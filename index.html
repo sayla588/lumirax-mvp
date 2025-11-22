@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LumiraX MVP</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #0a0a0a; color: #eee; margin: 0; padding: 0; }
+    header { padding: 20px; background: #111; text-align: center; font-size: 24px; }
+    section { padding: 20px; }
+    .card { background: #181818; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
+    input, textarea { width: 100%; padding: 10px; border-radius: 6px; border: none; margin-top: 10px; }
+    button { padding: 10px 20px; background: #4c8bf5; color: white; border: none; border-radius: 6px; cursor: pointer; margin-top: 10px; }
+    #chatBox { height: 200px; overflow-y: auto; background: #000; padding: 10px; border-radius: 8px; }
+    .msg { margin: 5px 0; }
+    .user { color: #4c8bf5; }
+    .ai { color: #72f59f; }
+  </style>
+</head>
+<body>
+<header>LumiraX — Free MVP</header>
+
+<section>
+  <div class="card">
+    <h2>AI Chat</h2>
+    <div id="chatBox"></div>
+    <input id="userInput" placeholder="Type your message..." />
+    <button onclick="sendMsg()">Send</button>
+  </div>
+
+  <div class="card">
+    <h2>Launchpad (Fake Version)</h2>
+    <p>Submit your Web3 project idea:</p>
+    <textarea id="launchInput" placeholder="Your project idea..."></textarea>
+    <button onclick="submitLaunch()">Submit</button>
+    <p id="launchStatus"></p>
+  </div>
+
+  <div class="card">
+    <h2>NFT Generator (Simulation)</h2>
+    <input type="file" id="nftFile" />
+    <button onclick="fakeNFT()">Generate NFT Preview</button>
+    <p id="nftResult"></p>
+  </div>
+</section>
+
+<script>
+// --- AI Chat (calls your serverless proxy at /api/chat) ---
+async function sendMsg() {
+  const msg = document.getElementById('userInput').value;
+  if (!msg) return;
+  addMsg('user', msg);
+  document.getElementById('userInput').value = '';
+
+  const reply = await callAI(msg);
+  addMsg('ai', reply);
+}
+
+function addMsg(role, text) {
+  const box = document.getElementById('chatBox');
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+  div.textContent = `${role.toUpperCase()}: ${text}`;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+
+async function callAI(message) {
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message })
+    });
+    const data = await res.json();
+    if (data && data.choices && data.choices[0] && data.choices[0].message) {
+      return data.choices[0].message.content;
+    }
+    if (data && data.error) return 'AI Error: ' + data.error;
+    return JSON.stringify(data).slice(0, 400);
+  } catch(e) {
+    return 'AI Error';
+  }
+}
+
+// --- Launchpad fake submit ---
+function submitLaunch() {
+  const val = document.getElementById('launchInput').value;
+  if (!val) return;
+  document.getElementById('launchStatus').innerText = 'Project submitted! (Fake demo)';
+}
+
+// --- Fake NFT Generator ---
+function fakeNFT() {
+  const file = document.getElementById('nftFile').files[0];
+  if (!file) return;
+  document.getElementById('nftResult').innerText = 'NFT Preview Generated (Fake).';
+}
+</script>
+</body>
+</html>
