@@ -1,293 +1,143 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>LumiraX — AI Powered Crypto Intelligence</title>
-  <meta name="description" content="LumiraX — AI + Web3 intelligence: token analysis, NFT scanner, wallet insights and more." />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lumirax MVP</title>
   <style>
-    :root{
-      --bg:#0b0f1a;
-      --card:#0f1724;
-      --muted:#9aa4b2;
-      --glass: rgba(255,255,255,0.03);
-      --accent1: linear-gradient(90deg,#7b61ff,#00d2ff 40%,#7bffb2);
-      --accent2: linear-gradient(90deg,#ff7bd6,#7b61ff 40%,#00d2ff);
-      --glass-2: rgba(255,255,255,0.02);
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #d2e9ff, #ffe8f4);
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
     }
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0;background:radial-gradient(1200px 600px at 10% 10%, rgba(124,58,237,0.12), transparent), radial-gradient(900px 400px at 90% 90%, rgba(14,165,233,0.08), transparent), var(--bg); color:#e6eef8; font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}
-    a{color:inherit}
-    .container{max-width:1100px;margin:0 auto;padding:36px 20px}
-    header{display:flex;align-items:center;justify-content:space-between;padding:10px 0}
-    .brand{display:flex;gap:12px;align-items:center}
-    .logo{
-      width:44px;height:44px;border-radius:10px;
-      background: linear-gradient(135deg,#ff7bd6,#7b61ff,#00d2ff);
-      display:flex;align-items:center;justify-content:center;font-weight:700;color:#071124; font-size:18px;
-      box-shadow:0 6px 24px rgba(124,58,237,0.12), inset 0 -6px 20px rgba(255,255,255,0.06);
+    header {
+      background: #ffffffaa;
+      backdrop-filter: blur(8px);
+      padding: 16px;
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
-    .site-title{font-weight:700;font-size:18px}
-    nav a{margin-left:18px;color:var(--muted);text-decoration:none;font-size:14px}
-    .hero{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:center;padding:36px 0}
-    .hero-card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:28px;border-radius:16px;box-shadow: 0 8px 30px rgba(2,6,23,0.6); border:1px solid rgba(255,255,255,0.03)}
-    h1{font-size:34px;margin:0 0 12px 0;line-height:1.05}
-    p.lead{margin:0;color:var(--muted);font-size:15px}
-    .cta-row{margin-top:18px;display:flex;gap:12px;align-items:center}
-    .btn{
-      display:inline-flex;align-items:center;gap:10px;padding:12px 18px;border-radius:12px;border:none;cursor:pointer;font-weight:600;
-      background:linear-gradient(90deg,#7b61ff,#00d2ff); color:#021027; box-shadow:0 10px 30px rgba(3,12,30,0.6);
+    #chatBox {
+      flex: 1;
+      padding: 18px;
+      overflow-y: auto;
     }
-    .btn.ghost{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.04);box-shadow:none}
-    .features{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:22px}
-    .feature{background:var(--card);padding:14px;border-radius:10px;border:1px solid var(--glass-2)}
-    .feature h4{margin:0 0 8px 0;font-size:15px}
-    .feature p{margin:0;color:var(--muted);font-size:13px}
-    .right-panel{display:flex;flex-direction:column;gap:14px}
-    .ai-box{background:linear-gradient(180deg, rgba(255,255,255,0.015), transparent); padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
-    #chatBox{height:220px;overflow:auto;background:linear-gradient(90deg, rgba(255,255,255,0.01), transparent);padding:12px;border-radius:10px}
-    input[type=text], textarea{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:10px;border-radius:8px;color:#e6eef8;width:100%;outline:none}
-    textarea{min-height:86px}
-    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:36px}
-    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03)}
-    .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.02);font-weight:600;color:var(--muted);font-size:12px}
-    .roadmap{display:flex;flex-direction:column;gap:12px}
-    .road-item{display:flex;gap:14px;align-items:flex-start}
-    .road-dot{width:12px;height:12px;border-radius:50%;background:linear-gradient(90deg,#ff7bd6,#7b61ff)}
-    footer{border-top:1px solid rgba(255,255,255,0.03);padding:18px 0;margin-top:36px;color:var(--muted);font-size:13px}
-    .social a{margin-right:8px;color:var(--muted);text-decoration:none}
-    /* responsive */
-    @media (max-width:1000px){ .hero{grid-template-columns:1fr} .grid-3{grid-template-columns:repeat(2,1fr)} }
-    @media (max-width:640px){
-      .container{padding:20px}
-      header{flex-direction:column;align-items:flex-start;gap:14px}
-      .hero{padding:12px 0}
-      .grid-3{grid-template-columns:1fr}
-      h1{font-size:26px}
-      .btn{padding:10px 14px}
+    .bubble {
+      padding: 12px 16px;
+      margin: 10px 0;
+      border-radius: 14px;
+      max-width: 75%;
+      line-height: 1.5em;
+      white-space: pre-wrap;
+    }
+    .me {
+      background: #8ec5ff;
+      color: white;
+      margin-left: auto;
+    }
+    .bot {
+      background: #ffffffd5;
+      color: #333;
+      margin-right: auto;
+    }
+    #inputBar {
+      display: flex;
+      padding: 10px;
+      background: #ffffffdd;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+    }
+    #msgInput {
+      flex: 1;
+      font-size: 17px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    button {
+      margin-left: 10px;
+      padding: 10px 20px;
+      border: none;
+      background: #0077ff;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background: #005fcc;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <div class="brand">
-        <div class="logo">LX</div>
-        <div>
-          <div class="site-title">LumiraX</div>
-          <div style="font-size:12px;color:var(--muted)">AI · Web3 · Intelligence</div>
-        </div>
-      </div>
-      <nav>
-        <a href="#features">Features</a>
-        <a href="#roadmap">Roadmap</a>
-        <a href="#team">Team</a>
-        <a href="#waitlist" class="btn ghost" style="padding:8px 12px">Join Waitlist</a>
-      </nav>
-    </header>
+<header>✨ 欢迎来到 Lumirax — 专属 AI 伴侣 ✨</header>
 
-    <section class="hero">
-      <div class="hero-card">
-        <h1>The Web3 intelligence platform<br/><span style="color:#b3ffe1">AI insights • Token analysis • NFT scanning</span></h1>
-        <p class="lead">LumiraX merges large language models with on-chain data to give you clear, actionable crypto insights — all in one place.</p>
+<div id="chatBox"></div>
 
-        <div class="cta-row">
-          <button class="btn" onclick="document.getElementById('email').scrollIntoView({behavior:'smooth'})">Join Waitlist</button>
-          <button class="btn ghost" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">See Features</button>
-        </div>
+<div id="inputBar">
+  <input id="msgInput" type="text" placeholder="输入内容..." />
+  <button onclick="sendMessage()">发送</button>
+</div>
 
-        <div class="features" style="margin-top:22px">
-          <div class="feature">
-            <h4>Real-time on-chain signals</h4>
-            <p>Whale movement, rug-alerts and liquidity flow — translated into human-readable insights.</p>
-          </div>
-          <div class="feature">
-            <h4>AI research assistant</h4>
-            <p>Ask natural-language questions about tokens, contracts, or market structure and get concise reports.</p>
-          </div>
-          <div class="feature">
-            <h4>NFT & project scanner</h4>
-            <p>Detect fake mints, suspicious traits, and marketplace anomalies — fast.</p>
-          </div>
-          <div class="feature">
-            <h4>Privacy-first design</h4>
-            <p>Wallets never hold user keys on our servers — user signs locally with MetaMask.</p>
-          </div>
-        </div>
-      </div>
+<script>
+  const KEY = "YOUR_OPENAI_KEY"; // ← ← ❗把这里换成你的真实 key
 
-      <aside class="right-panel">
-        <div class="ai-box hero-card">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <div style="font-weight:700">AI Quick Demo</div>
-            <div style="font-size:12px;color:var(--muted)">Beta</div>
-          </div>
+  const chatBox = document.getElementById("chatBox");
+  const input = document.getElementById("msgInput");
 
-          <div id="chatBox"></div>
-          <div style="margin-top:10px;display:flex;gap:8px">
-            <input id="userInput" type="text" placeholder="Ask about a token (e.g. 'check XYZ token')" />
-            <button class="btn" onclick="sendMsg()">Ask</button>
-          </div>
-          <div style="margin-top:8px;font-size:12px;color:var(--muted)">Note: This demo proxies requests to your /api/chat (OpenAI key kept secure).</div>
-        </div>
+  function addBubble(text, sender) {
+    const div = document.createElement("div");
+    div.className = "bubble " + sender;
+    div.innerText = text;
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
 
-        <div class="card">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <div style="font-weight:700">Snapshot</div>
-            <div class="pill">v0.2</div>
-          </div>
-          <div style="margin-top:12px;color:var(--muted);font-size:14px">MVP live · AI demo · Waitlist open</div>
-          <div style="margin-top:12px;display:flex;gap:8px">
-            <button class="btn" onclick="document.getElementById('waitlist-form').scrollIntoView({behavior:'smooth'})">Join Waitlist</button>
-            <button class="btn ghost" onclick="openSocial()">Community</button>
-          </div>
-        </div>
-      </aside>
-    </section>
+  async function sendMessage() {
+    const userMsg = input.value.trim();
+    if (!userMsg) return;
 
-    <section id="features" class="grid-3">
-      <div class="card">
-        <h3>AI Trading Advisor</h3>
-        <p style="color:var(--muted)">Personalized strategy templates, backtest-ready guides and educational scenario planning — no order execution.</p>
-      </div>
-      <div class="card">
-        <h3>Token Analysis Engine</h3>
-        <p style="color:var(--muted)">Automatic tokenomics breakdown, holder distribution and mint/lock checks.</p>
-      </div>
-      <div class="card">
-        <h3>NFT Intelligence</h3>
-        <p style="color:var(--muted)">Detect bot farms, wash trading, rare trait flags and suspicious mints.</p>
-      </div>
-    </section>
+    addBubble(userMsg, "me"); // 显示我说的话
+    input.value = "";
 
-    <section style="margin-top:28px">
-      <div class="card">
-        <h3 id="roadmap">Roadmap</h3>
-        <div class="roadmap" style="margin-top:12px">
-          <div class="road-item"><div class="road-dot"></div><div><strong>Q1</strong> · Public MVP & Waitlist • AI demo • Feedback loop</div></div>
-          <div class="road-item"><div class="road-dot"></div><div><strong>Q2</strong> · On-chain integrations • Dashboard • Pro tier</div></div>
-          <div class="road-item"><div class="road-dot"></div><div><strong>Q3</strong> · Wallet aggregation • NFT tools • Community rewards</div></div>
-          <div class="road-item"><div class="road-dot"></div><div><strong>Q4</strong> · Token design (governance) • Partnerships</div></div>
-        </div>
-      </div>
-    </section>
+    addBubble("正在思考...", "bot");
+    const thinkingBubble = chatBox.lastElementChild;
 
-    <section style="margin-top:22px">
-      <div class="card">
-        <h3 id="team">Team & Trust</h3>
-        <p style="color:var(--muted)">Small founding team (solo founder) — building LumiraX in public. Open to advisors and early partners. Contact: <span style="color:#9ad7ff">founder@lumirax.ai</span></p>
-        <div style="display:flex;gap:12px;margin-top:12px">
-          <div style="flex:1;padding:12px;border-radius:10px;background:linear-gradient(90deg,#ff7bd6,#7b61ff);color:#021027;font-weight:700;text-align:center">Apply as Advisor</div>
-          <div style="flex:1;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);text-align:center">Partnerships</div>
-        </div>
-      </div>
-    </section>
+    // 请求 OpenAI
+    try {
+      const res = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${KEY}`,
+        },
+        body: JSON.stringify({
+          model: "gpt-4o-mini",
+          messages: [{ role: "user", content: userMsg }],
+        }),
+      });
 
-    <section style="margin-top:22px" id="waitlist">
-      <div class="card" id="waitlist-form">
-        <h3>Join the Waitlist</h3>
-        <p style="color:var(--muted)">Get early access, beta invites and priority minting slots.</p>
-        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
-          <input id="email" type="text" placeholder="Your email (or wallet ENS)" style="flex:1;min-width:220px" />
-          <button class="btn" onclick="submitWaitlist()">Request Invite</button>
-        </div>
-        <p id="wait-msg" style="color:var(--muted);margin-top:10px"></p>
-        <div style="margin-top:12px;color:var(--muted);font-size:13px">
-          Prefer wallet-first? Paste your wallet address or ENS in the email box.
-        </div>
-      </div>
-    </section>
+      const data = await res.json();
+      thinkingBubble.remove();
 
-    <footer>
-      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap">
-        <div>
-          <strong>LumiraX</strong> — AI Powered Crypto Intelligence<br/>
-          <div style="color:var(--muted);margin-top:6px">Disclaimer: Not financial advice. Use responsibly.</div>
-        </div>
-        <div class="social" style="margin-top:6px">
-          <a href="#" onclick="openX()">X</a>
-          <a href="#" onclick="openDiscord()">Discord</a>
-          <a href="#" onclick="openTG()">Telegram</a>
-        </div>
-      </div>
-    </footer>
-  </div>
-
-  <script>
-    // ---------- AI Chat (keeps calling your serverless proxy /api/chat) ----------
-    function addMsg(role, text) {
-      const box = document.getElementById('chatBox');
-      const row = document.createElement('div');
-      row.style.marginBottom = '8px';
-      row.innerHTML = '<div style="font-size:12px;color:#9fb8d9;font-weight:700">'+role.toUpperCase()+':</div><div style="margin-top:4px;color:#e6eef8">'+text+'</div>';
-      box.appendChild(row);
-      box.scrollTop = box.scrollHeight;
+      const reply = data.choices?.[0]?.message?.content || "（没有返回内容）";
+      addBubble(reply, "bot");
+    } catch (e) {
+      thinkingBubble.remove();
+      addBubble("❌ 请求失败，请检查 API Key 或网络", "bot");
+      console.error(e);
     }
+  }
 
-    async function sendMsg() {
-      const v = document.getElementById('userInput').value;
-      if(!v) return;
-      addMsg('user', v);
-      document.getElementById('userInput').value = '';
-      try {
-        const res = await fetch('/api/chat', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ message: v })});
-        const data = await res.json();
-        if(data && data.choices && data.choices[0] && data.choices[0].message){
-          addMsg('ai', data.choices[0].message.content);
-        } else if(data && data.reply){
-          addMsg('ai', data.reply);
-        } else if(data && data.error){
-          addMsg('ai', 'Error: '+data.error);
-        } else {
-          addMsg('ai', JSON.stringify(data).slice(0,400));
-        }
-      } catch(e){
-        addMsg('ai','Network/Server error');
-      }
-    }
+  input.addEventListener("keydown", (ev) => {
+    if (ev.key === "Enter") sendMessage();
+  });
+</script>
 
-    // ---------- Waitlist submit (simple, client-first) ----------
-    // Replace FORMSPREE_ID with your Formspree form ID to collect emails on serverless service
-    const FORMSPREE_ID = 'REPLACE_WITH_FORMSPREE_ID'; // <-- replace when ready
-
-    async function submitWaitlist(){
-      const email = document.getElementById('email').value.trim();
-      const msgEl = document.getElementById('wait-msg');
-      if(!email){ msgEl.innerText = 'Please enter email or wallet address.'; return;}
-      msgEl.innerText = 'Submitting…';
-      try {
-        if(FORMSPREE_ID && FORMSPREE_ID !== 'REPLACE_WITH_FORMSPREE_ID'){
-          const r = await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
-            method:'POST',
-            headers:{ 'Content-Type':'application/json', 'Accept':'application/json' },
-            body: JSON.stringify({ email })
-          });
-          const j = await r.json();
-          if(r.ok){ msgEl.innerText = 'Thanks — you are on the waitlist!'; document.getElementById('email').value=''; }
-          else { msgEl.innerText = 'Server error: '+(j.error||JSON.stringify(j)); }
-        } else {
-          // fallback: store locally and prompt user to copy
-          const list = JSON.parse(localStorage.getItem('lumirax_waitlist')||'[]');
-          list.push({id:Date.now(), email});
-          localStorage.setItem('lumirax_waitlist', JSON.stringify(list));
-          msgEl.innerHTML = 'Saved locally. To collect emails centrally, set up Formspree (replace FORMSPREE_ID).';
-          document.getElementById('email').value='';
-        }
-      } catch(err){
-        msgEl.innerText = 'Submit failed: '+err.message;
-      }
-    }
-
-    // ---------- Social / utility ----------
-    function openSocial(){ alert('Community links placeholder — replace with real links.'); }
-    function openX(){ window.open('https://twitter.com/','_blank'); }
-    function openDiscord(){ window.open('https://discord.com/','_blank'); }
-    function openTG(){ window.open('https://t.me/','_blank'); }
-
-    // small UX: prefill example
-    document.addEventListener('DOMContentLoaded', ()=> {
-      addMsg('ai','Hi — ask me about any token or type "help" for examples.');
-    });
-  </script>
 </body>
 </html>
