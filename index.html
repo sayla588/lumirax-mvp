@@ -36,9 +36,7 @@
 </div>
 
 <script>
-  const DEEPSEEK_KEY = "sk-1371851d7df348bd8e96c5f424975584"; // ← 替换成你的 DeepSeek API Key
   let currentTab = "chat";
-
   const chatBox = document.getElementById("chatBox");
   const input = document.getElementById("msgInput");
 
@@ -54,14 +52,13 @@
     currentTab = tab;
     document.getElementById("tabChat").classList.toggle("active", tab === "chat");
     document.getElementById("tabRisk").classList.toggle("active", tab === "risk");
-
     chatBox.innerHTML = "";
     input.value = "";
 
     if (tab === "chat") {
-      addBubble("你好，我是 Lumirax AI，随时陪你聊天 🌙", "bot");
+      addBubble("你好，我是 Lumirax AI，可以陪你聊天 🌙", "bot");
     } else {
-      addBubble("请输入 Base 钱包地址，我将分析钱包风险 🛡", "bot");
+      addBubble("请输入 Base 钱包地址，我将分析安全风险 🛡", "bot");
     }
   }
 
@@ -75,44 +72,37 @@
     addBubble("正在分析中……", "bot");
     const thinking = chatBox.lastElementChild;
 
-    let prompt = "";
-    if (currentTab === "chat") {
-      prompt = msg;
-    } else if (currentTab === "risk") {
-      prompt = `你是一名 Web3 安全分析师，请深入分析 Base 链钱包风险，钱包地址：${msg}。检查以下内容：
-      - 是否在黑名单
-      - 过去 7 天转账模式
-      - 是否涉及可疑合约
-      - 过往 Rug / 骗局历史
-      - 风险评级（0-100 分）
-      用结构化总结输出。`;
+    let prompt = msg;
+    if (currentTab === "risk") {
+      prompt = `你是一名区块链安全分析师。请深入分析 Base 链钱包风险，钱包地址：${msg}。检查：
+      - 是否命中过去诈骗/黑名单数据库
+      - 交易行为和模式是否可疑
+      - 与高风险合约的交互
+      - 风险等级（0~100）
+      给出结构化总结。`;
     }
 
     try {
-      const res = await fetch("https://api.deepseek.com/chat/completions", {
+      const res = await fetch("https://api.lmsys.org/v1/chat/completions", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${DEEPSEEK_KEY}`,
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          model: "deepseek-chat",
-          messages: [{ role: "user", content: prompt }],
-        }),
+          model: "deepseek-llm",
+          messages: [{ role: "user", content: prompt }]
+        })
       });
       const data = await res.json();
       thinking.remove();
-      addBubble(data.choices?.[0]?.message?.content || "没有返回内容", "bot");
+      addBubble(data.choices?.[0]?.message?.content || "无输出", "bot");
     } catch (e) {
       thinking.remove();
-      addBubble("❌ 请求失败，请检查网络或 API Key", "bot");
+      addBubble("❌ 请求失败，稍后再试", "bot");
       console.error(e);
     }
   }
 
   input.addEventListener("keydown", e => e.key === "Enter" && sendMessage());
-
-  switchTab("chat"); // 默认显示聊天
+  switchTab("chat");
 </script>
 
 </body>
