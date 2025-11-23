@@ -1,103 +1,172 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>LumiraX Debug Test</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LumiraX — AI Web3 Assistant</title>
+
 <style>
-  body{font-family:Arial,Helvetica,sans-serif;margin:0;background:#071021;color:#eaf2ff}
-  .wrap{max-width:900px;margin:24px auto;padding:20px}
-  header{font-size:20px;margin-bottom:12px}
-  #messages{height:420px;overflow:auto;background:#02101a;padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.03)}
-  .m{margin:8px 0;padding:10px;border-radius:8px;max-width:80%}
-  .user{background:#0059ff;color:#fff;margin-left:auto}
-  .bot{background:#0b1620;color:#dff3ff;margin-right:auto}
-  #inputRow{display:flex;gap:8px;margin-top:12px}
-  input{flex:1;padding:10px;border-radius:6px;border:1px solid #254; background:#071828;color:#eaf2ff}
-  button{padding:10px 14px;border-radius:6px;border:none;background:#00bfff;color:#021;cursor:pointer}
-  .note{font-size:13px;color:#9fb0c6;margin-top:8px}
-  pre{background:#00111a;padding:8px;border-radius:6px;overflow:auto;color:#9be7ff}
+  body {
+    margin: 0;
+    background: radial-gradient(circle at 50% 10%, #1a2639, #090e14);
+    font-family: "Inter", sans-serif;
+    color: #e7f1ff;
+    display: flex;
+    justify-content: center;
+  }
+  .wrap {
+    width: 100%;
+    max-width: 880px;
+    margin-top: 32px;
+    padding: 0 20px 60px;
+  }
+  .hero {
+    display: flex;
+    gap: 18px;
+    background: rgba(255,255,255,0.05);
+    padding: 20px;
+    border-radius: 18px;
+    backdrop-filter: blur(10px);
+    align-items: center;
+    border: 1px solid rgba(255,255,255,0.07);
+  }
+  .hero img {
+    width: 92px;
+    height: 92px;
+    border-radius: 20px;
+    object-fit: cover;
+    border: 2px solid rgba(255,255,255,0.16);
+  }
+  .hero .info h1 {
+    font-size: 28px;
+    margin: 0;
+  }
+  .hero .info p {
+    margin: 6px 0 0 0;
+    font-size: 16px;
+    opacity: 0.85;
+  }
+  #messages {
+    margin-top: 26px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 16px;
+    padding: 20px;
+    height: 450px;
+    overflow-y: auto;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .m {
+    max-width: 78%;
+    padding: 14px 18px;
+    border-radius: 14px;
+    margin: 12px 0;
+    line-height: 1.55em;
+    font-size: 15px;
+  }
+  .user {
+    margin-left: auto;
+    background: #005dff;
+    color: #fff;
+    border-bottom-right-radius: 2px;
+  }
+  .bot {
+    margin-right: auto;
+    background: rgba(255,255,255,0.09);
+    border-bottom-left-radius: 2px;
+  }
+  #inputBox {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+  }
+  #q {
+    flex: 1;
+    padding: 14px;
+    border-radius: 12px;
+    border: none;
+    font-size: 15px;
+    background: rgba(255,255,255,0.09);
+    color: #e7f1ff;
+    outline: none;
+  }
+  button {
+    padding: 14px 20px;
+    background: #00c8ff;
+    border-radius: 12px;
+    border: none;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  button:active { opacity: 0.75; }
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <header><strong>LumiraX — Debug Chat (no Key)</strong></header>
+<div class="wrap">
 
-    <div id="messages"></div>
-
-    <div id="inputRow">
-      <input id="q" placeholder="输入问题或 Base 钱包地址，按 Enter 发送" />
-      <button id="send">发送</button>
+  <!-- Character AI 头像区 -->
+  <div class="hero">
+    <img src="https://i.ibb.co/JzjDHkP/ai-avatar.png" alt="Lumira Avatar">
+    <div class="info">
+      <h1>LumiraX AI</h1>
+      <p>你的 Web3 安全助手 · 提供合约风险分析、项目真伪检查、钱包安全检测</p>
     </div>
-
-    <div class="note">这版会把完整 HTTP 响应打印到浏览器控制台（F12 → Console / Network）。如果仍失败，请把 Console 的错误贴给我。</div>
-
-    <h4 style="margin-top:18px">快速 curl 测试（可在终端运行）</h4>
-    <pre id="curl">curl -X POST "https://api.lmsys.org/v1/chat/completions" -H "Content-Type: application/json" -d '{"model":"deepseek-llm","messages":[{"role":"user","content":"hello"}]}'</pre>
   </div>
 
+  <!-- 聊天区域 -->
+  <div id="messages"></div>
+
+  <!-- 输入框 -->
+  <div id="inputBox">
+    <input id="q" placeholder="输入你的问题，例如：帮我检查这个合约是否安全">
+    <button id="send">发送</button>
+  </div>
+
+</div>
+
 <script>
-const messagesEl = document.getElementById('messages');
-const q = document.getElementById('q');
-const sendBtn = document.getElementById('send');
+const messagesEl = document.getElementById("messages");
+const q = document.getElementById("q");
+const sendBtn = document.getElementById("send");
 
 function append(text, cls){
-  const d=document.createElement('div');
-  d.className='m '+cls; d.textContent=text;
-  messagesEl.appendChild(d); messagesEl.scrollTop = messagesEl.scrollHeight;
+  const d = document.createElement("div");
+  d.className = "m " + cls;
+  d.textContent = text;
+  messagesEl.appendChild(d);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
-async function callRemote(prompt){
-  // 使用 api.lmsys.org（公共端点）——无需 Key
-  const url = 'https://api.lmsys.org/v1/chat/completions';
-  const body = {
-    model: 'deepseek-llm',
-    messages: [{role:'user', content: prompt}]
-  };
-  console.log('[DEBUG] Request body:', body);
-  try {
-    const r = await fetch(url, { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(body) });
-    console.log('[DEBUG] raw response:', r);
-    const text = await r.text();
-    console.log('[DEBUG] response text:', text);
-    // 尝试解析 JSON
-    try {
-      const j = JSON.parse(text);
-      console.log('[DEBUG] response json:', j);
-      // Prefer common choice path
-      const reply = j.choices?.[0]?.message?.content ?? j.output ?? JSON.stringify(j).slice(0,1000);
-      return reply;
-    } catch(parseErr){
-      console.error('[DEBUG] parse error', parseErr);
-      return '无法解析返回，详细见控制台（Console）';
-    }
-  } catch(err){
-    console.error('[DEBUG] fetch error', err);
-    throw err;
-  }
+// 请求 Vercel 后端代理 API
+async function ask(prompt){
+  const r = await fetch("/api/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt })
+  });
+
+  const j = await r.json();
+  if (j.reply) return j.reply;
+  return "⚠️ 请求失败，请稍后重试";
 }
 
 async function send(){
   const v = q.value.trim();
   if(!v) return;
-  append(v,'user'); q.value='';
-  append('思考中...','bot');
-  try {
-    const reply = await callRemote(v);
-    // remove the last '思考中...' and add reply
-    const last = messagesEl.querySelector('.m.bot:last-child');
-    if(last && last.textContent==='思考中...') last.remove();
-    append(reply,'bot');
-  } catch(e){
-    const last = messagesEl.querySelector('.m.bot:last-child');
-    if(last && last.textContent==='思考中...') last.remove();
-    append('请求失败：请打开控制台查看错误并粘贴给我。','bot');
-  }
+  append(v,"user");
+  q.value = "";
+  append("思考中…","bot");
+  const reply = await ask(v);
+  const last = messagesEl.querySelector(".bot:last-child");
+  if(last && last.textContent === "思考中…") last.remove();
+  append(reply,"bot");
 }
 
 sendBtn.onclick = send;
-q.addEventListener('keydown', e=>{ if(e.key==='Enter') send(); });
-append('欢迎 — 测试版 (no Key). 请在输入框键入并发送。','bot');
+q.addEventListener("keydown", e => { if(e.key === "Enter") send(); });
+
+// 欢迎消息
+append("你好，我是 LumiraX AI。\n你可以问我：\n• 分析智能合约风险\n• 检查Web3项目真伪\n• 检查钱包地址是否暴露风险\n随时向我提问！","bot");
 </script>
 </body>
 </html>
