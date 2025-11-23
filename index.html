@@ -1,94 +1,103 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh">
 <head>
-<meta charset="UTF-8">
-<title>Lumirax MVP</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>LumiraX Debug Test</title>
 <style>
-    body { font-family: Arial, sans-serif; background:#0d0d0d; color:white; margin:0; }
-    #app { max-width: 700px; margin: auto; padding: 20px; }
-    h1 { text-align:center; }
-    #messages { height: 480px; overflow-y: auto; border: 1px solid #444; padding: 15px; border-radius: 8px; margin-bottom: 12px; }
-    .msg { margin: 12px 0; padding: 12px 15px; border-radius: 8px; max-width: 80%; line-height:1.5; }
-    .user { background:#0059ff; margin-left:auto; }
-    .bot { background:#262626; margin-right:auto; border:1px solid #444; }
-    #input-area { display:flex; gap:10px; }
-    #userInput { flex:1; padding:10px; border-radius:6px; border:none; }
-    button { padding:10px 15px; background:#00b894; border:none; border-radius:6px; cursor:pointer; color:black; font-weight:bold; }
-    button:hover { opacity:0.8; }
+  body{font-family:Arial,Helvetica,sans-serif;margin:0;background:#071021;color:#eaf2ff}
+  .wrap{max-width:900px;margin:24px auto;padding:20px}
+  header{font-size:20px;margin-bottom:12px}
+  #messages{height:420px;overflow:auto;background:#02101a;padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.03)}
+  .m{margin:8px 0;padding:10px;border-radius:8px;max-width:80%}
+  .user{background:#0059ff;color:#fff;margin-left:auto}
+  .bot{background:#0b1620;color:#dff3ff;margin-right:auto}
+  #inputRow{display:flex;gap:8px;margin-top:12px}
+  input{flex:1;padding:10px;border-radius:6px;border:1px solid #254; background:#071828;color:#eaf2ff}
+  button{padding:10px 14px;border-radius:6px;border:none;background:#00bfff;color:#021;cursor:pointer}
+  .note{font-size:13px;color:#9fb0c6;margin-top:8px}
+  pre{background:#00111a;padding:8px;border-radius:6px;overflow:auto;color:#9be7ff}
 </style>
 </head>
 <body>
-<div id="app">
-    <h1>Lumirax — Web3 风险扫描 MVP</h1>
+  <div class="wrap">
+    <header><strong>LumiraX — Debug Chat (no Key)</strong></header>
+
     <div id="messages"></div>
-    <div id="input-area">
-        <input id="userInput" type="text" placeholder="输入你的问题，例如：检测一个钱包风险">
-        <button onclick="sendMessage()">发送</button>
+
+    <div id="inputRow">
+      <input id="q" placeholder="输入问题或 Base 钱包地址，按 Enter 发送" />
+      <button id="send">发送</button>
     </div>
-</div>
+
+    <div class="note">这版会把完整 HTTP 响应打印到浏览器控制台（F12 → Console / Network）。如果仍失败，请把 Console 的错误贴给我。</div>
+
+    <h4 style="margin-top:18px">快速 curl 测试（可在终端运行）</h4>
+    <pre id="curl">curl -X POST "https://api.lmsys.org/v1/chat/completions" -H "Content-Type: application/json" -d '{"model":"deepseek-llm","messages":[{"role":"user","content":"hello"}]}'</pre>
+  </div>
 
 <script>
-const API_KEY = "sk-1371851d7df348bd8e96c5f424975584";   // ⬅️ 换成你的 DeepSeek Key
-const API_URL = "https://api.deepseek.com/v1/chat/completions";
+const messagesEl = document.getElementById('messages');
+const q = document.getElementById('q');
+const sendBtn = document.getElementById('send');
 
-let messages = [];
-
-function addMessage(text, sender) {
-    const div = document.createElement("div");
-    div.className = `msg ${sender}`;
-    div.textContent = text;
-    document.getElementById("messages").appendChild(div);
-    document.getElementById("messages").scrollTop = 99999;
+function append(text, cls){
+  const d=document.createElement('div');
+  d.className='m '+cls; d.textContent=text;
+  messagesEl.appendChild(d); messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
-async function sendMessage() {
-    const input = document.getElementById("userInput");
-    const content = input.value.trim();
-    if (!content) return;
-
-    addMessage(content, "user");
-    input.value = "";
-
-    // Loading动画文字
-    let loadingMsg = document.createElement("div");
-    loadingMsg.className = "msg bot";
-    loadingMsg.textContent = "⏳ 正在分析...";
-    document.getElementById("messages").appendChild(loadingMsg);
-    document.getElementById("messages").scrollTop = 99999;
-
-    messages.push({ role: "user", content });
-
+async function callRemote(prompt){
+  // 使用 api.lmsys.org（公共端点）——无需 Key
+  const url = 'https://api.lmsys.org/v1/chat/completions';
+  const body = {
+    model: 'deepseek-llm',
+    messages: [{role:'user', content: prompt}]
+  };
+  console.log('[DEBUG] Request body:', body);
+  try {
+    const r = await fetch(url, { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(body) });
+    console.log('[DEBUG] raw response:', r);
+    const text = await r.text();
+    console.log('[DEBUG] response text:', text);
+    // 尝试解析 JSON
     try {
-        const res = await fetch(API_URL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${API_KEY}`,
-            },
-            body: JSON.stringify({
-                model: "deepseek-chat",
-                messages: messages
-            })
-        });
-
-        const data = await res.json();
-
-        loadingMsg.remove(); // 去掉加载提示
-
-        if (data.error) {
-            addMessage("❌ 错误: " + data.error.message, "bot");
-            return;
-        }
-
-        const reply = data.choices[0].message.content;
-        addMessage(reply, "bot");
-        messages.push({ role: "assistant", content: reply });
-
-    } catch (e) {
-        loadingMsg.remove();
-        addMessage("⚠️ 请求失败（可能是 KEY 错误 / 调用频率过高 / 网络问题）", "bot");
+      const j = JSON.parse(text);
+      console.log('[DEBUG] response json:', j);
+      // Prefer common choice path
+      const reply = j.choices?.[0]?.message?.content ?? j.output ?? JSON.stringify(j).slice(0,1000);
+      return reply;
+    } catch(parseErr){
+      console.error('[DEBUG] parse error', parseErr);
+      return '无法解析返回，详细见控制台（Console）';
     }
+  } catch(err){
+    console.error('[DEBUG] fetch error', err);
+    throw err;
+  }
 }
+
+async function send(){
+  const v = q.value.trim();
+  if(!v) return;
+  append(v,'user'); q.value='';
+  append('思考中...','bot');
+  try {
+    const reply = await callRemote(v);
+    // remove the last '思考中...' and add reply
+    const last = messagesEl.querySelector('.m.bot:last-child');
+    if(last && last.textContent==='思考中...') last.remove();
+    append(reply,'bot');
+  } catch(e){
+    const last = messagesEl.querySelector('.m.bot:last-child');
+    if(last && last.textContent==='思考中...') last.remove();
+    append('请求失败：请打开控制台查看错误并粘贴给我。','bot');
+  }
+}
+
+sendBtn.onclick = send;
+q.addEventListener('keydown', e=>{ if(e.key==='Enter') send(); });
+append('欢迎 — 测试版 (no Key). 请在输入框键入并发送。','bot');
 </script>
 </body>
 </html>
