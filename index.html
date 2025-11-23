@@ -1,109 +1,94 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lumirax MVP</title>
-  <style>
-    body { font-family: Arial; margin: 0; background: #f0f7ff; display: flex; flex-direction: column; height: 100vh; }
-    header { text-align: center; padding: 14px; background: #ffffffcc; backdrop-filter: blur(8px); font-size: 20px; font-weight: bold; }
-    nav { display: flex; justify-content: center; gap: 12px; background: #fff; padding: 10px; }
-    nav button { padding: 8px 16px; border-radius: 8px; border: 1px solid #bbb; cursor: pointer; font-size: 15px; }
-    nav button.active { background: #0078ff; color: white; border: none; }
-    #chatBox { flex: 1; overflow-y: auto; padding: 20px; }
-    .bubble { padding: 12px 16px; margin: 10px 0; border-radius: 13px; max-width: 75%; }
-    .me { background: #8ec5ff; color: white; margin-left: auto; }
-    .bot { background: #ffffffd5; color: #222; margin-right: auto; }
-    #inputBar { display: flex; padding: 10px; background: #fff; }
-    #msgInput { flex: 1; font-size: 17px; padding: 10px; border-radius: 8px; border: 1px solid #ccc; }
-    button.send { margin-left: 10px; padding: 10px 20px; border: none; background: #0077ff; color: white; border-radius: 8px; cursor: pointer; }
-  </style>
+<meta charset="UTF-8">
+<title>Lumirax MVP</title>
+<style>
+    body { font-family: Arial, sans-serif; background:#0d0d0d; color:white; margin:0; }
+    #app { max-width: 700px; margin: auto; padding: 20px; }
+    h1 { text-align:center; }
+    #messages { height: 480px; overflow-y: auto; border: 1px solid #444; padding: 15px; border-radius: 8px; margin-bottom: 12px; }
+    .msg { margin: 12px 0; padding: 12px 15px; border-radius: 8px; max-width: 80%; line-height:1.5; }
+    .user { background:#0059ff; margin-left:auto; }
+    .bot { background:#262626; margin-right:auto; border:1px solid #444; }
+    #input-area { display:flex; gap:10px; }
+    #userInput { flex:1; padding:10px; border-radius:6px; border:none; }
+    button { padding:10px 15px; background:#00b894; border:none; border-radius:6px; cursor:pointer; color:black; font-weight:bold; }
+    button:hover { opacity:0.8; }
+</style>
 </head>
 <body>
-
-<header>✨ Lumirax — Web3 + AI 安全守护 ✨</header>
-
-<nav>
-  <button id="tabChat" class="active" onclick="switchTab('chat')">💬 AI 聊天</button>
-  <button id="tabRisk" onclick="switchTab('risk')">🛡 Base 钱包风险检测</button>
-</nav>
-
-<div id="chatBox"></div>
-
-<div id="inputBar">
-  <input id="msgInput" type="text" placeholder="输入内容..." />
-  <button class="send" onclick="sendMessage()">发送</button>
+<div id="app">
+    <h1>Lumirax — Web3 风险扫描 MVP</h1>
+    <div id="messages"></div>
+    <div id="input-area">
+        <input id="userInput" type="text" placeholder="输入你的问题，例如：检测一个钱包风险">
+        <button onclick="sendMessage()">发送</button>
+    </div>
 </div>
 
 <script>
-  let currentTab = "chat";
-  const chatBox = document.getElementById("chatBox");
-  const input = document.getElementById("msgInput");
+const API_KEY = "sk-1371851d7df348bd8e96c5f424975584";   // ⬅️ 换成你的 DeepSeek Key
+const API_URL = "https://api.deepseek.com/v1/chat/completions";
 
-  function addBubble(text, sender) {
+let messages = [];
+
+function addMessage(text, sender) {
     const div = document.createElement("div");
-    div.className = "bubble " + sender;
-    div.innerText = text;
-    chatBox.appendChild(div);
-    chatBox.scrollTop = chatBox.scrollHeight;
-  }
+    div.className = `msg ${sender}`;
+    div.textContent = text;
+    document.getElementById("messages").appendChild(div);
+    document.getElementById("messages").scrollTop = 99999;
+}
 
-  function switchTab(tab) {
-    currentTab = tab;
-    document.getElementById("tabChat").classList.toggle("active", tab === "chat");
-    document.getElementById("tabRisk").classList.toggle("active", tab === "risk");
-    chatBox.innerHTML = "";
+async function sendMessage() {
+    const input = document.getElementById("userInput");
+    const content = input.value.trim();
+    if (!content) return;
+
+    addMessage(content, "user");
     input.value = "";
 
-    if (tab === "chat") {
-      addBubble("你好，我是 Lumirax AI，可以陪你聊天 🌙", "bot");
-    } else {
-      addBubble("请输入 Base 钱包地址，我将分析安全风险 🛡", "bot");
-    }
-  }
+    // Loading动画文字
+    let loadingMsg = document.createElement("div");
+    loadingMsg.className = "msg bot";
+    loadingMsg.textContent = "⏳ 正在分析...";
+    document.getElementById("messages").appendChild(loadingMsg);
+    document.getElementById("messages").scrollTop = 99999;
 
-  async function sendMessage() {
-    const msg = input.value.trim();
-    if (!msg) return;
-
-    addBubble(msg, "me");
-    input.value = "";
-
-    addBubble("正在分析中……", "bot");
-    const thinking = chatBox.lastElementChild;
-
-    let prompt = msg;
-    if (currentTab === "risk") {
-      prompt = `你是一名区块链安全分析师。请深入分析 Base 链钱包风险，钱包地址：${msg}。检查：
-      - 是否命中过去诈骗/黑名单数据库
-      - 交易行为和模式是否可疑
-      - 与高风险合约的交互
-      - 风险等级（0~100）
-      给出结构化总结。`;
-    }
+    messages.push({ role: "user", content });
 
     try {
-      const res = await fetch("https://api.lmsys.org/v1/chat/completions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "deepseek-llm",
-          messages: [{ role: "user", content: prompt }]
-        })
-      });
-      const data = await res.json();
-      thinking.remove();
-      addBubble(data.choices?.[0]?.message?.content || "无输出", "bot");
+        const res = await fetch(API_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${API_KEY}`,
+            },
+            body: JSON.stringify({
+                model: "deepseek-chat",
+                messages: messages
+            })
+        });
+
+        const data = await res.json();
+
+        loadingMsg.remove(); // 去掉加载提示
+
+        if (data.error) {
+            addMessage("❌ 错误: " + data.error.message, "bot");
+            return;
+        }
+
+        const reply = data.choices[0].message.content;
+        addMessage(reply, "bot");
+        messages.push({ role: "assistant", content: reply });
+
     } catch (e) {
-      thinking.remove();
-      addBubble("❌ 请求失败，稍后再试", "bot");
-      console.error(e);
+        loadingMsg.remove();
+        addMessage("⚠️ 请求失败（可能是 KEY 错误 / 调用频率过高 / 网络问题）", "bot");
     }
-  }
-
-  input.addEventListener("keydown", e => e.key === "Enter" && sendMessage());
-  switchTab("chat");
+}
 </script>
-
 </body>
 </html>
