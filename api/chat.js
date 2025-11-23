@@ -1,40 +1,33 @@
-// Vercel serverless proxy — 转发 DeepSeek API，解决跨域 & 地域阻断 & Key泄露问题
 export default async function handler(req, res) {
   try {
-    const { prompt } = JSON.parse(req.body || "{}");
-    if (!prompt) {
-      return res.status(400).json({ error: "No prompt provided" });
-    }
+    const { message } = JSON.parse(req.body);
 
-    // 从 Vercel 环境变量读取 key
-    const apiKey = process.env.DEEPSEEK_KEY;
-    if (!apiKey) {
-      return res.status(500).json({ error: "Missing DEEPSEEK_KEY in Vercel env" });
-    }
-
-    const upstream = await fetch("https://api.deepseek.com/chat/completions", {
+    const response = await fetch("https://api.deepseek.com/chat/completions", {
       method: "POST",
       headers: {
+        "Authorization": `Bearer ${process.env.DEEPSEEK_KEY}`,
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
         model: "deepseek-chat",
-        messages: [{ role: "user", content: prompt }],
+        messages: [
+          { role: "system", content: "You are LumiraX, an AI assistant specialized in blockchain security." },
+          { role: "user", content: message }
+        ],
+        temperature: 0.7
       }),
     });
 
-    const raw = await upstream.text();
+    const data = await response.json();
 
-    try {
-      const j = JSON.parse(raw);
-      const reply = j.choices?.[0]?.message?.content ?? raw;
-      return res.status(200).json({ reply });
-    } catch {
-      return res.status(200).json({ reply: raw });
+    if (!data.choices || !data.choices[0]) {
+      return res.status(500).json({ error: "No response from DeepSeek" });
     }
+
+    res.status(200).json({
+      reply: data.choices[0].message.content
+    });
   } catch (err) {
-    return res.status(500).json({ error: err.message });
+    res.status(500).json({ error: err.message });
   }
 }
-
