@@ -1,13 +1,13 @@
 export default async function handler(req, res) {
   try {
-    // 必须：Vercel 解析 JSON 要用 req.json() / req.body 不能 JSON.parse
-    const body = req.method === "POST" ? await req.json() : null;
-    const message = body?.message;
+    // 直接从 req.body 读取，无需 JSON.parse
+    const { message } = req.body || {};
 
     if (!message) {
       return res.status(400).json({ error: "Message is required" });
     }
 
+    // 调用 DeepSeek API
     const response = await fetch("https://api.deepseek.com/chat/completions", {
       method: "POST",
       headers: {
@@ -17,27 +17,24 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: "deepseek-chat",
         messages: [
-          {
-            role: "system",
-            content: "You are LumiraX, an AI assistant specialized in blockchain security."
-          },
+          { role: "system", content: "You are LumiraX, an AI assistant specialized in blockchain security." },
           { role: "user", content: message }
         ],
-        temperature: 0.7,
+        temperature: 0.7
       }),
     });
 
     const data = await response.json();
 
-    if (!data?.choices?.[0]) {
+    if (!data.choices || !data.choices[0]) {
       return res.status(500).json({ error: "No response from DeepSeek" });
     }
 
-    return res.status(200).json({
-      reply: data.choices[0].message.content,
+    res.status(200).json({
+      reply: data.choices[0].message.content
     });
+
   } catch (err) {
-    console.error("API ERROR:", err);
-    return res.status(500).json({ error: err.message || "Unknown server error" });
+    res.status(500).json({ error: err.message });
   }
 }
