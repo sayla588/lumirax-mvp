@@ -1,3 +1,11 @@
+// 在文件最顶部添加
+import Head from 'next/head';
+
+// 然后在 return 里的最外层 div 之前加上：
+<Head>
+  <script src="https://cdn.tailwindcss.com"></script>
+</Head>
+
 import { useState, useRef, useEffect } from 'react';
 
 export default function Home() {
