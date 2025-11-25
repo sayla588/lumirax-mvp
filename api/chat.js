@@ -1,13 +1,21 @@
+export const config = {
+  api: {
+    bodyParser: true, // 关键：启用 JSON 解析
+  },
+};
+
 export default async function handler(req, res) {
   try {
-    // 直接从 req.body 读取，无需 JSON.parse
+    if (req.method !== "POST") {
+      return res.status(405).json({ error: "Method not allowed" });
+    }
+
     const { message } = req.body || {};
 
     if (!message) {
       return res.status(400).json({ error: "Message is required" });
     }
 
-    // 调用 DeepSeek API
     const response = await fetch("https://api.deepseek.com/chat/completions", {
       method: "POST",
       headers: {
@@ -30,11 +38,11 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: "No response from DeepSeek" });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       reply: data.choices[0].message.content
     });
 
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message });
   }
 }
