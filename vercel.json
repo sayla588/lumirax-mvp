@@ -1,6 +1,7 @@
 {
   "routes": [
     { "src": "/api/(.*)", "dest": "/api/$1.js" },
+    { "src": "/chat.js", "dest": "/chat.js" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
