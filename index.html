@@ -104,7 +104,6 @@
 <body>
 <div class="wrap">
 
-  <!-- AI 头像区 -->
   <div class="hero">
     <img src="https://i.ibb.co/JzjDHkP/ai-avatar.png" alt="Lumira Avatar">
     <div class="info">
@@ -113,10 +112,8 @@
     </div>
   </div>
 
-  <!-- 聊天 -->
   <div id="messages"></div>
 
-  <!-- 输入 -->
   <div id="inputBox">
     <input id="q" placeholder="输入你的问题，例如：帮我检查这个合约是否安全">
     <button id="send">发送</button>
@@ -137,16 +134,23 @@ function append(text, cls){
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
+// 与后端通信（修复版）
 async function ask(message){
-  const r = await fetch("/api/chat", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message })   // <--- 已修复！
-  });
+  try {
+    const r = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message })   // <--- 修复重点
+    });
 
-  const j = await r.json();
-  if (j.reply) return j.reply;
-  return "⚠️ 请求失败，请稍后重试";
+    const j = await r.json();
+
+    if (j.reply) return j.reply;
+
+    return j.error || "⚠️ 请求失败，请稍后重试";
+  } catch (err) {
+    return "⚠️ 网络错误，请检查服务器状态";
+  }
 }
 
 async function send(){
@@ -156,18 +160,18 @@ async function send(){
   q.value = "";
   append("思考中…","bot");
   const reply = await ask(v);
-
   const last = messagesEl.querySelector(".bot:last-child");
   if(last && last.textContent === "思考中…") last.remove();
-
   append(reply,"bot");
 }
 
 sendBtn.onclick = send;
 q.addEventListener("keydown", e => { if(e.key === "Enter") send(); });
 
-// 欢迎消息
-append("你好，我是 LumiraX AI。\n你可以问我：\n• 分析智能合约风险\n• 检查Web3项目真伪\n• 检查钱包地址是否暴露风险\n随时向我提问！","bot");
+append(
+"你好，我是 LumiraX AI。\n你可以问我：\n• 分析智能合约风险\n• 检查Web3项目真伪\n• 检查钱包地址是否暴露风险\n随时向我提问！",
+"bot"
+);
 </script>
 </body>
 </html>
