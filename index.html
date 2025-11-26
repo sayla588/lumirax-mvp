@@ -104,7 +104,7 @@
 <body>
 <div class="wrap">
 
-  <!-- Character AI 头像区 -->
+  <!-- AI 头像区 -->
   <div class="hero">
     <img src="https://i.ibb.co/JzjDHkP/ai-avatar.png" alt="Lumira Avatar">
     <div class="info">
@@ -113,10 +113,10 @@
     </div>
   </div>
 
-  <!-- 聊天区域 -->
+  <!-- 聊天 -->
   <div id="messages"></div>
 
-  <!-- 输入框 -->
+  <!-- 输入 -->
   <div id="inputBox">
     <input id="q" placeholder="输入你的问题，例如：帮我检查这个合约是否安全">
     <button id="send">发送</button>
@@ -137,12 +137,11 @@ function append(text, cls){
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
-// 请求 Vercel 后端代理 API
-async function ask(prompt){
+async function ask(message){
   const r = await fetch("/api/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ prompt })
+    body: JSON.stringify({ message })   // <--- 已修复！
   });
 
   const j = await r.json();
@@ -157,8 +156,10 @@ async function send(){
   q.value = "";
   append("思考中…","bot");
   const reply = await ask(v);
+
   const last = messagesEl.querySelector(".bot:last-child");
   if(last && last.textContent === "思考中…") last.remove();
+
   append(reply,"bot");
 }
 
