@@ -4,7 +4,17 @@ const sendBtn = document.getElementById("sendBtn");
 
 function addMessage(from, text) {
     const div = document.createElement("div");
-    div.innerHTML = `<strong>${from}:</strong> ${text}`;
+    div.style.marginBottom = "10px"; // 增加一点消息间距
+
+    const strong = document.createElement("strong");
+    strong.textContent = from + ": ";
+    
+    const span = document.createElement("span");
+    span.textContent = text;
+    span.style.whiteSpace = "pre-wrap"; // 允许 AI 回复中的换行符生效
+
+    div.appendChild(strong);
+    div.appendChild(span);
     chatbox.appendChild(div);
     chatbox.scrollTop = chatbox.scrollHeight;
 }
@@ -15,6 +25,8 @@ async function send() {
 
     addMessage("你", message);
     inputBox.value = "";
+    inputBox.disabled = true; // 发送期间禁用输入框，防止重复提交
+    sendBtn.disabled = true;
 
     try {
         const r = await fetch("/api/chat", {
@@ -24,13 +36,26 @@ async function send() {
         });
 
         const data = await r.json();
-        addMessage("AI", data.reply);
+        
+        if (r.status !== 200) {
+            addMessage("系统", data.error || data.reply || "发生错误");
+        } else {
+            addMessage("AI", data.reply);
+        }
     } catch (err) {
-        addMessage("系统", "请求失败，请稍后再试");
+        addMessage("系统", "网络请求失败");
+        console.error(err);
+    } finally {
+        inputBox.disabled = false;
+        sendBtn.disabled = false;
+        inputBox.focus();
     }
 }
 
 sendBtn.onclick = send;
 inputBox.addEventListener("keydown", e => {
-    if (e.key === "Enter") send();
+    if (e.key === "Enter" && !e.shiftKey) { // 防止 shift+enter 换行时误发送
+        e.preventDefault(); 
+        send();
+    }
 });
