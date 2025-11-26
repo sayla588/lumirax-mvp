@@ -1,14 +1,24 @@
 /* 全局设置 */
 :root {
-    --primary-color: #6366f1; /* 科技蓝紫 */
-    --primary-gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
-    --bg-color: #f3f4f6;
-    --chat-bg: #ffffff;
-    --text-dark: #1f2937;
-    --text-light: #6b7280;
-    --ai-bubble-bg: #f3f4f6;
-    --user-bubble-bg: var(--primary-gradient);
+    /* 核心色调：霓虹紫蓝 */
+    --primary-color: #818cf8; 
+    --primary-gradient: linear-gradient(135deg, #6366f1, #a855f7);
+    
+    /* 背景色：深邃黑/灰 */
+    --bg-color: #0f172a;    /* 网页背景：深蓝灰 */
+    --chat-bg: #1e293b;     /* 聊天卡片背景：稍浅的蓝灰 */
+    
+    /* 文字颜色 */
+    --text-dark: #f1f5f9;   /* 主文字：近白 */
+    --text-light: #94a3b8;  /* 次要文字：灰蓝 */
+    
+    /* 气泡颜色 */
+    --ai-bubble-bg: #334155; /* AI 气泡：深灰 */
+    --user-bubble-bg: var(--primary-gradient); /* 用户气泡：渐变 */
     --user-text-color: #ffffff;
+    
+    /* 边框线条 */
+    --border-color: #334155; 
 }
 
 * {
@@ -51,11 +61,9 @@ body {
 
 /* --- 头部设计 --- */
 .chat-header {
-    padding: 1.25rem;
-    text-align: center;
-    background: var(--chat-bg);
-    border-bottom: 1px solid #e5e7eb;
-    z-index: 10;
+    /* ...其他属性不变... */
+    background: var(--chat-bg); 
+    border-bottom: 1px solid var(--border-color, #e5e7eb); /* 增加变量支持 */
 }
 
 .chat-header h1 {
@@ -74,14 +82,8 @@ body {
 
 /* --- 消息区域设计 --- */
 .chat-messages {
-    flex: 1;
-    overflow-y: auto;
-    padding: 1.5rem;
-    background-color: #fafafa;
-    scroll-behavior: smooth;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem; /* 消息之间的间距 */
+    /* ...其他属性不变... */
+    background-color: var(--chat-bg); /* 这里原来是 #fafafa，一定要改！ */
 }
 
 /* 消息通用样式 */
@@ -140,20 +142,14 @@ body {
 
 /* --- 底部输入区设计 --- */
 .chat-input-area {
-    padding: 1rem;
+    /* ...其他属性不变... */
     background: var(--chat-bg);
-    border-top: 1px solid #e5e7eb;
+    border-top: 1px solid var(--border-color, #e5e7eb);
 }
 
 .input-wrapper {
-    display: flex;
-    align-items: flex-end;
-    gap: 0.75rem;
-    background-color: var(--ai-bubble-bg);
-    padding: 0.5rem;
-    border-radius: 1.5rem; /* 圆角输入条 */
-    border: 1px solid transparent;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    /* ...其他属性不变... */
+    background-color: var(--ai-bubble-bg); /* 让输入框底色和AI气泡一致 */
 }
 
 .input-wrapper:focus-within {
