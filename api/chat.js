@@ -1,4 +1,3 @@
-
 export const config = {
   api: {
     bodyParser: true,
@@ -6,7 +5,7 @@ export const config = {
 };
 
 export default async function handler(req, res) {
-  console.log("API Route /api/chat called");
+  console.log("📩 /api/chat hit");
 
   try {
     if (req.method !== "POST") {
@@ -15,18 +14,18 @@ export default async function handler(req, res) {
 
     const { message } = req.body || {};
 
-    // 检查 API KEY
-    const apiKey = process.env.DEEPSEEK_KEY;
-    if (!apiKey) {
-      console.error("❌ Missing DEEPSEEK_KEY");
-      return res.status(500).json({ error: "Server configuration error: API Key missing" });
-    }
-
     if (!message) {
       return res.status(400).json({ error: "Message is required" });
     }
 
-    console.log("Sending request to DeepSeek...");
+    const apiKey = process.env.DEEPSEEK_KEY;
+
+    if (!apiKey) {
+      console.error("❌ DEEPSEEK_KEY missing!");
+      return res.status(500).json({ error: "Server misconfigured: Missing API key" });
+    }
+
+    console.log("➡️ Sending to DeepSeek:", message);
 
     const response = await fetch("https://api.deepseek.com/chat/completions", {
       method: "POST",
@@ -44,20 +43,20 @@ export default async function handler(req, res) {
       }),
     });
 
-    // DeepSeek API 错误处理
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error(`❌ DeepSeek API Error (${response.status}):`, errorText);
+      const errText = await response.text();
+      console.error(`❌ DeepSeek Error ${response.status}:`, errText);
+
       return res.status(response.status).json({
-        error: `DeepSeek API Error: ${response.status}`,
-        details: errorText
+        error: `DeepSeek API Error (${response.status})`,
+        details: errText
       });
     }
 
     const data = await response.json();
 
-    if (!data.choices || !data.choices[0]) {
-      console.error("❌ Unexpected response:", data);
+    if (!data.choices?.[0]?.message?.content) {
+      console.error("❌ Invalid DeepSeek response:", data);
       return res.status(500).json({ error: "Invalid response from DeepSeek" });
     }
 
@@ -66,7 +65,7 @@ export default async function handler(req, res) {
     });
 
   } catch (err) {
-    console.error("❌ Server Internal Error:", err);
-    return res.status(500).json({ error: "Server error", details: err.message });
+    console.error("❌ Server Error:", err);
+    return res.status(500).json({ error: "Internal server error", details: err.message });
   }
 }
