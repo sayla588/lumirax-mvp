@@ -1,11 +1,10 @@
-export const config = {
+     export const config = {
   api: {
     bodyParser: true,
   },
 };
 
 export default async function handler(req, res) {
-  // 1. 调试日志：确认请求已到达
   console.log("API Route /api/chat called");
 
   try {
@@ -15,12 +14,10 @@ export default async function handler(req, res) {
 
     const { message } = req.body || {};
 
-    // 2. 检查 API Key 是否存在 (关键步骤)
-    // 注意：在 Vercel 环境变量里，确保名字是 DEEPSEEK_KEY，没有多余空格
+    // 检查 API KEY
     const apiKey = process.env.DEEPSEEK_KEY;
-    
     if (!apiKey) {
-      console.error("❌ Error: DEEPSEEK_KEY is missing in process.env");
+      console.error("❌ Missing DEEPSEEK_KEY");
       return res.status(500).json({ error: "Server configuration error: API Key missing" });
     }
 
@@ -46,23 +43,21 @@ export default async function handler(req, res) {
       }),
     });
 
-    // 3. 检查 DeepSeek 是否返回了 HTTP 错误 (比如 401, 402, 429, 500)
+    // DeepSeek API 错误处理
     if (!response.ok) {
-      const errorText = await response.text(); // 获取原始错误信息
+      const errorText = await response.text();
       console.error(`❌ DeepSeek API Error (${response.status}):`, errorText);
-      
-      // 将上游的具体错误直接返回给前端，方便调试
-      return res.status(response.status).json({ 
-        error: `DeepSeek API Error: ${response.status}`, 
-        details: errorText 
+      return res.status(response.status).json({
+        error: `DeepSeek API Error: ${response.status}`,
+        details: errorText
       });
     }
 
     const data = await response.json();
 
     if (!data.choices || !data.choices[0]) {
-      console.error("❌ Unexpected response structure:", JSON.stringify(data));
-      return res.status(500).json({ error: "No response content from DeepSeek" });
+      console.error("❌ Unexpected response:", data);
+      return res.status(500).json({ error: "Invalid response from DeepSeek" });
     }
 
     return res.status(200).json({
@@ -74,3 +69,4 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: "Server error", details: err.message });
   }
 }
+   
