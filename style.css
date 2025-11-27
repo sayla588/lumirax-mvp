@@ -1,204 +1,253 @@
-/* 全局设置 */
-:root {
-    /* 核心色调：霓虹紫蓝 */
-    --primary-color: #818cf8; 
-    --primary-gradient: linear-gradient(135deg, #6366f1, #a855f7);
-    
-    /* 背景色：深邃黑/灰 */
-    --bg-color: #0f172a;    /* 网页背景：深蓝灰 */
-    --chat-bg: #1e293b;     /* 聊天卡片背景：稍浅的蓝灰 */
-    
-    /* 文字颜色 */
-    --text-dark: #f1f5f9;   /* 主文字：近白 */
-    --text-light: #94a3b8;  /* 次要文字：灰蓝 */
-    
-    /* 气泡颜色 */
-    --ai-bubble-bg: #334155; /* AI 气泡：深灰 */
-    --user-bubble-bg: var(--primary-gradient); /* 用户气泡：渐变 */
-    --user-text-color: #ffffff;
-    
-    /* 边框线条 */
-    --border-color: #334155; 
-}
+/* --- 保持原有的 :root 变量配置 (推荐 Deep Space 方案) --- */
+/* ...原有代码... */
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-dark);
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-/* 主应用容器 - 类似手机屏幕或卡片 */
+/* --- 1. 新增：布局调整 --- */
 .app-container {
-    width: 100%;
-    max-width: 600px; /* 在大屏幕上限制宽度 */
-    height: 100vh;
-    max-height: 90vh; /* 在大屏幕上留出一点边距 */
-    background-color: var(--chat-bg);
+    flex-direction: row; /* 改为左右布局 */
+}
+
+/* --- 2. 新增：侧边导航栏样式 --- */
+.sidebar {
+    width: 64px;
+    background-color: #0f172a; /* 深色背景 */
+    border-right: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    overflow: hidden;
+    align-items: center;
+    padding: 1.5rem 0;
+    gap: 1.5rem;
+    z-index: 20;
 }
 
-/* 针对移动端全屏优化 */
-@media (max-width: 640px) {
-    .app-container {
-        max-width: 100%;
-        max-height: 100vh;
-        border-radius: 0;
-    }
-}
-
-/* --- 头部设计 --- */
-.chat-header {
-    /* ...其他属性不变... */
-    background: var(--chat-bg); 
-    border-bottom: 1px solid var(--border-color, #e5e7eb); /* 增加变量支持 */
-}
-
-.chat-header h1 {
-    font-size: 1.5rem;
-    font-weight: 700;
+.logo-icon {
+    font-weight: 800;
+    font-size: 1.2rem;
     color: var(--text-dark);
-    letter-spacing: -0.025em;
+    margin-bottom: 1rem;
 }
 
-.brand-accent {
-    background: var(--primary-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-left: 2px;
-}
-
-/* --- 消息区域设计 --- */
-.chat-messages {
-    /* ...其他属性不变... */
-    background-color: var(--chat-bg); /* 这里原来是 #fafafa，一定要改！ */
-}
-
-/* 消息通用样式 */
-.message {
-    display: flex;
-    width: 100%;
-    animation: fadeIn 0.3s ease-in-out;
-}
-
-.bubble {
-    max-width: 85%;
-    padding: 0.75rem 1rem;
-    border-radius: 1rem;
-    font-size: 0.95rem;
-    line-height: 1.5;
-    position: relative;
-    word-break: break-word; /* 防止长单词溢出 */
-    white-space: pre-wrap; /* 保留换行符 */
-}
-
-/* AI 消息样式 (左侧) */
-.ai-message {
-    justify-content: flex-start;
-}
-
-.ai-message .bubble {
-    background-color: var(--ai-bubble-bg);
-    color: var(--text-dark);
-    border-bottom-left-radius: 0.25rem; /* 使气泡更像对话 */
-}
-
-/* 用户消息样式 (右侧) */
-.user-message {
-    justify-content: flex-end;
-}
-
-.user-message .bubble {
-    background: var(--user-bubble-bg);
-    color: var(--user-text-color);
-    border-bottom-right-radius: 0.25rem;
-    box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2);
-}
-
-/* 系统/错误消息样式 */
-.system-message {
-    justify-content: center;
-}
-.system-message .bubble {
-    background-color: #fee2e2;
-    color: #b91c1c;
-    font-size: 0.85rem;
-    padding: 0.5rem 1rem;
-    border-radius: 2rem;
-}
-
-
-/* --- 底部输入区设计 --- */
-.chat-input-area {
-    /* ...其他属性不变... */
-    background: var(--chat-bg);
-    border-top: 1px solid var(--border-color, #e5e7eb);
-}
-
-.input-wrapper {
-    /* ...其他属性不变... */
-    background-color: var(--ai-bubble-bg); /* 让输入框底色和AI气泡一致 */
-}
-
-.input-wrapper:focus-within {
-    border-color: #c7d2fe;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-}
-
-#inputBox {
-    flex: 1;
-    border: none;
-    background: transparent;
-    padding: 0.5rem 0.75rem;
-    max-height: 120px;
-    resize: none; /* 禁止手动调整大小 */
-    font-family: inherit;
-    font-size: 0.95rem;
-    outline: none;
-    color: var(--text-dark);
-}
-
-#sendBtn {
-    background: var(--primary-gradient);
-    border: none;
+.nav-btn {
     width: 40px;
     height: 40px;
-    border-radius: 50%;
+    border-radius: 12px;
+    border: none;
+    background: transparent;
+    color: var(--text-light);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s;
     display: flex;
     justify-content: center;
     align-items: center;
-    cursor: pointer;
-    transition: transform 0.1s, opacity 0.2s;
-    flex-shrink: 0; /* 防止按钮被挤压 */
 }
 
-#sendBtn:hover {
-    opacity: 0.9;
+.nav-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
 }
 
-#sendBtn:active {
-    transform: scale(0.95);
+.nav-btn.active {
+    background: var(--primary-gradient);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
 }
 
-#sendBtn:disabled {
-    background: #d1d5db;
+.nav-btn:disabled {
+    opacity: 0.3;
     cursor: not-allowed;
 }
 
-/* 简单的淡入动画 */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+/* --- 3. 视图切换逻辑 --- */
+.main-content {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    display: flex; /* 确保子元素填满 */
+}
+
+.view-section {
+    display: none; /* 默认隐藏 */
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    background: var(--bg-color);
+}
+
+.view-section.active {
+    display: flex; /* 激活时显示 */
+    animation: fadeIn 0.3s ease;
+}
+
+/* 修复旧的聊天布局在 flex 下的表现 */
+#chat-view {
+    height: 100%;
+}
+
+/* --- 4. 智能合约扫描 UI 样式 --- */
+.scanner-container {
+    padding: 2rem;
+    overflow-y: auto;
+    height: 100%;
+}
+
+.scan-input-card {
+    background: var(--chat-bg);
+    padding: 1.5rem;
+    border-radius: 1rem;
+    display: flex;
+    gap: 10px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border-color);
+}
+
+.chain-selector select {
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    color: var(--text-dark);
+    padding: 0.8rem;
+    border-radius: 0.5rem;
+    height: 100%;
+    outline: none;
+}
+
+.contract-input {
+    flex: 1;
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    color: var(--text-dark);
+    padding: 0.8rem;
+    border-radius: 0.5rem;
+    outline: none;
+    font-family: monospace;
+}
+
+.contract-input:focus {
+    border-color: var(--primary-color);
+}
+
+.action-btn {
+    background: var(--primary-gradient);
+    color: white;
+    border: none;
+    padding: 0 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.beta-tag {
+    font-size: 0.7rem;
+    background: rgba(99, 102, 241, 0.2);
+    color: var(--primary-color);
+    padding: 2px 6px;
+    border-radius: 4px;
+    vertical-align: middle;
+}
+
+/* 结果仪表盘 */
+.scan-result {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.scan-result.hidden {
+    display: none;
+}
+
+.score-card {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    background: var(--chat-bg);
+    padding: 1.5rem;
+    border-radius: 1rem;
+    border: 1px solid var(--border-color);
+}
+
+.score-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: conic-gradient(#10b981 calc(var(--score) * 1%), #334155 0);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.score-circle::before {
+    content: '';
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    background: var(--chat-bg);
+    border-radius: 50%;
+}
+
+.score-number, .score-label {
+    position: relative;
+    z-index: 1;
+}
+
+.score-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #10b981;
+}
+.score-label { font-size: 0.7rem; color: var(--text-light); }
+
+.token-info h3 { color: var(--text-dark); margin-bottom: 0.5rem; }
+.token-info p { color: var(--text-light); font-size: 0.9rem; }
+.safe-text { color: #10b981; font-weight: 600; }
+
+/* 风险网格 */
+.risk-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.risk-item {
+    background: var(--chat-bg);
+    padding: 1rem;
+    border-radius: 0.8rem;
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.risk-item.danger { color: #ef4444; border-color: rgba(239, 68, 68, 0.3); }
+.risk-item.warning { color: #f59e0b; border-color: rgba(245, 158, 11, 0.3); }
+.risk-item.success { color: #10b981; border-color: rgba(16, 185, 129, 0.3); }
+
+/* 占位符 */
+.placeholder-state {
+    text-align: center;
+    color: var(--text-light);
+    margin-top: 4rem;
+    opacity: 0.5;
+}
+.placeholder-state i { font-size: 3rem; margin-bottom: 1rem; display: block; }
+
+/* 移动端适配 */
+@media (max-width: 640px) {
+    .app-container { flex-direction: column-reverse; } /* 导航栏到底部 */
+    .sidebar { 
+        width: 100%; 
+        height: 60px; 
+        flex-direction: row; 
+        justify-content: space-around;
+        padding: 0;
+        border-right: none;
+        border-top: 1px solid var(--border-color);
+    }
+    .logo-icon { display: none; }
+    .nav-btn { width: 100%; height: 100%; border-radius: 0; }
+    .scan-input-card { flex-direction: column; }
 }
