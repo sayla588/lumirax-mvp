@@ -3,39 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LumiraX AI</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <title>LumiraX Web3 Security</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
 </head>
 <body>
     <div class="app-container">
-        <header class="chat-header">
-            <div class="logo-area">
-                <h1>Lumira<span class="brand-accent">X</span></h1>
-            </div>
-        </header>
+        <nav class="sidebar">
+            <div class="logo-icon">L<span class="brand-accent">X</span></div>
+            
+            <button class="nav-btn active" data-target="chat-view" title="AI 对话">
+                <i class="ri-message-3-line"></i>
+            </button>
+            
+            <button class="nav-btn" data-target="contract-view" title="合约风险扫描">
+                <i class="ri-shield-flash-line"></i>
+            </button>
+            
+            <button class="nav-btn" disabled title="钱包透视 (开发中)">
+                <i class="ri-wallet-3-line"></i>
+            </button>
+            
+            <button class="nav-btn" disabled title="项目验证 (开发中)">
+                <i class="ri-verified-badge-line"></i>
+            </button>
+        </nav>
 
-        <main id="chatbox" class="chat-messages">
-            <div class="message ai-message">
-                <div class="bubble">
-                    你好，我是 LumiraX。有什么我可以帮你的吗？
+        <main class="main-content">
+            
+            <section id="chat-view" class="view-section active">
+                <header class="chat-header">
+                    <div class="header-title">
+                        <h1>Lumira<span class="brand-accent">X</span> AI</h1>
+                        <span class="status-dot"></span>
+                    </div>
+                </header>
+                <div id="chatbox" class="chat-messages">
+                    <div class="message ai-message">
+                        <div class="bubble">我是 LumiraX，您的链上安全专家。</div>
+                    </div>
                 </div>
-            </div>
-        </main>
+                <div class="chat-input-area">
+                    <div class="input-wrapper">
+                        <textarea id="inputBox" placeholder="输入问题..." rows="1"></textarea>
+                        <button id="sendBtn"><i class="ri-send-plane-fill"></i></button>
+                    </div>
+                </div>
+            </section>
 
-        <footer class="chat-input-area">
-            <div class="input-wrapper">
-                <textarea id="inputBox" placeholder="输入您的问题..." rows="1"></textarea>
-                <button id="sendBtn" aria-label="发送">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M22 2L11 13" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </button>
-            </div>
-        </footer>
+            <section id="contract-view" class="view-section">
+                <header class="chat-header">
+                    <h2>合约风险扫描 <span class="beta-tag">BETA</span></h2>
+                </header>
+                
+                <div class="scanner-container">
+                    <div class="scan-input-card">
+                        <div class="chain-selector">
+                            <select id="chainSelect">
+                                <option value="base">Base Chain</option>
+                                <option value="eth">Ethereum</option>
+                                <option value="bsc">BSC</option>
+                            </select>
+                        </div>
+                        <input type="text" id="contractInput" placeholder="输入合约地址 (0x...)" class="contract-input">
+                        <button id="scanBtn" class="action-btn">开始扫描</button>
+                    </div>
+
+                    <div id="scanResult" class="scan-result hidden">
+                        <div class="score-card">
+                            <div class="score-circle" style="--score: 85;">
+                                <span class="score-number">85</span>
+                                <span class="score-label">安全分</span>
+                            </div>
+                            <div class="token-info">
+                                <h3>Mock Token (MOCK)</h3>
+                                <p>持有者: 1,245 |LP 锁定: <span class="safe-text">已锁定</span></p>
+                            </div>
+                        </div>
+
+                        <div class="risk-grid">
+                            <div class="risk-item danger">
+                                <i class="ri-alarm-warning-line"></i>
+                                <span>交易税可变</span>
+                            </div>
+                            <div class="risk-item success">
+                                <i class="ri-check-double-line"></i>
+                                <span>非蜜罐 (Honeypot)</span>
+                            </div>
+                            <div class="risk-item warning">
+                                <i class="ri-error-warning-line"></i>
+                                <span>合约未开源验证</span>
+                            </div>
+                            <div class="risk-item success">
+                                <i class="ri-lock-2-line"></i>
+                                <span>所有权已放弃</span>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-box">
+                            <h4>模拟分析报告</h4>
+                            <p>检测到该合约存在可修改税率的函数，但流动性池已锁定 6 个月。建议主要观察 owner 权限变更。</p>
+                        </div>
+                    </div>
+                    
+                    <div id="scanPlaceholder" class="placeholder-state">
+                        <i class="ri-radar-line"></i>
+                        <p>请输入合约地址以启动 LumiraX 审计引擎</p>
+                    </div>
+
+                </div>
+            </section>
+
+        </main>
     </div>
     <script src="chat.js"></script>
 </body>
