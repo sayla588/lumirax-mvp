@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>LumiraX Web3 Security</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="app-container">
@@ -21,12 +21,12 @@
                 <i class="ri-shield-flash-line"></i>
             </button>
             
-            <button class="nav-btn" disabled title="钱包透视 (开发中)">
-                <i class="ri-wallet-3-line"></i>
+            <button class="nav-btn" data-target="verify-view" title="项目真伪验证">
+                <i class="ri-verified-badge-line"></i>
             </button>
             
-            <button class="nav-btn" disabled title="项目验证 (开发中)">
-                <i class="ri-verified-badge-line"></i>
+            <button class="nav-btn" disabled title="钱包透视 (开发中)">
+                <i class="ri-wallet-3-line"></i>
             </button>
         </nav>
 
@@ -36,7 +36,6 @@
                 <header class="chat-header">
                     <div class="header-title">
                         <h1>Lumira<span class="brand-accent">X</span> AI</h1>
-                        <span class="status-dot"></span>
                     </div>
                 </header>
                 <div id="chatbox" class="chat-messages">
@@ -72,38 +71,21 @@
 
                     <div id="scanResult" class="scan-result hidden">
                         <div class="score-card">
-                            <div class="score-circle" style="--score: 85;">
-                                <span class="score-number">85</span>
+                            <div class="score-circle" style="--score: 0;">
+                                <span class="score-number">--</span>
                                 <span class="score-label">安全分</span>
                             </div>
                             <div class="token-info">
-                                <h3>Mock Token (MOCK)</h3>
-                                <p>持有者: 1,245 |LP 锁定: <span class="safe-text">已锁定</span></p>
+                                <h3>--</h3>
+                                <p>--</p>
                             </div>
                         </div>
 
-                        <div class="risk-grid">
-                            <div class="risk-item danger">
-                                <i class="ri-alarm-warning-line"></i>
-                                <span>交易税可变</span>
-                            </div>
-                            <div class="risk-item success">
-                                <i class="ri-check-double-line"></i>
-                                <span>非蜜罐 (Honeypot)</span>
-                            </div>
-                            <div class="risk-item warning">
-                                <i class="ri-error-warning-line"></i>
-                                <span>合约未开源验证</span>
-                            </div>
-                            <div class="risk-item success">
-                                <i class="ri-lock-2-line"></i>
-                                <span>所有权已放弃</span>
-                            </div>
-                        </div>
+                        <div class="risk-grid"></div>
                         
                         <div class="detail-box">
-                            <h4>模拟分析报告</h4>
-                            <p>检测到该合约存在可修改税率的函数，但流动性池已锁定 6 个月。建议主要观察 owner 权限变更。</p>
+                            <h4>分析报告</h4>
+                            <p>等待数据...</p>
                         </div>
                     </div>
                     
@@ -111,7 +93,62 @@
                         <i class="ri-radar-line"></i>
                         <p>请输入合约地址以启动 LumiraX 审计引擎</p>
                     </div>
+                </div>
+            </section>
 
+            <section id="verify-view" class="view-section">
+                <header class="chat-header">
+                    <h2>项目全维验证 <span class="beta-tag">ALPHA</span></h2>
+                </header>
+                
+                <div class="scanner-container">
+                    <div class="scan-input-card">
+                        <input type="text" id="verifyInput" placeholder="输入代币地址 (侦测流动性与社交信息)" class="contract-input">
+                        <button id="verifyBtn" class="action-btn">启动验证</button>
+                    </div>
+
+                    <div id="verifyResult" class="scan-result hidden">
+                        
+                        <div class="project-header">
+                            <div class="project-logo" id="pLogo">?</div>
+                            <div class="project-meta">
+                                <h3 id="pName">Loading...</h3>
+                                <p id="pPrice" class="price-text">--</p>
+                            </div>
+                            <div class="trust-badge" id="trustScore">
+                                <span class="label">可信度评估</span>
+                                <span class="value">分析中</span>
+                            </div>
+                        </div>
+
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <span class="label">流动性 (Liquidity)</span>
+                                <strong id="pLiquidity">--</strong>
+                            </div>
+                            <div class="stat-card">
+                                <span class="label">24h 交易量</span>
+                                <strong id="pVolume">--</strong>
+                            </div>
+                            <div class="stat-card">
+                                <span class="label">24h 涨跌幅</span>
+                                <strong id="pChange">--</strong>
+                            </div>
+                        </div>
+
+                        <div class="detail-box">
+                            <h4>🌐 官方渠道验证</h4>
+                            <div class="social-links" id="socialLinks">
+                                </div>
+                            <p class="verification-note">⚠️ 提示：如果项目方没有绑定任何社交媒体，极大概率为假冒盘。</p>
+                        </div>
+
+                    </div>
+                    
+                    <div id="verifyPlaceholder" class="placeholder-state">
+                        <i class="ri-search-eye-line"></i>
+                        <p>LumiraX 正在等待代币地址以进行尽职调查 (Due Diligence)</p>
+                    </div>
                 </div>
             </section>
 
