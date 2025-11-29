@@ -236,3 +236,115 @@ function updateScanUI(data) {
 window.onload = () => {
     if (inputBox) inputBox.focus();
 };
+
+/* =========================================
+   新增：项目真伪验证逻辑 (Verify Module)
+   ========================================= */
+
+const verifyBtn = document.getElementById('verifyBtn');
+const verifyResult = document.getElementById('verifyResult');
+const verifyPlaceholder = document.getElementById('verifyPlaceholder');
+const verifyInput = document.getElementById('verifyInput');
+
+if(verifyBtn) {
+    verifyBtn.addEventListener('click', async () => {
+        const address = verifyInput.value.trim();
+
+        if (!address) {
+            alert("请输入代币地址");
+            return;
+        }
+
+        // UI 加载状态
+        verifyBtn.innerHTML = `<i class="ri-loader-4-line ri-spin"></i> 分析中...`;
+        verifyBtn.disabled = true;
+        verifyPlaceholder.classList.add('hidden');
+        verifyResult.classList.add('hidden');
+
+        try {
+            const r = await fetch("/api/verify", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ address })
+            });
+            
+            const resp = await r.json();
+
+            if (r.status !== 200) {
+                alert(resp.error || "验证失败");
+                verifyPlaceholder.classList.remove('hidden');
+            } else {
+                updateVerifyUI(resp.data);
+                verifyResult.classList.remove('hidden');
+            }
+
+        } catch (err) {
+            console.error(err);
+            alert("网络请求失败");
+            verifyPlaceholder.classList.remove('hidden');
+        } finally {
+            verifyBtn.innerHTML = "启动验证";
+            verifyBtn.disabled = false;
+        }
+    });
+}
+
+function updateVerifyUI(data) {
+    // 1. 基础信息
+    document.getElementById('pName').textContent = `${data.name} (${data.symbol})`;
+    document.getElementById('pPrice').textContent = data.price;
+    document.getElementById('pLiquidity').textContent = data.liquidity;
+    document.getElementById('pVolume').textContent = data.volume;
+    
+    // 涨跌幅颜色
+    const pChange = document.getElementById('pChange');
+    pChange.textContent = (parseFloat(data.change) > 0 ? '+' : '') + data.change;
+    pChange.style.color = parseFloat(data.change) >= 0 ? '#10b981' : '#ef4444';
+
+    // Logo 处理
+    const logoDiv = document.getElementById('pLogo');
+    if (data.logo) {
+        logoDiv.innerHTML = `<img src="${data.logo}" alt="logo">`;
+    } else {
+        logoDiv.innerHTML = data.symbol[0];
+    }
+
+    // 2. 可信度徽章
+    const trustBadge = document.getElementById('trustScore');
+    const trustValue = trustBadge.querySelector('.value');
+    trustValue.textContent = data.trustScoreText;
+    
+    // 重置颜色类
+    trustBadge.classList.remove('high', 'medium', 'low');
+    if (data.trustLevel === 'HIGH') trustBadge.classList.add('high');
+    else if (data.trustLevel === 'MEDIUM') trustBadge.classList.add('medium');
+    else trustBadge.classList.add('low');
+
+    // 3. 社交链接渲染
+    const linksContainer = document.getElementById('socialLinks');
+    linksContainer.innerHTML = ''; // 清空
+
+    // 合并 websites 和 socials
+    const allLinks = [...data.websites, ...data.socials];
+
+    if (allLinks.length === 0) {
+        linksContainer.innerHTML = `<span style="color:var(--text-light);font-size:0.9rem;">🚫 未检测到官方链接 (高危信号)</span>`;
+    } else {
+        allLinks.forEach(link => {
+            const a = document.createElement('a');
+            a.href = link.url;
+            a.target = "_blank";
+            a.className = "social-tag";
+            
+            // 简单的图标映射
+            let icon = "ri-link";
+            if(link.type === 'twitter') icon = "ri-twitter-x-line";
+            if(link.type === 'telegram') icon = "ri-telegram-line";
+            if(link.type === 'discord') icon = "ri-discord-line";
+            if(link.label === 'Website') icon = "ri-global-line";
+
+            a.innerHTML = `<i class="${icon}"></i> ${link.label || link.type}`;
+            linksContainer.appendChild(a);
+        });
+    }
+}
