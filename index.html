@@ -13,7 +13,7 @@
         <nav class="sidebar">
             <div class="logo-icon">L<span class="brand-accent">X</span></div>
             
-            <button class="nav-btn active" data-target="chat-view" title="AI 对话">
+            <button class="nav-btn active" data-target="chat-view" title="AI 助手">
                 <i class="ri-message-3-line"></i>
             </button>
             
@@ -21,12 +21,12 @@
                 <i class="ri-shield-flash-line"></i>
             </button>
             
-            <button class="nav-btn" data-target="verify-view" title="项目真伪验证">
-                <i class="ri-verified-badge-line"></i>
+            <button class="nav-btn" data-target="wallet-view" title="钱包安全检测">
+                <i class="ri-wallet-3-line"></i>
             </button>
             
-            <button class="nav-btn" disabled title="钱包透视 (开发中)">
-                <i class="ri-wallet-3-line"></i>
+            <button class="nav-btn" data-target="verify-view" title="项目真伪验证">
+                <i class="ri-verified-badge-line"></i>
             </button>
         </nav>
 
@@ -40,13 +40,13 @@
                 </header>
                 <div id="chatbox" class="chat-messages">
                     <div class="message ai-message">
-                        <div class="bubble">我是 LumiraX，您的链上安全专家。</div>
+                        <div class="bubble">你好，我是 LumiraX。这里是您的 Web3 安全终端，您可以询问我任何问题，或使用左侧工具栏进行链上检测。</div>
                     </div>
                 </div>
                 <div class="chat-input-area">
                     <div class="input-wrapper">
-                        <textarea id="inputBox" placeholder="输入问题..." rows="1"></textarea>
-                        <button id="sendBtn"><i class="ri-send-plane-fill"></i></button>
+                        <textarea id="inputBox" placeholder="输入您的问题..." rows="1"></textarea>
+                        <button id="sendBtn" aria-label="发送"><i class="ri-send-plane-fill"></i></button>
                     </div>
                 </div>
             </section>
@@ -60,8 +60,8 @@
                     <div class="scan-input-card">
                         <div class="chain-selector">
                             <select id="chainSelect">
-                                <option value="base">Base Chain</option>
-                                <option value="eth">Ethereum</option>
+                                <option value="base">Base</option>
+                                <option value="eth">ETH</option>
                                 <option value="bsc">BSC</option>
                             </select>
                         </div>
@@ -81,7 +81,8 @@
                             </div>
                         </div>
 
-                        <div class="risk-grid"></div>
+                        <div class="risk-grid">
+                            </div>
                         
                         <div class="detail-box">
                             <h4>分析报告</h4>
@@ -91,7 +92,57 @@
                     
                     <div id="scanPlaceholder" class="placeholder-state">
                         <i class="ri-radar-line"></i>
-                        <p>请输入合约地址以启动 LumiraX 审计引擎</p>
+                        <p>检测貔貅盘、高税率及合约漏洞</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="wallet-view" class="view-section">
+                <header class="chat-header">
+                    <h2>钱包风险透视 <span class="beta-tag">SECURE</span></h2>
+                </header>
+                
+                <div class="scanner-container">
+                    <div class="scan-input-card">
+                        <input type="text" id="walletInput" placeholder="输入钱包地址 (0x...)" class="contract-input">
+                        <button id="walletBtn" class="action-btn">深度检测</button>
+                    </div>
+
+                    <div id="walletResult" class="scan-result hidden">
+                        <div class="wallet-status-card" id="walletStatusCard">
+                            <div class="status-icon-area">
+                                <i id="wStatusIcon" class="ri-shield-check-line"></i>
+                            </div>
+                            <div class="status-text-area">
+                                <h3 id="wRiskLevel">--</h3>
+                                <p id="wRiskDesc">--</p>
+                            </div>
+                        </div>
+
+                        <div class="risk-grid">
+                            <div class="risk-item" id="chkPhishing">
+                                <i class="ri-loader-2-line"></i> <span>网络钓鱼检测</span>
+                            </div>
+                            <div class="risk-item" id="chkBlacklist">
+                                <i class="ri-loader-2-line"></i> <span>黑名单检测</span>
+                            </div>
+                            <div class="risk-item" id="chkStealing">
+                                <i class="ri-loader-2-line"></i> <span>盗窃行为检测</span>
+                            </div>
+                            <div class="risk-item" id="chkMixer">
+                                <i class="ri-loader-2-line"></i> <span>混币器交互</span>
+                            </div>
+                        </div>
+
+                        <div class="detail-box">
+                            <h4>🛡️ 审计说明</h4>
+                            <p>此报告基于链上历史行为分析。如果显示“高风险”，请切勿向该地址转账。</p>
+                        </div>
+                    </div>
+                    
+                    <div id="walletPlaceholder" class="placeholder-state">
+                        <i class="ri-fingerprint-line"></i>
+                        <p>输入钱包地址，识破黑客与诈骗者的伪装</p>
                     </div>
                 </div>
             </section>
@@ -108,7 +159,6 @@
                     </div>
 
                     <div id="verifyResult" class="scan-result hidden">
-                        
                         <div class="project-header">
                             <div class="project-logo" id="pLogo">?</div>
                             <div class="project-meta">
@@ -142,7 +192,6 @@
                                 </div>
                             <p class="verification-note">⚠️ 提示：如果项目方没有绑定任何社交媒体，极大概率为假冒盘。</p>
                         </div>
-
                     </div>
                     
                     <div id="verifyPlaceholder" class="placeholder-state">
