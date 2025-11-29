@@ -412,3 +412,70 @@
     }
     .stat-card .label { margin-bottom: 0; }
 }
+
+/* =========================================
+   新增：钱包扫描模块样式
+   ========================================= */
+
+.wallet-status-card {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 2rem;
+    border-radius: 1rem;
+    border: 1px solid var(--border-color);
+    background: var(--chat-bg);
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.status-icon-area {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--bg-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+}
+
+.status-text-area h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-dark);
+}
+
+.status-text-area p {
+    color: var(--text-light);
+}
+
+/* 状态变体：安全 */
+.wallet-status-card.safe {
+    border-color: rgba(16, 185, 129, 0.3);
+    background: linear-gradient(to right, rgba(16, 185, 129, 0.05), var(--chat-bg));
+}
+.wallet-status-card.safe .status-icon-area {
+    background: #ecfdf5;
+    color: #10b981;
+}
+
+/* 状态变体：危险 */
+.wallet-status-card.danger {
+    border-color: rgba(239, 68, 68, 0.3);
+    background: linear-gradient(to right, rgba(239, 68, 68, 0.05), var(--chat-bg));
+}
+.wallet-status-card.danger .status-icon-area {
+    background: #fef2f2;
+    color: #ef4444;
+}
+
+/* 状态变体：警告 */
+.wallet-status-card.warning {
+    border-color: rgba(245, 158, 11, 0.3);
+    background: linear-gradient(to right, rgba(245, 158, 11, 0.05), var(--chat-bg));
+}
+.wallet-status-card.warning .status-icon-area {
+    background: #fffbeb;
+    color: #f59e0b;
+}
