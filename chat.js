@@ -348,3 +348,104 @@ function updateVerifyUI(data) {
         });
     }
 }
+
+/* =========================================
+   新增：钱包安全扫描逻辑 (Wallet Module)
+   ========================================= */
+
+const walletBtn = document.getElementById('walletBtn');
+const walletResult = document.getElementById('walletResult');
+const walletPlaceholder = document.getElementById('walletPlaceholder');
+const walletInput = document.getElementById('walletInput');
+
+if(walletBtn) {
+    walletBtn.addEventListener('click', async () => {
+        const address = walletInput.value.trim();
+
+        if (!address) {
+            alert("请输入钱包地址");
+            return;
+        }
+
+        // UI 加载状态
+        walletBtn.innerHTML = `<i class="ri-loader-4-line ri-spin"></i> 检测中...`;
+        walletBtn.disabled = true;
+        walletPlaceholder.classList.add('hidden');
+        walletResult.classList.add('hidden');
+
+        try {
+            const r = await fetch("/api/wallet", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ address })
+            });
+            
+            const resp = await r.json();
+
+            if (r.status !== 200) {
+                alert(resp.error || "检测失败");
+                walletPlaceholder.classList.remove('hidden');
+            } else {
+                updateWalletUI(resp.data);
+                walletResult.classList.remove('hidden');
+            }
+
+        } catch (err) {
+            console.error(err);
+            alert("网络请求失败");
+            walletPlaceholder.classList.remove('hidden');
+        } finally {
+            walletBtn.innerHTML = "深度检测";
+            walletBtn.disabled = false;
+        }
+    });
+}
+
+function updateWalletUI(data) {
+    const card = document.getElementById('walletStatusCard');
+    const icon = document.getElementById('wStatusIcon');
+    const title = document.getElementById('wRiskLevel');
+    const desc = document.getElementById('wRiskDesc');
+
+    // 重置样式
+    card.classList.remove('safe', 'warning', 'danger');
+
+    // 1. 设置主卡片状态
+    if (data.riskLevel === 'CRITICAL') {
+        card.classList.add('danger');
+        icon.className = 'ri-alarm-warning-fill';
+        title.textContent = '极度危险 (CRITICAL)';
+        desc.textContent = '警告：该地址涉及严重的链上恶意活动！';
+    } else if (data.riskLevel === 'WARNING') {
+        card.classList.add('warning');
+        icon.className = 'ri-error-warning-fill';
+        title.textContent = '存在风险 (WARNING)';
+        desc.textContent = '检测到可疑行为或混币器交互，请谨慎。';
+    } else {
+        card.classList.add('safe');
+        icon.className = 'ri-shield-check-fill';
+        title.textContent = '状态良好 (SAFE)';
+        desc.textContent = '在已知的恶意数据库中未找到该地址的记录。';
+    }
+
+    // 2. 更新下方的小项检测
+    updateRiskItem('chkPhishing', data.details.phishing_activities, '网络钓鱼');
+    updateRiskItem('chkBlacklist', data.details.blackmail_activities, '黑名单/勒索'); // 这里 GoPlus 字段比较多，暂用 blackmail 代替黑名单演示
+    updateRiskItem('chkStealing', data.details.stealing_attack, '盗窃/黑客');
+    updateRiskItem('chkMixer', data.details.mixer, '混币器(Tornado等)');
+}
+
+function updateRiskItem(elementId, isRisk, labelText) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+
+    if (isRisk === "1") {
+        // 有风险
+        el.className = 'risk-item danger';
+        el.innerHTML = `<i class="ri-close-circle-fill"></i> <span>${labelText}: <strong>检出</strong></span>`;
+    } else {
+        // 无风险
+        el.className = 'risk-item success'; // 复用之前的 success 样式
+        el.innerHTML = `<i class="ri-checkbox-circle-line"></i> <span>${labelText}: 未检出</span>`;
+    }
+}
