@@ -251,3 +251,164 @@
     .nav-btn { width: 100%; height: 100%; border-radius: 0; }
     .scan-input-card { flex-direction: column; }
 }
+
+/* =========================================
+   新增：项目真伪验证模块样式
+   ========================================= */
+
+/* 项目头部卡片 */
+.project-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: var(--chat-bg);
+    padding: 1.5rem;
+    border-radius: 1rem;
+    border: 1px solid var(--border-color);
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+}
+
+/* 项目 Logo */
+.project-logo {
+    width: 50px;
+    height: 50px;
+    background: var(--bg-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: var(--text-light);
+    overflow: hidden;
+    border: 2px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+.project-logo img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+}
+
+/* 项目名称与价格 */
+.project-meta { 
+    flex: 1; 
+    overflow: hidden; 
+}
+.project-meta h3 { 
+    margin-bottom: 0.2rem; 
+    color: var(--text-dark);
+    font-size: 1.1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.price-text { 
+    font-family: 'Inter', monospace; 
+    font-size: 1.1rem; 
+    color: var(--text-dark); 
+    font-weight: 600;
+}
+
+/* 可信度徽章 */
+.trust-badge {
+    text-align: right;
+    min-width: 100px;
+}
+.trust-badge .label { 
+    display: block; 
+    font-size: 0.7rem; 
+    color: var(--text-light); 
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.trust-badge .value { 
+    font-size: 1rem; 
+    font-weight: 800; 
+}
+.trust-badge.high .value { color: #10b981; }
+.trust-badge.medium .value { color: #f59e0b; }
+.trust-badge.low .value { color: #ef4444; }
+
+/* 统计卡片网格 */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.stat-card {
+    background: var(--chat-bg);
+    padding: 1rem;
+    border-radius: 0.8rem;
+    border: 1px solid var(--border-color);
+    text-align: center;
+}
+
+.stat-card .label { 
+    display: block; 
+    font-size: 0.75rem; 
+    color: var(--text-light); 
+    margin-bottom: 0.5rem; 
+}
+.stat-card strong { 
+    font-size: 1.1rem; 
+    color: var(--text-dark); 
+    font-family: 'Inter', sans-serif;
+}
+
+/* 社交链接按钮 */
+.social-links {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.social-tag {
+    background: var(--bg-color);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    color: var(--text-dark);
+    text-decoration: none;
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+}
+
+.social-tag:hover {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+    transform: translateY(-1px);
+}
+
+.verification-note {
+    margin-top: 1.2rem;
+    font-size: 0.8rem;
+    color: var(--text-light);
+    border-top: 1px solid var(--border-color);
+    padding-top: 0.8rem;
+    font-style: italic;
+}
+
+/* 移动端适配 */
+@media (max-width: 640px) {
+    .stats-grid { 
+        grid-template-columns: 1fr; 
+        gap: 0.8rem;
+    }
+    .stat-card {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.8rem 1rem;
+    }
+    .stat-card .label { margin-bottom: 0; }
+}
