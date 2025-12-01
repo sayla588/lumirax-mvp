@@ -1,306 +1,155 @@
-
 <!DOCTYPE html>
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>LumiraX - Web3 AI Guardian</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LumiraX AI Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div class="glow-bg"></div>
-
-    <div class="app-container">
+    <div class="app-layout">
         
-        <nav class="sidebar" id="appSidebar">
-            <div class="logo-icon home-trigger" title="Back to Home">
-                <i class="ri-box-3-fill"></i>
+        <header class="top-bar">
+            <div class="logo-area">
+                <div class="logo-box"><i class="ri-box-3-line"></i></div>
+                <span class="logo-text">LumiraX</span>
             </div>
             
-            <button class="nav-btn" data-target="chat-view" title="AI Copilot">
-                <i class="ri-chat-voice-fill"></i>
-            </button>
-            
-            <button class="nav-btn" data-target="contract-view" title="Contract Scanner">
-                <i class="ri-shield-flash-fill"></i>
-            </button>
-            
-            <button class="nav-btn" data-target="wallet-view" title="Wallet Radar">
-                <i class="ri-radar-fill"></i>
-            </button>
-            
-            <button class="nav-btn" data-target="verify-view" title="Authenticity Checker">
-                <i class="ri-verified-badge-fill"></i>
-            </button>
-        </nav>
+            <nav class="top-nav">
+                <a href="#" class="nav-link active" data-target="chat-view">AI 对话</a>
+                <a href="#" class="nav-link" data-target="contract-view">链上扫描</a>
+                <a href="#" class="nav-link" data-target="wallet-view">风险透视</a>
+                <a href="#" class="nav-link" data-target="verify-view">验证工具</a>
+            </nav>
 
-        <main class="main-content">
+            <div class="header-actions">
+                <button class="connect-btn">Connect Wallet</button>
+                <div class="user-avatar"></div>
+            </div>
+        </header>
+
+        <div class="main-container">
             
-            <section id="home-view" class="view-section active landing-page">
-                
-                <header class="landing-header">
-                    <div class="brand">
-                        <div class="logo-box"><i class="ri-box-3-fill"></i></div>
-                        <span>LumiraX</span>
-                    </div>
-                    <nav class="center-nav">
-                        <a href="#" class="active">All Copilot <i class="ri-arrow-down-s-line"></i></a>
-                        <a href="#">Contract Scanner</a>
-                        <a href="#">Wallet Radar</a>
-                        <a href="#">Verification</a>
-                    </nav>
-                    <button class="connect-btn">Contact Wallet</button>
-                </header>
-
-                <div class="hero-section">
-                    <div class="hero-text">
-                        <h1>Your Web3 AI Guardian</h1>
-                        <p class="hero-sub">AI Security, Onchain Scanning & Verification In One Platform.</p>
-                        <div class="hero-btns">
-                            <button class="glow-btn primary nav-trigger" data-target="chat-view">
-                                <span class="dot"></span> Start AI Chat
-                            </button>
-                            <button class="glow-btn secondary nav-trigger" data-target="contract-view">
-                                <i class="ri-play-circle-line"></i> Run Smart Contract Scan
-                            </button>
-                        </div>
-                    </div>
-                    <div class="hero-image">
-                        <div class="ai-robot-visual">
-                            <img src="https://img.freepik.com/premium-photo/artificial-intelligence-concept-cyborg-face_31965-17983.jpg" alt="AI Robot">
-                            <div class="orbit-ring"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="features-row">
-                    <div class="glass-card nav-trigger" data-target="chat-view">
-                        <div class="icon-box blue"><i class="ri-chat-voice-fill"></i></div>
-                        <div class="card-text">
-                            <h3>AI Copilot</h3>
-                            <p>Engage in smart convos. AI-driven Web3 assistance.</p>
-                        </div>
-                    </div>
-                    <div class="glass-card nav-trigger" data-target="contract-view">
-                        <div class="icon-box purple"><i class="ri-shield-check-fill"></i></div>
-                        <div class="card-text">
-                            <h3>Smart Contract Scanner</h3>
-                            <p>Scan and detect full liabilities in smart contracts.</p>
-                        </div>
-                    </div>
-                    <div class="glass-card nav-trigger" data-target="wallet-view">
-                        <div class="icon-box cyan"><i class="ri-radar-fill"></i></div>
-                        <div class="card-text">
-                            <h3>Wallet Risk Radar</h3>
-                            <p>Analyze addresses and sniff out hackers instantly.</p>
-                        </div>
-                        <div class="mini-radar"><div class="radar-scan"></div></div>
-                    </div>
-                    <div class="glass-card nav-trigger" data-target="verify-view">
-                        <div class="icon-box pink"><i class="ri-search-eye-line"></i></div>
-                        <div class="card-text">
-                            <h3>Authenticity Checker</h3>
-                            <p>Verify for regularity of web3 projects and dapps.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="dashboard-panel">
+            <aside class="sidebar">
+                <div class="menu-group">
+                    <button class="menu-item active" data-target="chat-view">
+                        <div class="icon-wrap"><i class="ri-robot-2-line"></i></div>
+                        <span>AI 助手</span>
+                    </button>
                     
-                    <div class="dash-col stats-col">
-                        <div class="big-stat">
-                            <h2>2,034</h2>
-                            <span>Connex Contracts Scanned</span>
-                            <div class="shield-3d"><i class="ri-shield-star-fill"></i></div>
-                        </div>
-                        <div class="scan-list-small">
-                            <div class="scan-row">
-                                <i class="ri-map-pin-line"></i> <span>Yip test Cundevs</span>
-                            </div>
-                            <div class="scan-row">
-                                <span>+ Ausumosa Firming</span> <span class="badge blue">Scanning</span>
-                            </div>
-                            <div class="scan-row">
-                                <span>+ Axommunity 24N</span> <span class="badge purple">Done</span>
-                            </div>
-                        </div>
-                    </div>
+                    <button class="menu-item" data-target="contract-view">
+                        <div class="icon-wrap"><i class="ri-search-eye-line"></i></div>
+                        <span>智能合约扫描</span>
+                    </button>
+                    
+                    <button class="menu-item" data-target="wallet-view">
+                        <div class="icon-wrap"><i class="ri-shield-check-line"></i></div>
+                        <span>钱包风险透视</span>
+                    </button>
+                    
+                    <button class="menu-item" data-target="verify-view">
+                        <div class="icon-wrap"><i class="ri-verified-badge-line"></i></div>
+                        <span>项目真伪验证</span>
+                    </button>
+                </div>
+            </aside>
 
-                    <div class="dash-col table-col">
+            <main class="content-area">
+                
+                <section id="chat-view" class="view-section active grid-layout-chat">
+                    
+                    <div class="chat-panel">
                         <div class="panel-header">
-                            <h3>Top Risky Contracts</h3>
-                            <span class="tag warning"><i class="ri-error-warning-fill"></i> Report</span>
+                            <h2>AI 对话</h2>
                         </div>
-                        <div class="contract-list">
-                            <div class="c-row">
-                                <i class="ri-bug-fill icon-red"></i> <span>Ausomeri Draee</span>
-                                <div class="tags"><span class="t-blue">00x</span> <span class="t-red">Phishing</span></div>
+                        
+                        <div id="chatbox" class="chat-messages">
+                            <div class="message user-message">
+                                <div class="bubble">你能解释一下智能合约吗？</div>
                             </div>
-                            <div class="c-row">
-                                <i class="ri-skull-fill icon-red"></i> <span>Audnate1 005P</span>
-                                <div class="tags"><span class="t-purple">-Rooth</span> <span class="t-orange">Scam</span></div>
+                            <div class="message ai-message">
+                                <div class="bubble">
+                                    智能合约是运行在区块链上自动执行协议。无论合约方无需中介即可进行可信的交易。
+                                    <div class="cube-decoration">
+                                        <i class="ri-box-3-fill"></i>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="c-row">
-                                <i class="ri-alarm-warning-fill icon-red"></i> <span>Deportion 221%S</span>
-                                <div class="tags"><span class="t-red">Honeypot</span> <span class="t-orange">Status</span></div>
+                             <div class="message user-message">
+                                <div class="bubble">我们如何检查智能合约是否存在风险？</div>
+                            </div>
+                        </div>
+
+                        <div class="input-area">
+                            <div class="input-box">
+                                <input type="text" id="inputBox" placeholder="请在此输入问题...">
+                                <button id="sendBtn"><i class="ri-attachment-2"></i></button>
                             </div>
                         </div>
                     </div>
 
-                    <div class="dash-col list-col">
-                        <div class="panel-header">
-                            <h3>Latest Scans</h3>
-                            <span class="tag success"><i class="ri-checkbox-circle-fill"></i> Active</span>
+                    <div class="insight-panel">
+                        <h3>链上洞察</h3>
+                        
+                        <div class="chart-circle-wrap">
+                            <div class="chart-circle">
+                                <div class="inner-circle">72</div>
+                            </div>
                         </div>
-                        <div class="latest-list">
-                            <div class="l-row">
-                                <i class="ri-file-search-line"></i> <span>0x4a...2b1</span> <span class="sc-score safe">98/100</span>
-                            </div>
-                            <div class="l-row">
-                                <i class="ri-file-warning-line"></i> <span>Dupluama</span> <span class="sc-score risk">Risk</span>
-                            </div>
-                            <div class="l-row">
-                                <i class="ri-file-shield-line"></i> <span>Diolacrues</span> <span class="sc-score safe">Safe</span>
-                            </div>
-                            <button class="view-all-btn">View All Scans <i class="ri-arrow-right-s-line"></i></button>
+
+                        <div class="bar-chart-wrap">
+                            <div class="bar" style="height: 30%; background: #06b6d4;"></div>
+                            <div class="bar" style="height: 50%; background: #3b82f6;"></div>
+                            <div class="bar" style="height: 80%; background: #6366f1;"></div>
+                            <div class="bar" style="height: 40%; background: #8b5cf6;"></div>
                         </div>
+                        
+                        <div class="bottom-block"></div>
                     </div>
 
-                </div>
+                </section>
 
-                <footer class="simple-footer">
-                    <div class="f-left">About &nbsp; API &nbsp; Docs</div>
-                    <div class="f-right">© 2033 LumiraX - Powered by A.</div>
-                </footer>
+                <section id="contract-view" class="view-section">
+                    <div class="full-panel">
+                        <h2>智能合约扫描</h2>
+                        <div class="scanner-box">
+                            <input type="text" id="contractInput" placeholder="输入合约地址 (0x...)" class="big-input">
+                            <button id="scanBtn" class="big-btn">开始扫描</button>
+                        </div>
+                        <div id="scanResult" class="result-area hidden">
+                            </div>
+                    </div>
+                </section>
 
-            </section>
+                <section id="wallet-view" class="view-section">
+                    <div class="full-panel">
+                        <h2>钱包风险透视</h2>
+                        <div class="scanner-box">
+                            <input type="text" id="walletInput" placeholder="输入钱包地址..." class="big-input">
+                            <button id="walletBtn" class="big-btn">检测风险</button>
+                        </div>
+                        <div id="walletResult" class="result-area hidden"></div>
+                    </div>
+                </section>
 
-            <section id="chat-view" class="view-section">
-                <header class="chat-header">
-                    <h1>AI Copilot</h1>
-                </header>
-                <div id="chatbox" class="chat-messages">
-                    <div class="message ai-message">
-                        <div class="bubble">I am LumiraX AI. How can I assist you with Web3 security today?</div>
+                <section id="verify-view" class="view-section">
+                    <div class="full-panel">
+                        <h2>项目真伪验证</h2>
+                        <div class="scanner-box">
+                            <input type="text" id="verifyInput" placeholder="输入代币地址..." class="big-input">
+                            <button id="verifyBtn" class="big-btn">启动验证</button>
+                        </div>
+                        <div id="verifyResult" class="result-area hidden"></div>
                     </div>
-                </div>
-                <div class="chat-input-area">
-                    <div class="input-wrapper">
-                        <textarea id="inputBox" placeholder="Ask anything..." rows="1"></textarea>
-                        <button id="sendBtn"><i class="ri-send-plane-fill"></i></button>
-                    </div>
-                </div>
-            </section>
+                </section>
 
-            <section id="contract-view" class="view-section">
-                <header class="chat-header">
-                    <h2>Smart Contract Scanner</h2>
-                </header>
-                <div class="scanner-container">
-                    <div class="scan-input-card">
-                        <div class="chain-selector">
-                            <select id="chainSelect">
-                                <option value="base">Base</option>
-                                <option value="eth">Ethereum</option>
-                                <option value="bsc">BSC</option>
-                            </select>
-                        </div>
-                        <input type="text" id="contractInput" placeholder="Contract Address (0x...)" class="contract-input">
-                        <button id="scanBtn" class="action-btn">Scan Now</button>
-                    </div>
-
-                    <div id="scanResult" class="scan-result hidden">
-                        <div class="score-card">
-                            <div class="score-circle" style="--score: 0;">
-                                <span class="score-number">--</span>
-                            </div>
-                            <div class="token-info">
-                                <h3>--</h3>
-                                <p>--</p>
-                            </div>
-                        </div>
-                        <div class="risk-grid"></div>
-                        <div class="detail-box">
-                            <h4>Analysis Report</h4>
-                            <p>Waiting for data...</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="wallet-view" class="view-section">
-                <header class="chat-header">
-                    <h2>Wallet Risk Radar</h2>
-                </header>
-                <div class="scanner-container">
-                    <div class="scan-input-card">
-                        <input type="text" id="walletInput" placeholder="Wallet Address (0x...)" class="contract-input">
-                        <button id="walletBtn" class="action-btn">Check Risk</button>
-                    </div>
-                    <div id="walletResult" class="scan-result hidden">
-                        <div class="wallet-status-card" id="walletStatusCard">
-                            <div class="status-icon-area">
-                                <i id="wStatusIcon" class="ri-shield-check-line"></i>
-                            </div>
-                            <div class="status-text-area">
-                                <h3 id="wRiskLevel">--</h3>
-                                <p id="wRiskDesc">--</p>
-                            </div>
-                        </div>
-                        <div class="risk-grid">
-                            <div class="risk-item" id="chkPhishing"><span>Phishing</span></div>
-                            <div class="risk-item" id="chkBlacklist"><span>Blacklist</span></div>
-                            <div class="risk-item" id="chkStealing"><span>Stealing</span></div>
-                            <div class="risk-item" id="chkMixer"><span>Mixer</span></div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="verify-view" class="view-section">
-                <header class="chat-header">
-                    <h2>Authenticity Checker</h2>
-                </header>
-                <div class="scanner-container">
-                    <div class="scan-input-card">
-                        <input type="text" id="verifyInput" placeholder="Token Address..." class="contract-input">
-                        <button id="verifyBtn" class="action-btn">Verify Project</button>
-                    </div>
-                    <div id="verifyResult" class="scan-result hidden">
-                        <div class="project-header">
-                            <div class="project-logo" id="pLogo">?</div>
-                            <div class="project-meta">
-                                <h3 id="pName">--</h3>
-                                <p id="pPrice" class="price-text">--</p>
-                            </div>
-                            <div class="trust-badge" id="trustScore">
-                                <span class="value">--</span>
-                            </div>
-                        </div>
-                        <div class="stats-grid">
-                            <div class="stat-card">
-                                <span class="label">Liquidity</span><strong id="pLiquidity">--</strong>
-                            </div>
-                            <div class="stat-card">
-                                <span class="label">Volume</span><strong id="pVolume">--</strong>
-                            </div>
-                            <div class="stat-card">
-                                <span class="label">Change</span><strong id="pChange">--</strong>
-                            </div>
-                        </div>
-                        <div class="detail-box">
-                            <div class="social-links" id="socialLinks"></div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-        </main>
+            </main>
+        </div>
     </div>
-    
+
     <script src="chat.js"></script>
 </body>
 </html>
