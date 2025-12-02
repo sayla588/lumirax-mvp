@@ -63,71 +63,166 @@ document.addEventListener('DOMContentLoaded', () => {
 /* =========================================
    Chat & Tool Logic
    ========================================= */
-const chatbox = document.getElementById("chatbox");
-const inputBox = document.getElementById("inputBox");
-const sendBtn = document.getElementById("sendBtn");
-
-function addMessage(type, text) {
-    const div = document.createElement("div");
-    div.classList.add("message");
-    div.classList.add(type === "你" ? "user-message" : "ai-message");
-    
-    // 如果是 AI 回复，可以随机加个装饰图标 (可选)
-    const decoration = type !== "你" ? '' : '';
-
-    div.innerHTML = `<div class="bubble">${text}${decoration}</div>`;
-    chatbox.appendChild(div);
-    chatbox.scrollTop = chatbox.scrollHeight;
-}
-
-async function send() {
-    const message = inputBox.value.trim();
-    if (!message) return;
-
-    addMessage("你", message);
-    inputBox.value = "";
-    
-    try {
-        const r = await fetch("/api/chat", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ message })
-        });
-        const data = await r.json();
-        addMessage("AI", data.reply || "Error");
-    } catch (e) {
-        addMessage("AI", "网络请求失败，请检查连接。");
+// 通用函数：处理按钮加载状态
+function setLoading(btnId, isLoading, text = "分析中...") {
+    const btn = document.getElementById(btnId);
+    if (!btn) return;
+    if (isLoading) {
+        btn.dataset.originalText = btn.innerText;
+        btn.innerText = text;
+        btn.style.opacity = "0.7";
+        btn.disabled = true;
+    } else {
+        btn.innerText = btn.dataset.originalText || "开始";
+        btn.style.opacity = "1";
+        btn.disabled = false;
     }
 }
 
-if(sendBtn) sendBtn.onclick = send;
-if(inputBox) inputBox.addEventListener("keydown", e => { if(e.key==="Enter") send(); });
+// 通用函数：显示结果
+function showResult(containerId, htmlContent) {
+    const container = document.getElementById(containerId);
+    if (container) {
+        container.classList.remove('hidden');
+        container.innerHTML = htmlContent;
+    }
+}
 
-// 模拟工具按钮点击效果
-['scanBtn', 'walletBtn', 'verifyBtn'].forEach(id => {
-    const btn = document.getElementById(id);
-    if(btn) {
-        btn.addEventListener('click', () => {
-            const originalText = btn.innerText;
-            btn.innerText = "分析中...";
-            btn.style.opacity = "0.7";
-            btn.disabled = true;
+// 1. 智能合约扫描 (调用 /api/scan)
+const scanBtn = document.getElementById('scanBtn');
+if (scanBtn) {
+    scanBtn.addEventListener('click', async () => {
+        const input = document.getElementById('contractInput');
+        const address = input.value.trim();
+        if (!address) return alert("请输入合约地址");
+
+        setLoading('scanBtn', true);
+        try {
+            const res = await fetch('/api/scan', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chain: 'base', address: address }) // 默认用 Base 链
+            });
+            const json = await res.json();
             
-            setTimeout(() => {
-                const resDiv = btn.parentElement.nextElementSibling;
-                resDiv.classList.remove('hidden');
-                resDiv.innerHTML = `
-                    <div style="margin-top:20px; padding:20px; background:rgba(74,222,128,0.1); border:1px solid rgba(74,222,128,0.3); border-radius:12px; color:#4ade80;">
-                        <h4 style="margin-bottom:10px; display:flex; align-items:center; gap:10px;">
-                            <i class="ri-checkbox-circle-fill"></i> 分析完成
-                        </h4>
-                        <p style="font-size:0.9rem; opacity:0.9;">这里将显示 API 返回的详细数据 (当前为演示模式)</p>
+            if (!json.success) throw new Error(json.error || "扫描失败");
+
+            // 构建风险列表 HTML
+            const risksHtml = json.data.risks.map(r => 
+                `<div style="color: ${r.type === 'danger' ? '#ef4444' : '#fbbf24'}; margin-bottom:4px;">
+                    • ${r.text}
+                 </div>`
+            ).join('');
+
+            const html = `
+                <div style="margin-top:20px; padding:20px; background:rgba(20,20,40,0.6); border:1px solid rgba(124,58,237,0.3); border-radius:12px;">
+                    <h3 style="color:#fff; margin-bottom:10px;">${json.data.name} (${json.data.symbol})</h3>
+                    <div style="font-size:2rem; font-weight:bold; color:${json.data.score < 60 ? '#ef4444' : '#4ade80'}">
+                        安全分: ${json.data.score}
                     </div>
-                `;
-                btn.innerText = originalText;
-                btn.style.opacity = "1";
-                btn.disabled = false;
-            }, 1500);
-        });
-    }
-});
+                    <div style="margin-top:15px; font-size:0.9rem;">
+                        ${risksHtml}
+                    </div>
+                    <p style="margin-top:10px; font-size:0.8rem; opacity:0.6;">${json.data.details}</p>
+                </div>
+            `;
+            showResult('scanResult', html);
+
+        } catch (err) {
+            showResult('scanResult', `<div style="color:#ef4444; margin-top:10px;">错误: ${err.message}</div>`);
+        } finally {
+            setLoading('scanBtn', false);
+        }
+    });
+}
+
+// 2. 钱包风险透视 (调用 /api/wallet)
+const walletBtn = document.getElementById('walletBtn');
+if (walletBtn) {
+    walletBtn.addEventListener('click', async () => {
+        const input = document.getElementById('walletInput');
+        const address = input.value.trim();
+        if (!address) return alert("请输入钱包地址");
+
+        setLoading('walletBtn', true);
+        try {
+            const res = await fetch('/api/wallet', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ address })
+            });
+            const json = await res.json();
+
+            if (!json.success) throw new Error(json.error || "检测失败");
+
+            const levelColor = json.data.riskLevel === 'SAFE' ? '#4ade80' : '#ef4444';
+            const html = `
+                <div style="margin-top:20px; padding:20px; background:rgba(20,20,40,0.6); border:1px solid ${levelColor}; border-radius:12px;">
+                    <h4 style="color:${levelColor}; font-size:1.2rem; margin-bottom:10px;">
+                        风险等级: ${json.data.riskLevel}
+                    </h4>
+                    <ul style="list-style:none; font-size:0.9rem; color:#ccc;">
+                        <li>钓鱼活动: ${json.data.details.phishing_activities === "1" ? "⚠️ 是" : "否"}</li>
+                        <li>偷窃行为: ${json.data.details.stealing_attack === "1" ? "⚠️ 是" : "否"}</li>
+                        <li>混币器使用: ${json.data.details.mixer === "1" ? "⚠️ 是" : "否"}</li>
+                    </ul>
+                </div>
+            `;
+            showResult('walletResult', html);
+
+        } catch (err) {
+            showResult('walletResult', `<div style="color:#ef4444; margin-top:10px;">错误: ${err.message}</div>`);
+        } finally {
+            setLoading('walletBtn', false);
+        }
+    });
+}
+
+// 3. 项目真伪验证 (调用 /api/verify)
+const verifyBtn = document.getElementById('verifyBtn');
+if (verifyBtn) {
+    verifyBtn.addEventListener('click', async () => {
+        const input = document.getElementById('verifyInput');
+        const address = input.value.trim();
+        if (!address) return alert("请输入代币地址");
+
+        setLoading('verifyBtn', true);
+        try {
+            const res = await fetch('/api/verify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ address })
+            });
+            const json = await res.json(); // 注意：verify.js 有时可能返回 404
+
+            if (res.status !== 200) throw new Error(json.error || "未找到代币");
+
+            const data = json.data;
+            const trustColor = data.trustLevel === 'HIGH' ? '#4ade80' : (data.trustLevel === 'SCAM' ? '#ef4444' : '#fbbf24');
+
+            const html = `
+                <div style="margin-top:20px; padding:20px; background:rgba(20,20,40,0.6); border:1px solid ${trustColor}; border-radius:12px;">
+                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                        ${data.logo ? `<img src="${data.logo}" style="width:30px;height:30px;border-radius:50%;">` : ''}
+                        <h3 style="color:#fff;">${data.name} (${data.symbol})</h3>
+                    </div>
+                    <div style="font-size:1.1rem; color:${trustColor}; font-weight:bold; margin-bottom:10px;">
+                        ${data.trustScoreText}
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:0.9rem; color:#ccc;">
+                        <div>价格: ${data.price}</div>
+                        <div>变化: ${data.change}</div>
+                        <div>流动性: ${data.liquidity}</div>
+                        <div>24H量: ${data.volume}</div>
+                    </div>
+                </div>
+            `;
+            showResult('verifyResult', html);
+
+        } catch (err) {
+            showResult('verifyResult', `<div style="color:#ef4444; margin-top:10px;">${err.message}</div>`);
+        } finally {
+            setLoading('verifyBtn', false);
+        }
+    });
+}
