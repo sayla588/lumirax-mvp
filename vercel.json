@@ -1,7 +1,13 @@
 {
   "routes": [
-    { "src": "/api/(.*)", "dest": "/api/$1.js" },
+    // 1. 静态资源（CSS, JS）
+    { "src": "/style.css", "dest": "/style.css" },
     { "src": "/chat.js", "dest": "/chat.js" },
+    
+    // 2. API 路由
+    { "src": "/api/(.*)", "dest": "/api/$1.js" },
+    
+    // 3. 根路径指向 index.html
     { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
