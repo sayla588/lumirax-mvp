@@ -1,26 +1,40 @@
 :root {
-    /* 调色板 - 按照图片取色 */
-    --bg-app: #0f0c15;         /* 最深背景 */
-    --bg-panel: #15121f;       /* 卡片背景 */
-    --bg-sidebar: #0b0c15;     /* 左侧栏背景 */
-    --primary: #7c3aed;        /* 亮紫色 */
-    --primary-glow: rgba(124, 58, 237, 0.4);
-    --text-white: #ffffff;
-    --text-gray: #9ca3af;
-    --border-color: rgba(255, 255, 255, 0.05);
+    /* --- 核心调色板 (基于图片取色) --- */
+    --bg-app: #050511;          /* 整体背景：极深午夜蓝 */
+    --bg-sidebar: #0b0b1e;      /* 侧边栏：稍亮 */
+    --bg-panel: rgba(20, 20, 40, 0.6); /* 玻璃拟态背景 */
     
-    /* 按钮渐变 */
-    --btn-gradient: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    --primary: #7c3aed;         /* 核心紫 */
+    --primary-glow: #8b5cf6;    /* 发光紫 */
+    --accent-blue: #3b82f6;     /* 强调蓝 */
+    --accent-cyan: #06b6d4;     /* 青色装饰 */
+    
+    --text-white: #ffffff;
+    --text-gray: #94a3b8;
+    --text-muted: #64748b;
+    
+    --border-light: rgba(255, 255, 255, 0.08);
+    --border-glow: rgba(124, 58, 237, 0.3);
+    
+    /* 渐变 */
+    --gradient-btn: linear-gradient(135deg, rgba(59,130,246,0.2) 0%, rgba(124,58,237,0.2) 100%);
+    --gradient-btn-hover: linear-gradient(135deg, rgba(59,130,246,0.4) 0%, rgba(124,58,237,0.4) 100%);
+    --gradient-text: linear-gradient(to right, #fff, #a5b4fc);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
     background-color: var(--bg-app);
+    /* 添加一点背景光晕氛围 */
+    background-image: 
+        radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(124, 58, 237, 0.05) 0%, transparent 40%);
     color: var(--text-white);
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     height: 100vh;
     overflow: hidden;
+    font-size: 14px;
 }
 
 /* --- 布局容器 --- */
@@ -28,83 +42,104 @@ body {
     display: flex;
     flex-direction: column;
     height: 100vh;
+    max-width: 1600px; /* 限制大屏最大宽度 */
+    margin: 0 auto;
 }
 
 /* --- 1. 顶部导航栏 --- */
 .top-bar {
-    height: 70px;
+    height: 80px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 30px;
-    background-color: var(--bg-sidebar); /* 与左侧栏一致 */
-    border-bottom: 1px solid var(--border-color);
+    padding: 0 40px;
+    background: transparent; /* 透明背景 */
+    border-bottom: none; /* 去掉底边框 */
 }
 
-.logo-area { display: flex; align-items: center; gap: 10px; }
+.logo-area { display: flex; align-items: center; gap: 12px; }
 .logo-box {
-    width: 32px; height: 32px;
-    background: transparent;
-    border: 1px solid var(--primary);
-    box-shadow: 0 0 10px var(--primary-glow);
-    color: var(--primary);
+    width: 40px; height: 40px;
+    /* 3D 立方体 Logo 效果 */
+    background: linear-gradient(135deg, var(--accent-blue), var(--primary));
+    box-shadow: 0 0 15px var(--primary-glow);
+    color: #fff;
     display: flex; align-items: center; justify-content: center;
-    border-radius: 6px;
-    font-size: 1.2rem;
+    border-radius: 10px; /* 稍微圆润一点 */
+    font-size: 1.5rem;
+    border: 1px solid rgba(255,255,255,0.2);
 }
-.logo-text { font-weight: 700; font-size: 1.1rem; letter-spacing: 0.5px; }
+.logo-text { display: none; } /* 图片中似乎没有文字Logo，只有图标 */
 
-.top-nav { display: flex; gap: 30px; }
+/* 顶部导航链接 */
+.top-nav { display: flex; gap: 40px; }
 .nav-link {
     text-decoration: none;
     color: var(--text-gray);
-    font-size: 0.9rem;
-    transition: color 0.3s;
-}
-.nav-link:hover, .nav-link.active { color: var(--text-white); }
-
-.header-actions { display: flex; align-items: center; gap: 15px; }
-.connect-btn {
-    background: transparent;
-    border: 1px solid #3b82f6;
-    color: #fff;
-    padding: 8px 20px;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    cursor: pointer;
-    box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+    font-size: 0.95rem;
+    font-weight: 500;
     transition: all 0.3s;
-}
-.connect-btn:hover { background: rgba(59, 130, 246, 0.1); }
-.user-avatar {
-    width: 32px; height: 32px;
-    background: #1f2937;
-    border-radius: 50%;
-    border: 2px solid #374151;
     position: relative;
 }
+.nav-link:hover { color: var(--text-white); }
+.nav-link.active { color: var(--text-white); }
+/* 激活状态下的小圆点 */
+.nav-link.active::after {
+    content: ''; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%);
+    width: 4px; height: 4px; background: var(--primary-glow); border-radius: 50%;
+    box-shadow: 0 0 5px var(--primary);
+}
+
+/* 顶部右侧按钮 */
+.header-actions { display: flex; align-items: center; gap: 20px; }
+.connect-btn {
+    background: rgba(11, 12, 30, 0.6);
+    border: 1px solid var(--accent-blue);
+    color: var(--accent-blue);
+    padding: 10px 24px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.15);
+    transition: all 0.3s;
+    font-weight: 500;
+}
+.connect-btn:hover {
+    background: rgba(59, 130, 246, 0.1);
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+}
+.user-avatar {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, #1e1b4b, #312e81);
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.1);
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+}
 .user-avatar::after {
-    content: ''; position: absolute; top: 0; right: 0; width: 8px; height: 8px;
-    background: #3b82f6; border-radius: 50%;
+    content: ''; position: absolute; top: 2px; right: 2px; width: 8px; height: 8px;
+    background: var(--accent-blue); border-radius: 50%; border: 2px solid var(--bg-app);
 }
 
 /* --- 2. 主体区域 --- */
 .main-container {
     flex: 1;
     display: flex;
+    padding: 0 40px 40px 40px; /* 留出边距 */
+    gap: 30px;
     overflow: hidden;
 }
 
 /* --- 左侧边栏 --- */
 .sidebar {
-    width: 240px;
-    background-color: var(--bg-sidebar);
-    padding: 30px 20px;
+    width: 260px;
+    background: transparent;
+    padding: 20px 0;
     display: flex;
     flex-direction: column;
 }
 
-.menu-group { display: flex; flex-direction: column; gap: 20px; }
+.menu-group { display: flex; flex-direction: column; gap: 25px; }
 
 .menu-item {
     background: transparent;
@@ -112,124 +147,163 @@ body {
     color: var(--text-gray);
     display: flex;
     align-items: center;
-    gap: 15px;
-    padding: 12px;
+    gap: 18px;
+    padding: 12px 0;
     cursor: pointer;
-    font-size: 0.95rem;
+    font-size: 1rem;
     transition: all 0.3s;
-    border-radius: 12px;
     text-align: left;
+    position: relative;
 }
 
 .menu-item .icon-wrap {
-    width: 36px; height: 36px;
+    width: 24px; 
     display: flex; align-items: center; justify-content: center;
-    border-radius: 8px;
-    font-size: 1.2rem;
+    font-size: 1.4rem;
+    color: var(--text-muted);
     transition: all 0.3s;
 }
 
-/* 激活状态 - 复刻图片中的发光框 */
-.menu-item.active { color: var(--text-white); }
-.menu-item.active .icon-wrap {
-    background: transparent;
-    border: 1px solid var(--primary);
-    box-shadow: 0 0 15px var(--primary-glow);
-    color: var(--primary);
+/* 激活状态 - 图片风格：左侧发光条，图标变亮 */
+.menu-item.active { color: var(--text-white); font-weight: 600; }
+.menu-item.active .icon-wrap { color: var(--primary-glow); text-shadow: 0 0 10px var(--primary); }
+
+/* 那个特殊的 "AI 助手" 按钮样式 */
+.menu-item.special-active {
+    background: linear-gradient(90deg, rgba(124, 58, 237, 0.1) 0%, transparent 100%);
+    border-left: 3px solid var(--primary);
+    padding-left: 15px; /* 稍微缩进 */
 }
-.menu-item:hover { color: var(--text-white); }
+.menu-item.special-active .icon-wrap {
+    color: var(--primary);
+    /* 给图标加个六边形背景模拟图片里的效果 */
+    background: rgba(124, 58, 237, 0.1);
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    border: 1px solid rgba(124, 58, 237, 0.3);
+}
+
 
 /* --- 中间内容区 --- */
 .content-area {
     flex: 1;
-    background-color: var(--bg-app);
-    padding: 30px;
-    overflow-y: auto;
+    background: transparent;
+    padding: 0;
+    overflow: hidden; /* 内部滚动 */
 }
 
 .view-section { display: none; height: 100%; }
 .view-section.active { display: block; }
 
-/* 聊天界面的 Grid 布局 (左聊天，右仪表) */
+/* Grid 布局 */
 .grid-layout-chat {
-    display: grid !important; /* 强制覆盖 block */
-    grid-template-columns: 2.5fr 1fr; /* 聊天占宽，仪表占窄 */
+    display: grid !important;
+    grid-template-columns: 1fr 320px; /* 右侧固定宽度 */
     gap: 30px;
     height: 100%;
 }
 
-/* 通用面板样式 */
+/* 面板通用样式 - 玻璃拟态 */
 .chat-panel, .insight-panel, .full-panel {
-    background-color: var(--bg-panel);
-    border-radius: 20px;
-    padding: 25px;
+    background: var(--bg-panel);
+    backdrop-filter: blur(20px); /* 磨砂效果 */
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-light);
+    border-radius: 24px;
+    padding: 30px;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
 }
 
-/* 聊天面板 */
+/* --- 聊天面板 --- */
 .chat-panel { position: relative; }
-.panel-header h2 { font-size: 1.8rem; margin-bottom: 20px; font-weight: 600; }
+.panel-header h2 { 
+    font-size: 2rem; 
+    margin-bottom: 30px; 
+    font-weight: 700; 
+    color: var(--text-white);
+    letter-spacing: 1px;
+}
 
 .chat-messages {
     flex: 1;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 25px;
     padding-right: 10px;
+    /* 隐藏滚动条但保留功能 */
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-light) transparent;
 }
 
-/* 消息气泡 - 图片风格 */
-.message { display: flex; width: 100%; }
+/* 消息气泡 */
+.message { display: flex; width: 100%; align-items: flex-start; }
 .user-message { justify-content: flex-end; }
-.ai-message { justify-content: flex-start; }
+.ai-message { justify-content: flex-start; position: relative; }
 
 .bubble {
-    max-width: 80%;
-    padding: 15px 20px;
-    border-radius: 16px;
-    font-size: 0.95rem;
+    max-width: 75%;
+    padding: 18px 24px;
+    font-size: 1rem;
     line-height: 1.6;
     position: relative;
+    backdrop-filter: blur(10px);
 }
 
+/* 用户气泡 */
 .user-message .bubble {
-    background: #1f1d2b;
-    color: #ccc;
-    border-top-right-radius: 4px;
-}
-
-.ai-message .bubble {
-    background: #1f1d2b; /* 也是深色背景 */
-    color: #fff;
-    border-top-left-radius: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-gray);
+    border-radius: 16px 16px 4px 16px;
     border: 1px solid rgba(255,255,255,0.05);
 }
 
-/* 气泡里的 3D 立方体装饰 */
+/* AI 气泡 - 重点 */
+.ai-message .bubble {
+    background: linear-gradient(135deg, rgba(20, 20, 40, 0.8), rgba(30, 30, 60, 0.8));
+    color: var(--text-white);
+    border-radius: 16px 16px 16px 4px;
+    border: 1px solid var(--border-light);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+/* 3D 立方体装饰 (仅在第一个AI消息出现) */
 .cube-decoration {
     position: absolute;
-    right: -50px;
-    top: 50%;
-    transform: translateY(-50%);
+    right: -80px;
+    top: 0;
+    width: 60px; height: 60px;
+    /* 这里用 CSS 绘制一个简单的发光立方体示意，或者用 Icon */
+    display: flex; align-items: center; justify-content: center;
     font-size: 3rem;
     color: var(--primary);
+    filter: drop-shadow(0 0 15px var(--primary));
     opacity: 0.8;
-    filter: drop-shadow(0 0 10px var(--primary));
+    animation: float 6s ease-in-out infinite;
+}
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
 }
 
 /* 输入框区域 */
-.input-area { margin-top: 20px; }
+.input-area { margin-top: 30px; position: relative; }
 .input-box {
-    background: #0b0c15;
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 12px;
-    padding: 5px 15px;
+    background: rgba(11, 12, 25, 0.6);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    padding: 8px 20px;
     display: flex;
     align-items: center;
-    height: 50px;
+    height: 60px;
+    transition: border-color 0.3s;
+}
+.input-box:focus-within {
+    border-color: var(--border-glow);
+    box-shadow: 0 0 15px rgba(124, 58, 237, 0.1);
 }
 #inputBox {
     flex: 1;
@@ -237,70 +311,134 @@ body {
     border: none;
     color: #fff;
     outline: none;
-    font-size: 0.9rem;
+    font-size: 1rem;
+    padding-right: 10px;
 }
+#inputBox::placeholder { color: var(--text-muted); }
+
 #sendBtn {
     background: transparent;
     border: none;
     color: var(--text-gray);
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     cursor: pointer;
+    transition: color 0.3s;
+    transform: rotate(45deg); /* 旋转回形针图标 */
 }
-#sendBtn:hover { color: #fff; }
+#sendBtn:hover { color: var(--text-white); }
 
 
-/* 右侧仪表盘 (链上洞察) */
-.insight-panel h3 { margin-bottom: 30px; font-size: 1rem; color: var(--text-gray); }
+/* --- 右侧仪表盘 (链上洞察) --- */
+.insight-panel {
+    background: rgba(11, 11, 25, 0.5); /* 比左边稍微深一点 */
+    border: 1px solid rgba(255,255,255,0.03);
+}
+.insight-panel h3 { 
+    margin-bottom: 40px; 
+    font-size: 1.1rem; 
+    color: var(--text-white); 
+    font-weight: 500;
+}
 
+/* 圆环图表 */
 .chart-circle-wrap {
-    display: flex; justify-content: center; margin-bottom: 40px;
+    display: flex; justify-content: center; margin-bottom: 50px;
+    position: relative;
 }
 .chart-circle {
-    width: 120px; height: 120px;
+    width: 140px; height: 140px;
     border-radius: 50%;
-    background: conic-gradient(var(--primary) 72%, #1f2937 0);
+    /* 渐变圆环 */
+    background: conic-gradient(
+        var(--primary) 0% 72%, 
+        rgba(255,255,255,0.05) 72% 100%
+    );
     display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 0 20px rgba(124, 58, 237, 0.2);
+    box-shadow: 0 0 30px rgba(124, 58, 237, 0.15);
+    position: relative;
 }
-.inner-circle {
-    width: 100px; height: 100px;
-    background: var(--bg-panel);
+/* 增加一个外发光圈 */
+.chart-circle::before {
+    content: ''; position: absolute; inset: -10px;
     border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 2rem; font-weight: bold; color: #fff;
+    border: 1px solid rgba(124, 58, 237, 0.2);
 }
 
+.inner-circle {
+    width: 110px; height: 110px;
+    background: #0b0c16; /* 遮住中间 */
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.5rem; font-weight: 700; color: var(--text-white);
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+}
+
+/* 柱状图 */
 .bar-chart-wrap {
-    display: flex; justify-content: center; align-items: flex-end; gap: 15px; height: 100px; margin-bottom: 30px;
+    display: flex; justify-content: center; align-items: flex-end; gap: 12px; height: 80px; margin-bottom: 40px;
+    padding: 0 20px;
 }
 .bar {
-    width: 20px;
+    width: 16px;
     border-radius: 4px;
-    opacity: 0.8;
+    /* 渐变柱子 */
+    background: linear-gradient(to top, rgba(59, 130, 246, 0.3), var(--accent-blue));
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+}
+/* 给其中一个柱子不同的颜色 */
+.bar:nth-child(3) {
+    background: linear-gradient(to top, rgba(124, 58, 237, 0.3), var(--primary));
+    box-shadow: 0 0 10px rgba(124, 58, 237, 0.2);
 }
 
 .bottom-block {
     margin-top: auto;
-    height: 60px;
-    background: #0b0c15;
-    border-radius: 12px;
-    border: 1px solid rgba(255,255,255,0.05);
+    height: 80px;
+    background: rgba(255,255,255,0.02);
+    border-radius: 16px;
+    border: 1px dashed rgba(255,255,255,0.1);
 }
 
-/* 扫描页面的大输入框样式 */
-.scanner-box { display: flex; gap: 10px; margin-bottom: 20px; }
-.big-input { flex: 1; background: #0b0c15; border: 1px solid rgba(255,255,255,0.1); padding: 15px; border-radius: 12px; color: #fff; outline: none; }
-.big-btn { background: var(--primary); color: #fff; border: none; padding: 0 30px; border-radius: 12px; cursor: pointer; font-weight: 600; }
+/* --- 其他工具页面的样式 --- */
+.scanner-box { display: flex; gap: 15px; margin-bottom: 30px; }
+.big-input { 
+    flex: 1; 
+    background: rgba(255,255,255,0.03); 
+    border: 1px solid var(--border-light); 
+    padding: 18px 24px; 
+    border-radius: 16px; 
+    color: #fff; 
+    outline: none; 
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+.big-input:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(124, 58, 237, 0.1); }
 
-/* 隐藏 */
+.big-btn { 
+    background: var(--gradient-btn); 
+    color: #fff; 
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 0 40px; 
+    border-radius: 16px; 
+    cursor: pointer; 
+    font-weight: 600; 
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+.big-btn:hover {
+    background: var(--gradient-btn-hover);
+    box-shadow: 0 0 20px rgba(124, 58, 237, 0.3);
+}
+
 .hidden { display: none; }
 
-/* 响应式适配 */
-@media (max-width: 900px) {
+/* 响应式 */
+@media (max-width: 1024px) {
     .grid-layout-chat { grid-template-columns: 1fr; }
-    .insight-panel { display: none; } /* 移动端隐藏右侧图表 */
-    .sidebar { width: 70px; padding: 20px 10px; }
+    .insight-panel { display: none; }
+    .sidebar { width: 80px; }
     .menu-item span { display: none; }
-    .logo-text { display: none; }
-    .top-nav { display: none; } /* 移动端隐藏顶部文字导航 */
+    .menu-item { justify-content: center; padding-left: 0; border-left: none; }
+    .menu-item.special-active { padding-left: 0; border-left: none; }
+    .top-nav { display: none; }
 }
