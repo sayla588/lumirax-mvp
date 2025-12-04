@@ -3,122 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LumiraX - AI 驱动的 Web3 安全终端</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <!-- 引入 FontAwesome 图标库 -->
+    <title>ChainGuard - 区块链安全分析平台</title>
+    <!-- 引入 Font Awesome 图标库 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 引入自定义 CSS -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="app-container">
-        <!-- 左侧边栏 -->
-        <aside class="sidebar">
-            <div class="logo-area">
-                <div class="logo-icon">
-                    <i class="fa-solid fa-shield-halved"></i>
+
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fa-solid fa-shield-halved"></i> ChainGuard
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html" class="active">首页</a></li>
+            <li><a href="scanner.html">链上扫描</a></li>
+            <li><a href="risk.html">风险透视</a></li>
+            <li><a href="verify.html">验证工具</a></li>
+        </ul>
+        <div class="nav-actions">
+            <button class="btn-login">登录 / 注册</button>
+        </div>
+        <div class="hamburger">
+            <i class="fa-solid fa-bars"></i>
+        </div>
+    </nav>
+
+    <!-- 英雄区域 (Hero Section) -->
+    <header class="hero">
+        <div class="hero-content">
+            <h1>守护您的链上资产安全</h1>
+            <p>利用 AI 驱动的智能合约审计与实时风险监控，为您的 Web3 之旅保驾护航。</p>
+            <div class="hero-buttons">
+                <a href="scanner.html" class="btn-primary">开始扫描合约</a>
+                <a href="risk.html" class="btn-secondary">检查钱包风险</a>
+            </div>
+        </div>
+        <!-- 动态背景装饰 -->
+        <div class="hero-bg-animation"></div>
+    </header>
+
+    <!-- 核心功能展示 -->
+    <section class="features">
+        <div class="section-title">
+            <h2>核心功能</h2>
+            <p>全方位的区块链安全解决方案</p>
+        </div>
+        
+        <div class="feature-grid">
+            <!-- 功能卡片 1 -->
+            <div class="feature-card">
+                <div class="icon-box">
+                    <i class="fa-solid fa-magnifying-glass-chart"></i>
                 </div>
-                <span class="logo-text">LumiraX</span>
+                <h3>智能合约扫描</h3>
+                <p>深度分析合约代码漏洞，识别貔貅盘、后门代码及权限滥用风险。</p>
+                <a href="scanner.html" class="card-link">立即使用 &rarr;</a>
             </div>
 
-            <nav class="side-nav">
-                <div class="nav-group">
-                    <div class="nav-label">核心功能</div>
-                    <!-- 修改点：使用 a 标签进行链接跳转，当前页加 active 类 -->
-                    <a href="index.html" class="nav-item active">
-                        <i class="fa-solid fa-robot"></i>
-                        <span>AI 助手</span>
-                    </a>
-                    <a href="scanner.html" class="nav-item">
-                        <i class="fa-solid fa-magnifying-glass-chart"></i>
-                        <span>智能合约扫描</span>
-                    </a>
-                    <a href="risk.html" class="nav-item">
-                        <i class="fa-solid fa-wallet"></i>
-                        <span>钱包风险透视</span>
-                    </a>
-                    <a href="verify.html" class="nav-item">
-                        <i class="fa-solid fa-certificate"></i>
-                        <span>项目真伪验证</span>
-                    </a>
+            <!-- 功能卡片 2 -->
+            <div class="feature-card">
+                <div class="icon-box">
+                    <i class="fa-solid fa-wallet"></i>
                 </div>
-
-                <div class="nav-group">
-                    <div class="nav-label">系统</div>
-                    <a href="#" class="nav-item">
-                        <i class="fa-solid fa-gear"></i>
-                        <span>设置</span>
-                    </a>
-                    <a href="#" class="nav-item">
-                        <i class="fa-solid fa-file-contract"></i>
-                        <span>API 文档</span>
-                    </a>
-                </div>
-            </nav>
-
-            <div class="user-profile">
-                <div class="avatar">U</div>
-                <div class="user-info">
-                    <div class="username">User_0x89</div>
-                    <div class="status">Pro Plan</div>
-                </div>
+                <h3>钱包风险透视</h3>
+                <p>一键检测钱包授权情况，发现恶意授权并提供取消建议，防止资产被盗。</p>
+                <a href="risk.html" class="card-link">立即使用 &rarr;</a>
             </div>
-        </aside>
 
-        <!-- 主内容区 -->
-        <main class="main-content">
-            <!-- 顶部导航栏 -->
-            <header class="top-bar">
-                <div class="breadcrumb">
-                    <i class="fa-solid fa-house"></i> / 
-                    <!-- 修改点：顶部导航链接 -->
-                    <a href="index.html" class="active-link">主页</a> / 
-                    <a href="index.html" class="active-link">AI 对话</a>
+            <!-- 功能卡片 3 -->
+            <div class="feature-card">
+                <div class="icon-box">
+                    <i class="fa-solid fa-check-double"></i>
                 </div>
-                <div class="top-actions">
-                    <!-- 顶部也可以作为快捷导航 -->
-                    <a href="scanner.html" class="action-btn"><i class="fa-solid fa-radar"></i> 链上扫描</a>
-                    <a href="risk.html" class="action-btn"><i class="fa-solid fa-eye"></i> 风险透视</a>
-                    <a href="verify.html" class="action-btn"><i class="fa-solid fa-check-double"></i> 验证工具</a>
-                    <button class="connect-wallet-btn">
-                        <i class="fa-solid fa-link"></i> 连接钱包
-                    </button>
-                </div>
-            </header>
-
-            <!-- 聊天区域 (index.html 独有) -->
-            <div class="chat-container">
-                <div class="chat-history" id="chatHistory">
-                    <!-- 欢迎消息 -->
-                    <div class="message ai-message">
-                        <div class="message-avatar">
-                            <i class="fa-solid fa-shield-cat"></i>
-                        </div>
-                        <div class="message-content">
-                            <div class="message-header">LumiraX AI</div>
-                            <div class="message-body">
-                                你好，我是 LumiraX 安全助手。我可以帮你分析代币合约、追踪资金流向或解答 Web3 安全问题。请直接输入合约地址或你的问题。
-                            </div>
-                            <div class="message-time">刚刚</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="chat-input-area">
-                    <div class="input-wrapper">
-                        <button class="attach-btn"><i class="fa-solid fa-paperclip"></i></button>
-                        <textarea id="userInput" placeholder="输入合约地址 (0x...) 或描述你想分析的项目..." rows="1"></textarea>
-                        <button class="send-btn" id="sendBtn">
-                            <i class="fa-solid fa-paper-plane"></i>
-                        </button>
-                    </div>
-                    <div class="input-footer">
-                        AI 生成内容仅供参考，不构成投资建议。
-                    </div>
-                </div>
+                <h3>项目真伪验证</h3>
+                <p>基于多维度数据验证项目官方渠道，远离钓鱼网站和假冒社群。</p>
+                <a href="verify.html" class="card-link">立即使用 &rarr;</a>
             </div>
-        </main>
-    </div>
+        </div>
+    </section>
 
-    <script src="chat.js"></script>
+    <!-- 数据统计栏 -->
+    <section class="stats">
+        <div class="stat-item">
+            <span class="stat-number">100W+</span>
+            <span class="stat-label">已扫描合约</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-number">$50M+</span>
+            <span class="stat-label">挽回潜在损失</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-number">24/7</span>
+            <span class="stat-label">实时监控</span>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <i class="fa-solid fa-shield-halved"></i> ChainGuard
+            </div>
+            <p>&copy; 2023 ChainGuard Security. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- 简单的移动端菜单脚本 -->
+    <script>
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+    </script>
 </body>
 </html>
