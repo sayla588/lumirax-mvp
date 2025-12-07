@@ -1,1 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 / 注册 - ChainGuard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="auth.css">
+    <style>
+        /* 确保导航栏中的登录按钮在登录页不可见 */
+        .nav-actions .btn-login {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fa-solid fa-shield-halved"></i> ChainGuard
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">首页</a></li>
+            <li><a href="scanner.html">链上扫描</a></li>
+            <li><a href="risk.html">风险透视</a></li>
+            <li><a href="verify.html">验证工具</a></li>
+        </ul>
+        <div class="nav-actions" id="navActions">
+            <!-- 用户登录后会显示用户信息，这里保持空 -->
+        </div>
+        <div class="hamburger">
+            <i class="fa-solid fa-bars"></i>
+        </div>
+    </nav>
 
+    <div class="auth-container">
+        <div class="auth-box">
+            <div class="auth-header">
+                <h2>欢迎来到 ChainGuard</h2>
+                <p>登录您的账户或创建新账户</p>
+            </div>
+
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="switchAuthTab('login')">登录</button>
+                <button class="auth-tab" onclick="switchAuthTab('register')">注册</button>
+            </div>
+
+            <!-- 错误/成功消息 -->
+            <div class="error-message" id="errorMessage"></div>
+            <div class="success-message" id="successMessage"></div>
+
+            <!-- 登录表单 -->
+            <form class="auth-form active" id="loginForm" onsubmit="return handleLogin(event)">
+                <div class="form-group">
+                    <label class="form-label">邮箱地址</label>
+                    <input type="email" class="form-input" id="loginEmail" placeholder="请输入邮箱" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">密码</label>
+                    <input type="password" class="form-input" id="loginPassword" placeholder="请输入密码" required>
+                    <button type="button" class="password-toggle" onclick="togglePassword('loginPassword', this)">
+                        <i class="fa-regular fa-eye"></i>
+                    </button>
+                </div>
+
+                <button type="submit" class="btn-auth" id="loginBtn">
+                    登录
+                </button>
+
+                <div class="auth-footer">
+                    <p>没有账户？ <a href="#" onclick="switchAuthTab('register')">立即注册</a></p>
+                </div>
+            </form>
+
+            <!-- 注册表单 -->
+            <form class="auth-form" id="registerForm" onsubmit="return handleRegister(event)">
+                <div class="form-group">
+                    <label class="form-label">用户名</label>
+                    <input type="text" class="form-input" id="registerUsername" placeholder="请输入用户名" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">邮箱地址</label>
+                    <input type="email" class="form-input" id="registerEmail" placeholder="请输入邮箱" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">密码</label>
+                    <input type="password" class="form-input" id="registerPassword" placeholder="至少6位字符" required minlength="6">
+                    <button type="button" class="password-toggle" onclick="togglePassword('registerPassword', this)">
+                        <i class="fa-regular fa-eye"></i>
+                    </button>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">确认密码</label>
+                    <input type="password" class="form-input" id="registerConfirmPassword" placeholder="再次输入密码" required minlength="6">
+                    <button type="button" class="password-toggle" onclick="togglePassword('registerConfirmPassword', this)">
+                        <i class="fa-regular fa-eye"></i>
+                    </button>
+                </div>
+
+                <button type="submit" class="btn-auth" id="registerBtn">
+                    注册账户
+                </button>
+
+                <div class="auth-footer">
+                    <p>已有账户？ <a href="#" onclick="switchAuthTab('login')">立即登录</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <i class="fa-solid fa-shield-halved"></i> ChainGuard
+            </div>
+            <p>&copy; 2023 ChainGuard Security. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // 移动端菜单
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        // 密码显示/隐藏
+        function togglePassword(inputId, button) {
+            const input = document.getElementById(inputId);
+            const icon = button.querySelector('i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        // 切换登录/注册标签页
+        function switchAuthTab(tab) {
+            // 更新标签页
+            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+            
+            // 清空错误消息
+            hideMessages();
+            
+            if (tab === 'login') {
+                document.querySelector('.auth-tab:nth-child(1)').classList.add('active');
+                document.getElementById('loginForm').classList.add('active');
+            } else {
+                document.querySelector('.auth-tab:nth-child(2)').classList.add('active');
+                document.getElementById('registerForm').classList.add('active');
+            }
+        }
+
+        // 显示/隐藏消息
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+            document.getElementById('successMessage').classList.remove('show');
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.classList.add('show');
+            document.getElementById('errorMessage').classList.remove('show');
+        }
+
+        function hideMessages() {
+            document.getElementById('errorMessage').classList.remove('show');
+            document.getElementById('successMessage').classList.remove('show');
+        }
+
+        // 设置按钮加载状态
+        function setLoading(buttonId, isLoading) {
+            const button = document.getElementById(buttonId);
+            if (isLoading) {
+                button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 处理中...';
+                button.disabled = true;
+            } else {
+                if (buttonId === 'loginBtn') {
+                    button.innerHTML = '登录';
+                } else {
+                    button.innerHTML = '注册账户';
+                }
+                button.disabled = false;
+            }
+        }
+
+        // 处理登录
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+            
+            if (!email || !password) {
+                showError('请填写邮箱和密码');
+                return false;
+            }
+            
+            setLoading('loginBtn', true);
+            
+            try {
+                const response = await fetch('/api/auth', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        action: 'login',
+                        email,
+                        password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showSuccess('登录成功！正在跳转...');
+                    
+                    // 保存用户信息到 localStorage
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    localStorage.setItem('isLoggedIn', 'true');
+                    
+                    // 3秒后跳转到首页
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1500);
+                    
+                } else {
+                    showError(data.error || '登录失败');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showError('网络错误，请稍后重试');
+            } finally {
+                setLoading('loginBtn', false);
+            }
+            
+            return false;
+        }
+
+        // 处理注册
+        async function handleRegister(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('registerUsername').value.trim();
+            const email = document.getElementById('registerEmail').value.trim();
+            const password = document.getElementById('registerPassword').value.trim();
+            const confirmPassword = document.getElementById('registerConfirmPassword').value.trim();
+            
+            // 验证输入
+            if (!username || !email || !password || !confirmPassword) {
+                showError('请填写所有字段');
+                return false;
+            }
+            
+            if (password.length < 6) {
+                showError('密码至少需要6位字符');
+                return false;
+            }
+            
+            if (password !== confirmPassword) {
+                showError('两次输入的密码不一致');
+                return false;
+            }
+            
+            setLoading('registerBtn', true);
+            
+            try {
+                const response = await fetch('/api/auth', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        action: 'register',
+                        username,
+                        email,
+                        password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showSuccess('注册成功！正在自动登录...');
+                    
+                    // 保存用户信息到 localStorage
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    localStorage.setItem('isLoggedIn', 'true');
+                    
+                    // 3秒后跳转到首页
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1500);
+                    
+                } else {
+                    showError(data.error || '注册失败');
+                }
+            } catch (error) {
+                console.error('Register error:', error);
+                showError('网络错误，请稍后重试');
+            } finally {
+                setLoading('registerBtn', false);
+            }
+            
+            return false;
+        }
+
+        // 页面加载时检查登录状态
+        document.addEventListener('DOMContentLoaded', () => {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (isLoggedIn === 'true') {
+                // 如果已登录，跳转到首页
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>
