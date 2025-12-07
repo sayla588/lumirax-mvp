@@ -416,3 +416,95 @@ footer {
         padding: 1rem;
     }
 }
+
+/* === 用户相关样式 === */
+
+/* 用户菜单容器 */
+.user-menu {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: var(--text-light);
+}
+
+/* 用户信息 */
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* 用户头像 */
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, var(--secondary-color), var(--primary-color));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    margin-right: 5px;
+}
+
+/* 用户名 */
+.user-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-light);
+}
+
+/* 退出按钮 */
+.btn-logout {
+    padding: 0.5rem 1rem;
+    background: transparent;
+    border: 1px solid var(--accent-red);
+    color: var(--accent-red);
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+}
+
+.btn-logout:hover {
+    background: var(--accent-red);
+    color: var(--bg-dark);
+}
+
+/* 登录按钮保持原有样式，这里确保它正确显示 */
+.nav-actions .btn-login {
+    padding: 0.5rem 1.5rem;
+    background: transparent;
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.nav-actions .btn-login:hover {
+    background: var(--primary-color);
+    color: var(--bg-dark);
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+    .user-menu {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: flex-start;
+    }
+    
+    .user-name {
+        display: none; /* 在移动端隐藏用户名 */
+    }
+    
+    .nav-actions {
+        display: block !important; /* 确保显示 */
+    }
+    
+    .btn-logout, .btn-login {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+    }
+}
