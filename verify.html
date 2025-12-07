@@ -1,1 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>安全验证工具 - ChainGuard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* 验证页专用样式 */
+        .verify-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
 
+        /* 选项卡切换 */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 2rem;
+        }
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-gray);
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        .tab-btn.active {
+            color: #fff;
+            font-weight: 600;
+        }
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--primary-color);
+        }
+        
+        /* 内容区域 */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        /* 表单组 */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+        .verify-input {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+            font-family: monospace; /* 适合显示地址和URL */
+        }
+        .verify-input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        /* 结果展示区域 - 真实逻辑反馈 */
+        .result-box {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border-radius: 8px;
+            display: none; /* 默认隐藏 */
+        }
+        .result-box.safe {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--accent-green);
+            color: var(--accent-green);
+            display: block;
+        }
+        .result-box.danger {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--accent-red);
+            color: var(--accent-red);
+            display: block;
+        }
+        .result-box.warning {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid #f59e0b;
+            color: #f59e0b;
+            display: block;
+        }
+
+        .result-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+        .result-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .result-desc {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            color: #ccc;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fa-solid fa-shield-halved"></i> ChainGuard
+        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">首页</a></li>
+            <li><a href="scanner.html">链上扫描</a></li>
+            <li><a href="risk.html">风险透视</a></li>
+            <li><a href="verify.html" class="active">验证工具</a></li>
+        </ul>
+        <div class="nav-actions">
+            <button class="btn-login">登录 / 注册</button>
+        </div>
+        <div class="hamburger">
+            <i class="fa-solid fa-bars"></i>
+        </div>
+    </nav>
+
+    <!-- 页面主要内容 -->
+    <div class="page-container">
+        <div class="tool-header">
+            <h1>真伪验证中心</h1>
+            <p>验证官方域名与钱包地址格式，远离钓鱼诈骗。</p>
+        </div>
+
+        <div class="verify-container">
+            <!-- 选项卡 -->
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('domain')">官方域名验证</button>
+                <button class="tab-btn" onclick="switchTab('address')">地址格式校验</button>
+            </div>
+
+            <!-- 域名验证内容 -->
+            <div id="domain-tab" class="tab-content active">
+                <div class="form-group">
+                    <label class="form-label">输入网站链接 (URL)</label>
+                    <input type="text" id="urlInput" class="verify-input" placeholder="例如: uniswap.org 或 https://opensea.io">
+                </div>
+                <button class="btn-primary" style="width: 100%" onclick="verifyDomain()">立即验证域名</button>
+                
+                <!-- 结果反馈区 -->
+                <div id="domainResult" class="result-box">
+                    <!-- JS 将填充这里 -->
+                </div>
+            </div>
+
+            <!-- 地址校验内容 -->
+            <div id="address-tab" class="tab-content">
+                <div class="form-group">
+                    <label class="form-label">输入以太坊/EVM 钱包地址</label>
+                    <input type="text" id="addrInput" class="verify-input" placeholder="0x...">
+                </div>
+                <button class="btn-primary" style="width: 100%" onclick="verifyAddress()">校验地址格式</button>
+
+                <!-- 结果反馈区 -->
+                <div id="addrResult" class="result-box">
+                    <!-- JS 将填充这里 -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <i class="fa-solid fa-shield-halved"></i> ChainGuard
+            </div>
+            <p>&copy; 2023 ChainGuard Security. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- 脚本 -->
+    <script>
+        // 移动端菜单
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        // 选项卡切换逻辑
+        function switchTab(tabName) {
+            // 隐藏所有内容
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            
+            // 隐藏结果框
+            document.getElementById('domainResult').style.display = 'none';
+            document.getElementById('addrResult').style.display = 'none';
+
+            // 显示选中内容
+            if(tabName === 'domain') {
+                document.getElementById('domain-tab').classList.add('active');
+                document.querySelector('.tabs button:nth-child(1)').classList.add('active');
+            } else {
+                document.getElementById('address-tab').classList.add('active');
+                document.querySelector('.tabs button:nth-child(2)').classList.add('active');
+            }
+        }
+
+        // ==========================================
+        // 真实逻辑 1: 域名验证 (基于内置白名单库)
+        // ==========================================
+        
+        // 模拟一个官方白名单数据库
+        const officialWhitelist = [
+            "uniswap.org", "app.uniswap.org",
+            "opensea.io", "pro.opensea.io",
+            "metamask.io",
+            "etherscan.io",
+            "binance.com",
+            "curve.fi",
+            "aave.com"
+        ];
+
+        function verifyDomain() {
+            const input = document.getElementById('urlInput').value.trim().toLowerCase();
+            const resultBox = document.getElementById('domainResult');
+            
+            if (!input) return;
+
+            // 1. 简单的 URL 清洗 (移除 https://, http://, www.)
+            let cleanDomain = input.replace(/^(https?:\/\/)?(www\.)?/, '').split('/')[0];
+
+            // 2. 逻辑判断
+            let status = '';
+            let title = '';
+            let desc = '';
+            let icon = '';
+
+            if (officialWhitelist.includes(cleanDomain)) {
+                // 在白名单中
+                status = 'safe';
+                icon = '<i class="fa-solid fa-circle-check"></i>';
+                title = '官方认证安全';
+                desc = `<strong>${cleanDomain}</strong> 是已知的官方域名，请放心访问。`;
+            } else if (cleanDomain.includes('uniswap') || cleanDomain.includes('metamask') || cleanDomain.includes('opensea')) {
+                // 简单的钓鱼检测逻辑：不在白名单，但包含知名项目关键词
+                status = 'danger';
+                icon = '<i class="fa-solid fa-skull-crossbones"></i>';
+                title = '高危：疑似钓鱼网站';
+                desc = `警告！<strong>${cleanDomain}</strong> 不在官方白名单中，但试图模仿知名项目。这极有可能是钓鱼诈骗！`;
+            } else {
+                // 未知域名
+                status = 'warning';
+                icon = '<i class="fa-solid fa-circle-exclamation"></i>';
+                title = '未知域名';
+                desc = `数据库中暂未收录 <strong>${cleanDomain}</strong>。请通过官方推特或 CoinGecko 交叉验证。`;
+            }
+
+            // 3. 渲染结果
+            resultBox.className = `result-box ${status}`;
+            resultBox.innerHTML = `
+                <div class="result-icon">${icon}</div>
+                <div class="result-title">${title}</div>
+                <div class="result-desc">${desc}</div>
+            `;
+        }
+
+        // ==========================================
+        // 真实逻辑 2: 地址格式校验 (基于 Regex)
+        // ==========================================
+
+        function verifyAddress() {
+            const input = document.getElementById('addrInput').value.trim();
+            const resultBox = document.getElementById('addrResult');
+
+            if (!input) return;
+
+            // 以太坊地址标准正则：0x 开头，后面跟 40 个十六进制字符
+            const ethRegex = /^0x[a-fA-F0-9]{40}$/;
+
+            let status = '';
+            let title = '';
+            let desc = '';
+            let icon = '';
+
+            if (ethRegex.test(input)) {
+                status = 'safe';
+                icon = '<i class="fa-solid fa-check-double"></i>';
+                title = '格式有效';
+                desc = '这是一个符合标准的以太坊 (EVM) 钱包地址格式。<br>注意：格式正确不代表该地址是安全的，转账前请务必核对。';
+            } else {
+                status = 'danger';
+                icon = '<i class="fa-solid fa-xmark"></i>';
+                title = '格式无效';
+                desc = '这不是一个有效的以太坊地址。请检查是否包含空格、长度是否正确（应为42位），或是否复制了其他链的地址。';
+            }
+
+            // 渲染结果
+            resultBox.className = `result-box ${status}`;
+            resultBox.innerHTML = `
+                <div class="result-icon">${icon}</div>
+                <div class="result-title">${title}</div>
+                <div class="result-desc">${desc}</div>
+            `;
+        }
+    </script>
+</body>
+</html>
