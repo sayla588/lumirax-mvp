@@ -1,3 +1,8 @@
+没问题，这是**修复后的完整代码**。
+
+我已经帮您在 `verifyDomain`（域名验证）和 `verifyAddress`（地址验证）两个函数中都添加了强制显示结果的代码。您可以直接复制下面的全部内容，覆盖您原来的文件即可。
+
+```html
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -92,7 +97,8 @@
             background: rgba(16, 185, 129, 0.1);
             border: 1px solid var(--accent-green);
             color: var(--accent-green);
-            display: block;
+            /* 这里虽然写了block，但在JS使用了style.display='none'后会被覆盖，所以JS里必须改回来 */
+            display: block; 
         }
         .result-box.danger {
             background: rgba(239, 68, 68, 0.1);
@@ -127,7 +133,6 @@
 </head>
 <body>
 
-    <!-- 导航栏 -->
     <nav class="navbar">
         <div class="logo">
             <i class="fa-solid fa-shield-halved"></i> ChainGuard
@@ -146,7 +151,6 @@
         </div>
     </nav>
 
-    <!-- 页面主要内容 -->
     <div class="page-container">
         <div class="tool-header">
             <h1>真伪验证中心</h1>
@@ -154,13 +158,11 @@
         </div>
 
         <div class="verify-container">
-            <!-- 选项卡 -->
             <div class="tabs">
                 <button class="tab-btn active" onclick="switchTab('domain')">官方域名验证</button>
                 <button class="tab-btn" onclick="switchTab('address')">地址格式校验</button>
             </div>
 
-            <!-- 域名验证内容 -->
             <div id="domain-tab" class="tab-content active">
                 <div class="form-group">
                     <label class="form-label">输入网站链接 (URL)</label>
@@ -168,13 +170,10 @@
                 </div>
                 <button class="btn-primary" style="width: 100%" onclick="verifyDomain()">立即验证域名</button>
                 
-                <!-- 结果反馈区 -->
                 <div id="domainResult" class="result-box">
-                    <!-- JS 将填充这里 -->
-                </div>
+                    </div>
             </div>
 
-            <!-- 地址校验内容 -->
             <div id="address-tab" class="tab-content">
                 <div class="form-group">
                     <label class="form-label">输入以太坊/EVM 钱包地址</label>
@@ -182,16 +181,13 @@
                 </div>
                 <button class="btn-primary" style="width: 100%" onclick="verifyAddress()">校验地址格式</button>
 
-                <!-- 结果反馈区 -->
                 <div id="addrResult" class="result-box">
-                    <!-- JS 将填充这里 -->
-                </div>
+                    </div>
             </div>
 
         </div>
     </div>
 
-    <!-- 页脚 -->
     <footer>
         <div class="footer-content">
             <div class="footer-logo">
@@ -201,7 +197,6 @@
         </div>
     </footer>
 
-    <!-- 脚本 -->
     <script>
         // 移动端菜单
         const hamburger = document.querySelector('.hamburger');
@@ -216,7 +211,7 @@
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
             
-            // 隐藏结果框
+            // 隐藏结果框 (这一步会导致 style="display: none"，所以后面的函数必须改回 block)
             document.getElementById('domainResult').style.display = 'none';
             document.getElementById('addrResult').style.display = 'none';
 
@@ -281,6 +276,9 @@
             }
 
             // 3. 渲染结果
+            // ★★★ 修复关键点：强制设置为 block，确保结果可见 ★★★
+            resultBox.style.display = 'block'; 
+            
             resultBox.className = `result-box ${status}`;
             resultBox.innerHTML = `
                 <div class="result-icon">${icon}</div>
@@ -320,6 +318,9 @@
             }
 
             // 渲染结果
+            // ★★★ 修复关键点：强制设置为 block，确保结果可见 ★★★
+            resultBox.style.display = 'block';
+
             resultBox.className = `result-box ${status}`;
             resultBox.innerHTML = `
                 <div class="result-icon">${icon}</div>
@@ -330,3 +331,4 @@
     </script>
 </body>
 </html>
+```
