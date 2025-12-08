@@ -109,6 +109,18 @@
             <p>&copy; 2023 ChainGuard Security. All rights reserved.</p>
         </div>
     </footer>
+    
+
+    <!-- 简单的移动端菜单脚本 -->
+    <script>
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+    </script>
+
     <!-- 登录/注册 模态框 (放在 body 结束标签前) -->
     <div id="authModal" class="modal-overlay">
         <div class="modal-content">
@@ -139,15 +151,5 @@
 
     <!-- 引入 Auth 脚本 -->
     <script src="auth.js"></script>
-
-    <!-- 简单的移动端菜单脚本 -->
-    <script>
-        const hamburger = document.querySelector('.hamburger');
-        const navLinks = document.querySelector('.nav-links');
-
-        hamburger.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-        });
-    </script>
 </body>
 </html>
