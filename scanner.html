@@ -149,6 +149,8 @@
         </div>
     </footer>
 
+    
+
     <script>
         const hamburger = document.querySelector('.hamburger');
         const navLinks = document.querySelector('.nav-links');
@@ -287,5 +289,36 @@
             errorBox.style.display = 'block';
         }
     </script>
+
+    <!-- 登录/注册 模态框 (放在 body 结束标签前) -->
+    <div id="authModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeAuthModal()">&times;</button>
+            
+            <div class="auth-tabs">
+                <button id="tab-login" class="auth-tab active" onclick="switchAuthTab('login')">登录</button>
+                <button id="tab-register" class="auth-tab" onclick="switchAuthTab('register')">注册</button>
+            </div>
+
+            <!-- 登录表单 -->
+            <form id="form-login" class="auth-form active" onsubmit="handleLogin(event)">
+                <input type="text" id="loginUser" class="auth-input" placeholder="用户名" required>
+                <input type="password" id="loginPass" class="auth-input" placeholder="密码" required>
+                <button type="submit" class="btn-full">立即登录</button>
+                <div id="loginMsg" class="auth-msg"></div>
+            </form>
+
+            <!-- 注册表单 -->
+            <form id="form-register" class="auth-form" onsubmit="handleRegister(event)">
+                <input type="text" id="regUser" class="auth-input" placeholder="设置用户名" required>
+                <input type="password" id="regPass" class="auth-input" placeholder="设置密码" required>
+                <button type="submit" class="btn-full" style="background: transparent; border: 1px solid var(--primary-color); color: #fff;">创建账户</button>
+                <div id="regMsg" class="auth-msg"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 引入 Auth 脚本 -->
+    <script src="auth.js"></script>
 </body>
 </html>
