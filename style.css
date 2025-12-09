@@ -345,7 +345,8 @@ footer {
     flex: 1;
     padding: 1rem;
     border-radius: 8px;
-    border: 1px solid #334155;
+    /* 保持原有属性，由下面的“视觉细节优化”覆盖边框和背景 */
+    border: 1px solid #334155; 
     background: #0f172a;
     color: white;
     font-size: 1rem;
@@ -354,6 +355,7 @@ footer {
 .main-input:focus {
     outline: none;
     border-color: var(--primary-color);
+    /* 保持原有属性，由下面的“视觉细节优化”添加 box-shadow */
 }
 
 .btn-action {
@@ -493,6 +495,7 @@ footer {
     width: 100%;
     padding: 12px;
     margin-bottom: 1rem;
+    /* 保持原有属性，由下面的“视觉细节优化”覆盖背景和边框 */
     background: rgba(255,255,255,0.05);
     border: 1px solid rgba(255,255,255,0.1);
     border-radius: 6px;
@@ -501,6 +504,7 @@ footer {
 .auth-input:focus {
     border-color: var(--primary-color);
     outline: none;
+    /* 保持原有属性，由下面的“视觉细节优化”添加 box-shadow */
 }
 
 .btn-full {
@@ -542,3 +546,50 @@ footer {
     font-size: 0.8rem;
 }
 .btn-logout:hover { background: var(--accent-red); }
+}
+
+/* =========================================
+   视觉细节优化
+   ========================================= */
+
+/* 1. 全局细节：滚动条与选中色 */
+
+/* 极简深色滚动条 */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg-dark); 
+}
+::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-color);
+}
+
+/* 文字选中效果 (配合主题色) */
+::selection {
+    background: rgba(0, 210, 255, 0.3);
+    color: #fff;
+}
+
+/* 2. 输入框交互：霓虹对焦效果 */
+
+/* 统一输入框的基准样式 (main-input, auth-input, verify-input) */
+.main-input, .verify-input, .auth-input {
+    /* 使用 !important 确保覆盖原始的边框和背景，实现更通透的深色和柔和边框 */
+    background: rgba(15, 23, 42, 0.6) !important; 
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    transition: all 0.3s ease; /* 新增过渡效果 */
+    /* backdrop-filter: blur(5px); */ /* 可选，如果需要毛玻璃效果可以取消注释 */
+}
+
+/* 聚焦时的霓虹光晕和微动 */
+.main-input:focus, .verify-input:focus, .auth-input:focus {
+    border-color: var(--primary-color) !important; /* 确保边框变色 */
+    box-shadow: 0 0 15px rgba(0, 210, 255, 0.4), inset 0 0 5px rgba(0, 210, 255, 0.1); 
+    transform: translateY(-1px);
+}
