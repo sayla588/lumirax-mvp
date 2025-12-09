@@ -93,17 +93,22 @@
 <body>
 
     <nav class="navbar">
-        <div class="logo">
-            <i class="fa-solid fa-shield-halved"></i> ChainGuard <span style="font-size: 0.7rem; background:var(--accent-red); padding: 2px 5px; border-radius: 4px; margin-left: 5px;">LIVE DATA</span>
-        </div>
-        <ul class="nav-links">
-            <li><a href="index.html">首页</a></li>
-            <li><a href="scanner.html">链上扫描</a></li>
-            <li><a href="risk.html" class="active">风险透视</a></li>
-            <li><a href="verify.html">验证工具</a></li>
-        </ul>
-        <div class="hamburger"><i class="fa-solid fa-bars"></i></div>
-    </nav>
+    <div class="logo">
+        <i class="fa-solid fa-shield-halved"></i> ChainGuard <span style="font-size: 0.7rem; background:var(--accent-red); padding: 2px 5px; border-radius: 4px; margin-left: 5px;">LIVE DATA</span>
+    </div>
+    <ul class="nav-links">
+        <li><a href="index.html">首页</a></li>
+        <li><a href="scanner.html">链上扫描</a></li>
+        <li><a href="risk.html" class="active">风险透视</a></li>
+        <li><a href="verify.html">验证工具</a></li>
+    </ul>
+    
+    <div class="nav-actions">
+        <button class="btn-login" onclick="openAuthModal()">登录 / 注册</button>
+    </div>
+
+    <div class="hamburger"><i class="fa-solid fa-bars"></i></div>
+</nav>
 
     <div class="page-container">
         <div class="tool-header">
