@@ -1,5 +1,5 @@
 {
-  "name": "lumirax-dashboard",
+  "name": "mivichain-dashboard",
   "version": "1.0.0",
   "scripts": {
     "start": "vercel dev"
