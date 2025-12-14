@@ -1,3 +1,21 @@
+// === 开发者专属后门（只在开发时用，上线前可以删掉或注释） ===
+if (window.location.hostname === 'localhost' || window.location.hostname.includes('vercel.app')) {
+    // 按 F12 打开浏览器控制台，输入：devVip('cyj-790218')
+    window.devVip = function(username) {
+        let users = JSON.parse(localStorage.getItem('chainGuard_users') || '{}');
+        if (!users[username]) {
+            alert('用户不存在，先注册一个吧！');
+            return;
+        }
+        users[username].isVip = true;
+        users[username].vipUntil = '2099-12-31'; // 永不过期
+        localStorage.setItem('chainGuard_users', JSON.stringify(users));
+        alert(`${username} 已强制升级为永久 VIP！刷新页面生效～`);
+        checkLoginStatus();
+        if (typeof updateVipDisplay === 'function') updateVipDisplay();
+    };
+}
+
 // auth.js - 真实支付会员系统（支持支付宝、微信、PayPal、Google Pay 等）
 
 document.addEventListener('DOMContentLoaded', () => {
