@@ -19,7 +19,7 @@ export default async function handler(req, res) {
 
     try {
         const session = await stripe.checkout.sessions.create({
-            payment_method_types: ['card', 'alipay', 'wechat_pay'],
+            payment_method_types: ['card'],  // 只显示信用卡（支持订阅完美）
             mode: 'subscription',
             line_items: [{ price: PRICE_IDS[plan], quantity: 1 }],
             success_url: `${req.headers.origin}/?payment=success`,
