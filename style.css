@@ -676,3 +676,34 @@ footer {
     font-weight: bold;
     box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
 }
+
+/* VIP升级弹窗滚动优化 */
+.vip-modal-scroll {
+    max-height: 90vh; /* 最大高度占屏幕90% */
+    overflow: hidden;
+}
+
+.vip-scroll-container {
+    max-height: calc(90vh - 120px); /* 减去标题和按钮高度 */
+    overflow-y: auto; /* 垂直滚动条 */
+    padding-right: 10px; /* 避免滚动条遮内容 */
+    scrollbar-width: thin; /* Firefox 细滚动条 */
+}
+
+.vip-scroll-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.vip-scroll-container::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.05);
+    border-radius: 4px;
+}
+
+.vip-scroll-container::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 4px;
+}
+
+.vip-scroll-container::-webkit-scrollbar-thumb:hover {
+    background: #00e6ff;
+}
