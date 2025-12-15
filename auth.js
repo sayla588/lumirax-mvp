@@ -1,4 +1,4 @@
-// auth.js - 登录、注册、VIP升级（爱发电国内支付 + 预留国际）
+// auth.js - 完整版：登录、注册、VIP升级（爱发电支付 + 滚动弹窗）
 
 document.addEventListener('DOMContentLoaded', () => {
     checkLoginStatus();
@@ -125,65 +125,71 @@ function checkLoginStatus() {
 }
 
 // ============================
-// 升级VIP弹窗（爱发电 + 预留国际）
+// 升级VIP弹窗（带内部滚动条）
 // ============================
 function showUpgradeModal() {
     const modalHtml = `
         <div id="upgradeModal" class="modal-overlay" style="display:flex;">
-            <div class="modal-content" style="max-width:600px; width:90%;">
+            <div class="modal-content vip-modal-scroll">
                 <button class="modal-close" onclick="document.getElementById('upgradeModal').remove()">×</button>
                 <h3 style="text-align:center; margin-bottom:20px; color:#fff;">升级 VIP 会员</h3>
                 <p style="text-align:center; color:#ccc; margin-bottom:30px;">
                     解锁 MiviChain Pro 浏览器插件下载 + 高级工具 + 无广告体验
                 </p>
 
-                <div class="vip-plans">
-                    <!-- 中国用户：爱发电 -->
-                    <div class="vip-card">
-                        <div class="flag">🇨🇳 中国用户</div>
-                        <h4>月会员 ¥29 / 月</h4>
-                        <p style="color:#94a3b8; margin:10px 0;">支付宝 · 微信支付</p>
-                        <button class="btn-full" onclick="window.open('https://ifdian.net/order/create?plan_id=2fda6108d9a211f0ac165254001e7c00&product_type=0&remark=&affiliate_code=&fr=afcom', '_blank')">
-                            去爱发电开通
-                        </button>
+                <!-- 内部可滚动区域 -->
+                <div class="vip-scroll-container">
+
+                    <div class="vip-plans">
+                        <!-- 中国用户：爱发电 -->
+                        <div class="vip-card">
+                            <div class="flag">🇨🇳 中国用户</div>
+                            <h4>月会员 ¥29 / 月</h4>
+                            <p style="color:#94a3b8; margin:10px 0;">支付宝 · 微信支付</p>
+                            <button class="btn-full" onclick="window.open('https://ifdian.net/order/create?plan_id=2fda6108d9a211f0ac165254001e7c00&product_type=0&remark=&affiliate_code=&fr=afcom', '_blank')">
+                                去爱发电开通
+                            </button>
+                        </div>
+
+                        <div class="vip-card recommended">
+                            <div class="flag">🇨🇳 中国用户</div>
+                            <div class="badge">最划算</div>
+                            <h4>年会员 ¥17 / 月（建议一次付12个月 ≈ ¥204）</h4>
+                            <p style="color:#94a3b8; margin:10px 0;">支付宝 · 微信支付（相当于199元超值年费）</p>
+                            <button class="btn-full" onclick="window.open('https://ifdian.net/order/create?plan_id=1d776c8ad9a311f0b58952540025c377&product_type=0&remark=&affiliate_code=&fr=afcom', '_blank')">
+                                去爱发电开通
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="vip-card recommended">
-                        <div class="flag">🇨🇳 中国用户</div>
-                        <div class="badge">最划算</div>
-                        <h4>年会员 ¥17 / 月（建议一次付12个月 ≈ ¥204）</h4>
-                        <p style="color:#94a3b8; margin:10px 0;">支付宝 · 微信支付（相当于199元超值年费）</p>
-                        <button class="btn-full" onclick="window.open('https://ifdian.net/order/create?plan_id=1d776c8ad9a311f0b58952540025c377&product_type=0&remark=&affiliate_code=&fr=afcom', '_blank')">
-                            去爱发电开通
-                        </button>
+                    <div class="vip-plans" style="margin-top:40px;">
+                        <!-- 国际用户：预留 -->
+                        <div class="vip-card">
+                            <div class="flag">🌍 国际用户</div>
+                            <h4>Monthly VIP $4.99 / month</h4>
+                            <p style="color:#94a3b8; margin:10px 0;">Credit Card · PayPal · Apple/Google Pay</p>
+                            <button class="btn-full" onclick="alert('国际支付功能即将上线，敬请期待！')">
+                                即将开通
+                            </button>
+                        </div>
+
+                        <div class="vip-card recommended">
+                            <div class="flag">🌍 国际用户</div>
+                            <div class="badge">Best Value</div>
+                            <h4>Yearly VIP $49.99 / year</h4>
+                            <p style="color:#94a3b8; margin:10px 0;">Credit Card · PayPal（Save 16%）</p>
+                            <button class="btn-full" onclick="alert('国际支付功能即将上线，敬请期待！')">
+                                即将开通
+                            </button>
+                        </div>
                     </div>
+
+                    <p style="text-align:center; color:#94a3b8; font-size:0.9rem; margin:30px 0 20px;">
+                        支付成功后，请在留言或邮件中提供你的网站用户名，我会手动为你开通 VIP～
+                    </p>
+
                 </div>
-
-                <div class="vip-plans" style="margin-top:40px;">
-                    <!-- 国际用户：预留 -->
-                    <div class="vip-card">
-                        <div class="flag">🌍 国际用户</div>
-                        <h4>Monthly VIP $4.99 / month</h4>
-                        <p style="color:#94a3b8; margin:10px 0;">Credit Card · PayPal · Apple/Google Pay</p>
-                        <button class="btn-full" onclick="alert('国际支付功能即将上线，敬请期待！')">
-                            即将开通
-                        </button>
-                    </div>
-
-                    <div class="vip-card recommended">
-                        <div class="flag">🌍 国际用户</div>
-                        <div class="badge">Best Value</div>
-                        <h4>Yearly VIP $49.99 / year</h4>
-                        <p style="color:#94a3b8; margin:10px 0;">Credit Card · PayPal（Save 16%）</p>
-                        <button class="btn-full" onclick="alert('国际支付功能即将上线，敬请期待！')">
-                            即将开通
-                        </button>
-                    </div>
-                </div>
-
-                <p style="text-align:center; color:#94a3b8; font-size:0.9rem; margin-top:30px;">
-                    支付成功后，请在留言或邮件中提供你的网站用户名，我会手动为你开通 VIP～
-                </p>
+                <!-- 滚动区域结束 -->
             </div>
         </div>
     `;
@@ -225,7 +231,7 @@ function setupModalEvents() {
 }
 
 // ============================
-// 开发者后门（仅本地或Vercel预览生效，上线前可删）
+// 开发者后门（仅本地或Vercel预览生效）
 // ============================
 if (window.location.hostname === 'localhost' || window.location.hostname.includes('vercel.app')) {
     window.devVip = function(username) {
