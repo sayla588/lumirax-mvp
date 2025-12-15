@@ -1,22 +1,4 @@
-// === 开发者专属后门（只在开发时用，上线前可以删掉或注释） ===
-if (window.location.hostname === 'localhost' || window.location.hostname.includes('vercel.app')) {
-    // 按 F12 打开浏览器控制台，输入：devVip('cyj-790218')
-    window.devVip = function(username) {
-        let users = JSON.parse(localStorage.getItem('chainGuard_users') || '{}');
-        if (!users[username]) {
-            alert('用户不存在，先注册一个吧！');
-            return;
-        }
-        users[username].isVip = true;
-        users[username].vipUntil = '2099-12-31'; // 永不过期
-        localStorage.setItem('chainGuard_users', JSON.stringify(users));
-        alert(`${username} 已强制升级为永久 VIP！刷新页面生效～`);
-        checkLoginStatus();
-        if (typeof updateVipDisplay === 'function') updateVipDisplay();
-    };
-}
-
-// auth.js - 真实支付会员系统（支持支付宝、微信、PayPal、Google Pay 等）
+// auth.js - 登录、注册、VIP升级（爱发电国内支付 + 预留国际）
 
 document.addEventListener('DOMContentLoaded', () => {
     checkLoginStatus();
@@ -26,16 +8,9 @@ document.addEventListener('DOMContentLoaded', () => {
 const DB_KEY_USERS = 'chainGuard_users';
 const DB_KEY_SESSION = 'chainGuard_session';
 
-// Stripe Publishable Key（替换成你自己的！）
-const STRIPE_PK = 'pk_test_XXXXXXXXXXXXXXXXXXXXXXXX'; // 测试键，或换成 live 键
-
-let stripe = null;
-if (typeof Stripe !== 'undefined') {
-    stripe = Stripe(STRIPE_PK);
-}
-
 // ============================
-// 注册（普通用户）
+// 注册功能
+// ============================
 function handleRegister(e) {
     e.preventDefault();
     const username = document.getElementById('regUser').value.trim();
@@ -57,7 +32,7 @@ function handleRegister(e) {
     users[username] = {
         password: password,
         isVip: false,
-        vipUntil: null, // ISO 字符串或 null
+        vipUntil: null,
         regDate: new Date().toISOString()
     };
     localStorage.setItem(DB_KEY_USERS, JSON.stringify(users));
@@ -70,7 +45,9 @@ function handleRegister(e) {
     }, 1500);
 }
 
-// 登录
+// ============================
+// 登录功能
+// ============================
 function handleLogin(e) {
     e.preventDefault();
     const username = document.getElementById('loginUser').value.trim();
@@ -91,21 +68,25 @@ function handleLogin(e) {
     setTimeout(() => {
         closeAuthModal();
         checkLoginStatus();
-        if (typeof updateVipDisplay === 'function') updateVipDisplay(); // 主页按钮更新
+        if (typeof updateVipDisplay === 'function') updateVipDisplay();
     }, 1000);
 }
 
+// ============================
 // 退出登录
+// ============================
 function logout() {
     if (confirm('确定要退出登录吗？')) {
         localStorage.removeItem(DB_KEY_SESSION);
         checkLoginStatus();
         if (typeof updateVipDisplay === 'function') updateVipDisplay();
-        window.location.reload();
+        location.reload();
     }
 }
 
-// 检查是否为有效 VIP
+// ============================
+// 检查是否为有效VIP
+// ============================
 function isVip() {
     const username = localStorage.getItem(DB_KEY_SESSION);
     if (!username) return false;
@@ -118,7 +99,9 @@ function isVip() {
     return new Date(user.vipUntil) > new Date();
 }
 
+// ============================
 // 更新导航栏
+// ============================
 function checkLoginStatus() {
     const username = localStorage.getItem(DB_KEY_SESSION);
     const navActions = document.querySelector('.nav-actions');
@@ -138,43 +121,68 @@ function checkLoginStatus() {
         navActions.innerHTML = `<button class="btn-login" onclick="openAuthModal()">登录 / 注册</button>`;
     }
 
-    // 触发主页下载按钮更新（如果存在）
     if (typeof updateVipDisplay === 'function') updateVipDisplay();
 }
 
-// 显示升级会员弹窗（真实支付）
+// ============================
+// 升级VIP弹窗（爱发电 + 预留国际）
+// ============================
 function showUpgradeModal() {
     const modalHtml = `
         <div id="upgradeModal" class="modal-overlay" style="display:flex;">
             <div class="modal-content" style="max-width:600px; width:90%;">
                 <button class="modal-close" onclick="document.getElementById('upgradeModal').remove()">×</button>
                 <h3 style="text-align:center; margin-bottom:20px; color:#fff;">升级 VIP 会员</h3>
+                <p style="text-align:center; color:#ccc; margin-bottom:30px;">
+                    解锁 MiviChain Pro 浏览器插件下载 + 高级工具 + 无广告体验
+                </p>
+
                 <div class="vip-plans">
-                    <div class="vip-card" data-plan="month">
-                        <h4>月会员</h4>
-                        <div class="price">¥29<span>/月</span></div>
-                        <ul>
-                            <li>✓ 下载 MiviChain Pro 插件</li>
-                            <li>✓ 优先工具访问</li>
-                            <li>✓ 无广告体验</li>
-                        </ul>
-                        <button class="btn-full" onclick="createCheckout('month')">立即支付</button>
+                    <!-- 中国用户：爱发电 -->
+                    <div class="vip-card">
+                        <div class="flag">🇨🇳 中国用户</div>
+                        <h4>月会员 ¥29 / 月</h4>
+                        <p style="color:#94a3b8; margin:10px 0;">支付宝 · 微信支付</p>
+                        <button class="btn-full" onclick="window.open('https://ifdian.net/order/create?plan_id=2fda6108d9a211f0ac165254001e7c00&product_type=0&remark=&affiliate_code=&fr=afcom', '_blank')">
+                            去爱发电开通
+                        </button>
                     </div>
-                    <div class="vip-card recommended" data-plan="year">
+
+                    <div class="vip-card recommended">
+                        <div class="flag">🇨🇳 中国用户</div>
                         <div class="badge">最划算</div>
-                        <h4>年会员</h4>
-                        <div class="price">¥199<span>/年</span></div>
-                        <p style="font-size:0.9rem; color:#10b981;">相当于每月 ¥16.6，省 ¥149！</p>
-                        <ul>
-                            <li>✓ 所有月会员权益</li>
-                            <li>✓ 一年有效期</li>
-                            <li>✓ 专属徽章</li>
-                        </ul>
-                        <button class="btn-full" onclick="createCheckout('year')">立即支付</button>
+                        <h4>年会员 ¥17 / 月（建议一次付12个月 ≈ ¥204）</h4>
+                        <p style="color:#94a3b8; margin:10px 0;">支付宝 · 微信支付（相当于199元超值年费）</p>
+                        <button class="btn-full" onclick="window.open('https://ifdian.net/order/create?plan_id=1d776c8ad9a311f0b58952540025c377&product_type=0&remark=&affiliate_code=&fr=afcom', '_blank')">
+                            去爱发电开通
+                        </button>
                     </div>
                 </div>
-                <p style="text-align:center; color:#94a3b8; font-size:0.85rem; margin-top:20px;">
-                    支持支付宝、微信、PayPal、Google Pay、Apple Pay、信用卡等
+
+                <div class="vip-plans" style="margin-top:40px;">
+                    <!-- 国际用户：预留 -->
+                    <div class="vip-card">
+                        <div class="flag">🌍 国际用户</div>
+                        <h4>Monthly VIP $4.99 / month</h4>
+                        <p style="color:#94a3b8; margin:10px 0;">Credit Card · PayPal · Apple/Google Pay</p>
+                        <button class="btn-full" onclick="alert('国际支付功能即将上线，敬请期待！')">
+                            即将开通
+                        </button>
+                    </div>
+
+                    <div class="vip-card recommended">
+                        <div class="flag">🌍 国际用户</div>
+                        <div class="badge">Best Value</div>
+                        <h4>Yearly VIP $49.99 / year</h4>
+                        <p style="color:#94a3b8; margin:10px 0;">Credit Card · PayPal（Save 16%）</p>
+                        <button class="btn-full" onclick="alert('国际支付功能即将上线，敬请期待！')">
+                            即将开通
+                        </button>
+                    </div>
+                </div>
+
+                <p style="text-align:center; color:#94a3b8; font-size:0.9rem; margin-top:30px;">
+                    支付成功后，请在留言或邮件中提供你的网站用户名，我会手动为你开通 VIP～
                 </p>
             </div>
         </div>
@@ -182,46 +190,9 @@ function showUpgradeModal() {
     document.body.insertAdjacentHTML('beforeend', modalHtml);
 }
 
-// 创建 Stripe Checkout 会话
-async function createCheckout(plan) {
-    const username = localStorage.getItem(DB_KEY_SESSION);
-    if (!username) {
-        alert('请先登录');
-        return;
-    }
-
-    const btn = event.target;
-    btn.disabled = true;
-    btn.textContent = '跳转中...';
-
-    try {
-        const res = await fetch('/api/create-checkout-session', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ plan, username })
-        });
-
-        const data = await res.json();
-
-        if (!data.sessionId) {
-            throw new Error(data.error || '创建支付失败');
-        }
-
-        // 跳转到 Stripe Checkout
-        const result = await stripe.redirectToCheckout({ sessionId: data.sessionId });
-
-        if (result.error) {
-            alert(result.error.message);
-        }
-    } catch (err) {
-        console.error(err);
-        alert('支付发起失败：' + err.message);
-        btn.disabled = false;
-        btn.textContent = '立即支付';
-    }
-}
-
-// 其他 UI 函数保持不变
+// ============================
+// 辅助函数
+// ============================
 function showMsg(element, text, type) {
     element.textContent = text;
     element.className = `auth-msg ${type}`;
@@ -253,7 +224,28 @@ function setupModalEvents() {
     }
 }
 
-// 全局暴露 VIP 检查函数供 index.html 使用
+// ============================
+// 开发者后门（仅本地或Vercel预览生效，上线前可删）
+// ============================
+if (window.location.hostname === 'localhost' || window.location.hostname.includes('vercel.app')) {
+    window.devVip = function(username) {
+        let users = JSON.parse(localStorage.getItem(DB_KEY_USERS) || '{}');
+        if (!users[username]) {
+            alert('用户不存在，先注册一个吧！');
+            return;
+        }
+        users[username].isVip = true;
+        users[username].vipUntil = '2099-12-31';
+        localStorage.setItem(DB_KEY_USERS, JSON.stringify(users));
+        alert(`${username} 已强制升级为永久 VIP！刷新页面生效～`);
+        checkLoginStatus();
+        if (typeof updateVipDisplay === 'function') updateVipDisplay();
+    };
+}
+
+// ============================
+// 全局暴露VIP检查供index.html使用
+// ============================
 window.isVip = isVip;
 window.updateVipDisplay = function() {
     const downloadBtn = document.getElementById('proDownloadBtn');
@@ -261,7 +253,7 @@ window.updateVipDisplay = function() {
 
     if (isVip()) {
         downloadBtn.style.display = 'inline-block';
-        downloadBtn.onclick = null; // 移除提示
+        downloadBtn.onclick = null;
     } else {
         downloadBtn.style.display = 'none';
         downloadBtn.onclick = (e) => {
