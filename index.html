@@ -4,18 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MiviChain - 区块链安全分析平台</title>
-    <!-- Font Awesome 图标 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- 自定义样式 -->
     <link rel="stylesheet" href="style.css">
 
-    <!-- Google Translate 多语言切换（中英日韩） -->
+    <!-- Google Translate（负责全站翻译成英日韩） -->
     <div id="google_translate_element" style="position:fixed; top:80px; right:20px; z-index:9999;"></div>
     <script type="text/javascript">
     function googleTranslateElementInit() {
       new google.translate.TranslateElement({
-        pageLanguage: 'zh-CN',
-        includedLanguages: 'zh-CN,en,ja,ko',
+        pageLanguage: 'zh-CN',  // 原语言中文
+        includedLanguages: 'zh-CN,en,ja,ko',  // 支持中文、英文、日文、韩文
         layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
         autoDisplay: false
       }, 'google_translate_element');
@@ -25,112 +23,52 @@
 </head>
 <body>
 
-    <!-- 导航栏 -->
+    <!-- 导航栏（只写中文，Google会自动翻译） -->
     <nav class="navbar">
         <div class="logo">
             <i class="fa-solid fa-shield-halved"></i> MiviChain
         </div>
         <ul class="nav-links">
-            <li><a href="index.html" class="nav-link active" data-target="home-view">
-                <span data-lang="zh">首页</span>
-                <span data-lang="en">Home</span>
-                <span data-lang="ja">ホーム</span>
-                <span data-lang="ko">홈</span>
-            </a></li>
-            <li><a href="scanner.html" class="nav-link" data-target="scanner-view">
-                <span data-lang="zh">链上扫描</span>
-                <span data-lang="en">Contract Scan</span>
-                <span data-lang="ja">コントラクトスキャン</span>
-                <span data-lang="ko">컨트랙트 스캔</span>
-            </a></li>
-            <li><a href="risk.html" class="nav-link" data-target="risk-view">
-                <span data-lang="zh">风险透视</span>
-                <span data-lang="en">Wallet Risk</span>
-                <span data-lang="ja">ウォレットリスク</span>
-                <span data-lang="ko">지갑 위험</span>
-            </a></li>
-            <li><a href="verify.html" class="nav-link" data-target="verify-view">
-                <span data-lang="zh">验证工具</span>
-                <span data-lang="en">Verify Tool</span>
-                <span data-lang="ja">検証ツール</span>
-                <span data-lang="ko">검증 도구</span>
-            </a></li>
+            <li><a href="index.html" class="nav-link active">首页</a></li>
+            <li><a href="scanner.html" class="nav-link">链上扫描</a></li>
+            <li><a href="risk.html" class="nav-link">风险透视</a></li>
+            <li><a href="verify.html" class="nav-link">验证工具</a></li>
         </ul>
         <div class="nav-actions">
-            <button class="btn-login" onclick="openAuthModal()">
-                <span data-lang="zh">登录 / 注册</span>
-                <span data-lang="en">Login / Register</span>
-                <span data-lang="ja">ログイン / 登録</span>
-                <span data-lang="ko">로그인 / 등록</span>
-            </button>
+            <button class="btn-login" onclick="openAuthModal()">登录 / 注册</button>
         </div>
         <div class="hamburger">
             <i class="fa-solid fa-bars"></i>
         </div>
     </nav>
 
-    <!-- 英雄区域 (Hero Section) -->
+    <!-- Hero区（只写中文） -->
     <header class="hero">
         <div class="hero-content">
-            <h1>
-                <span data-lang="zh">守护您的链上资产安全</span>
-                <span data-lang="en">Protect Your On-Chain Assets</span>
-                <span data-lang="ja">チェーン上の資産を守る</span>
-                <span data-lang="ko">체인상 자산 보호</span>
-            </h1>
-            <p>
-                <span data-lang="zh">利用 AI 驱动的智能合约审计与实时风险监控，为您的 Web3 之旅保驾护航。</span>
-                <span data-lang="en">AI-powered smart contract audit and real-time risk monitoring for your Web3 journey.</span>
-                <span data-lang="ja">AI駆動のスマートコントラクト監査とリアルタイムリスク監視で、Web3の旅を守ります。</span>
-                <span data-lang="ko">AI 기반 스마트 컨트랙트 감사 및 실시간 위험 모니터링으로 Web3 여정을 보호합니다。</span>
-            </p>
+            <h1>守护您的链上资产安全</h1>
+            <p>利用 AI 驱动的智能合约审计与实时风险监控，为您的 Web3 之旅保驾护航。</p>
             <div class="hero-buttons">
-                <a href="scanner.html" class="btn-primary">
-                    <span data-lang="zh">开始扫描合约</span>
-                    <span data-lang="en">Scan Contract</span>
-                    <span data-lang="ja">コントラクトをスキャン</span>
-                    <span data-lang="ko">컨트랙트 스캔</span>
-                </a>
-                <a href="risk.html" class="btn-secondary">
-                    <span data-lang="zh">检查钱包风险</span>
-                    <span data-lang="en">Check Wallet Risk</span>
-                    <span data-lang="ja">ウォレットリスクチェック</span>
-                    <span data-lang="ko">지갑 위험 확인</span>
-                </a>
+                <a href="scanner.html" class="btn-primary">开始扫描合约</a>
+                <a href="risk.html" class="btn-secondary">检查钱包风险</a>
 
-                <!-- VIP 专属下载按钮 -->
+                <!-- VIP下载按钮 -->
                 <a id="proDownloadBtn" 
                    href="/plugins/mivichain-pro.crx" 
                    download="MiviChain-Pro.crx"
                    class="btn-primary vip-download-btn"
                    style="display:none;">
-                    <i class="fa-solid fa-download"></i>
-                    <span data-lang="zh">下载 MiviChain Pro 浏览器插件</span>
-                    <span data-lang="en">Download MiviChain Pro Extension</span>
-                    <span data-lang="ja">MiviChain Pro ブラウザ拡張をダウンロード</span>
-                    <span data-lang="ko">MiviChain Pro 브라우저 확장 다운로드</span>
+                    <i class="fa-solid fa-download"></i> 下载 MiviChain Pro 浏览器插件
                 </a>
             </div>
         </div>
-        <!-- 动态背景装饰 -->
         <div class="hero-bg-animation"></div>
     </header>
 
-    <!-- 核心功能展示 -->
+    <!-- 核心功能展示（只写中文） -->
     <section class="features">
         <div class="section-title">
-            <h2>
-                <span data-lang="zh">核心功能</span>
-                <span data-lang="en">Core Features</span>
-                <span data-lang="ja">主な機能</span>
-                <span data-lang="ko">핵심 기능</span>
-            </h2>
-            <p>
-                <span data-lang="zh">全方位的区块链安全解决方案</span>
-                <span data-lang="en">Comprehensive Blockchain Security Solutions</span>
-                <span data-lang="ja">包括的なブロックチェーンセキュリティソリューション</span>
-                <span data-lang="ko">종합적인 블록체인 보안 솔루션</span>
-            </p>
+            <h2>核心功能</h2>
+            <p>全方位的区块链安全解决方案</p>
         </div>
         
         <div class="feature-grid">
@@ -138,104 +76,44 @@
                 <div class="icon-box">
                     <i class="fa-solid fa-magnifying-glass-chart"></i>
                 </div>
-                <h3>
-                    <span data-lang="zh">智能合约扫描</span>
-                    <span data-lang="en">Smart Contract Scan</span>
-                    <span data-lang="ja">スマートコントラクトスキャン</span>
-                    <span data-lang="ko">스마트 컨트랙트 스캔</span>
-                </h3>
-                <p>
-                    <span data-lang="zh">深度分析合约代码漏洞，识别貔貅盘、后门代码及权限滥用风险。</span>
-                    <span data-lang="en">Deep analysis of contract code vulnerabilities, identifying honeypots, backdoors, and permission abuse risks.</span>
-                    <span data-lang="ja">コントラクトコードの脆弱性を深く分析し、ハニーポット、バックドア、権限乱用リスクを特定します。</span>
-                    <span data-lang="ko">컨트랙트 코드 취약점 심층 분석, 허니팟, 백도어, 권한 남용 위험 식별.</span>
-                </p>
-                <a href="scanner.html" class="card-link">
-                    <span data-lang="zh">立即使用 &rarr;</span>
-                    <span data-lang="en">Use Now &rarr;</span>
-                    <span data-lang="ja">今すぐ使う &rarr;</span>
-                    <span data-lang="ko">지금 사용 &rarr;</span>
-                </a>
+                <h3>智能合约扫描</h3>
+                <p>深度分析合约代码漏洞，识别貔貅盘、后门代码及权限滥用风险。</p>
+                <a href="scanner.html" class="card-link">立即使用 &rarr;</a>
             </div>
 
             <div class="feature-card">
                 <div class="icon-box">
                     <i class="fa-solid fa-wallet"></i>
                 </div>
-                <h3>
-                    <span data-lang="zh">钱包风险透视</span>
-                    <span data-lang="en">Wallet Risk Insight</span>
-                    <span data-lang="ja">ウォレットリスク分析</span>
-                    <span data-lang="ko">지갑 위험 분석</span>
-                </h3>
-                <p>
-                    <span data-lang="zh">一键检测钱包授权情况，发现恶意授权并提供取消建议，防止资产被盗。</span>
-                    <span data-lang="en">One-click detection of wallet authorizations, identifying malicious approvals and providing revocation suggestions to prevent asset theft.</span>
-                    <span data-lang="ja">ワンクリックでウォレットの承認状況を検出、悪意のある承認を特定し、取り消し提案を提供して資産盗難を防ぎます。</span>
-                    <span data-lang="ko">원클릭 지갑 승인 상황 감지, 악의적 승인 식별 및 취소 제안으로 자산 도난 방지.</span>
-                </p>
-                <a href="risk.html" class="card-link">
-                    <span data-lang="zh">立即使用 &rarr;</span>
-                    <span data-lang="en">Use Now &rarr;</span>
-                    <span data-lang="ja">今すぐ使う &rarr;</span>
-                    <span data-lang="ko">지금 사용 &rarr;</span>
-                </a>
+                <h3>钱包风险透视</h3>
+                <p>一键检测钱包授权情况，发现恶意授权并提供取消建议，防止资产被盗。</p>
+                <a href="risk.html" class="card-link">立即使用 &rarr;</a>
             </div>
 
             <div class="feature-card">
                 <div class="icon-box">
                     <i class="fa-solid fa-check-double"></i>
                 </div>
-                <h3>
-                    <span data-lang="zh">项目真伪验证</span>
-                    <span data-lang="en">Project Verification</span>
-                    <span data-lang="ja">プロジェクト検証</span>
-                    <span data-lang="ko">프로젝트 검증</span>
-                </h3>
-                <p>
-                    <span data-lang="zh">基于多维度数据验证项目官方渠道，远离钓鱼网站和假冒社群。</span>
-                    <span data-lang="en">Multi-dimensional data verification of official project channels to stay away from phishing sites and fake communities.</span>
-                    <span data-lang="ja">多次元データでプロジェクトの公式チャネルを検証し、フィッシングサイトや偽コミュニティから遠ざかります。</span>
-                    <span data-lang="ko">다차원 데이터로 프로젝트 공식 채널 검증, 피싱 사이트 및 가짜 커뮤니티 차단.</span>
-                </p>
-                <a href="verify.html" class="card-link">
-                    <span data-lang="zh">立即使用 &rarr;</span>
-                    <span data-lang="en">Use Now &rarr;</span>
-                    <span data-lang="ja">今すぐ使う &rarr;</span>
-                    <span data-lang="ko">지금 사용 &rarr;</span>
-                </a>
+                <h3>项目真伪验证</h3>
+                <p>基于多维度数据验证项目官方渠道，远离钓鱼网站和假冒社群。</p>
+                <a href="verify.html" class="card-link">立即使用 &rarr;</a>
             </div>
         </div>
     </section>
 
-    <!-- 数据统计栏 -->
+    <!-- 数据统计 -->
     <section class="stats">
         <div class="stat-item">
             <span class="stat-number">100W+</span>
-            <span class="stat-label">
-                <span data-lang="zh">已扫描合约</span>
-                <span data-lang="en">Contracts Scanned</span>
-                <span data-lang="ja">スキャンされたコントラクト</span>
-                <span data-lang="ko">스캔된 컨트랙트</span>
-            </span>
+            <span class="stat-label">已扫描合约</span>
         </div>
         <div class="stat-item">
             <span class="stat-number">$50M+</span>
-            <span class="stat-label">
-                <span data-lang="zh">挽回潜在损失</span>
-                <span data-lang="en">Potential Losses Saved</span>
-                <span data-lang="ja">潜在損失回避</span>
-                <span data-lang="ko">잠재적 손실 방지</span>
-            </span>
+            <span class="stat-label">挽回潜在损失</span>
         </div>
         <div class="stat-item">
             <span class="stat-number">24/7</span>
-            <span class="stat-label">
-                <span data-lang="zh">实时监控</span>
-                <span data-lang="en">Real-time Monitoring</span>
-                <span data-lang="ja">24/7監視</span>
-                <span data-lang="ko">24/7 모니터링</span>
-            </span>
+            <span class="stat-label">实时监控</span>
         </div>
     </section>
 
@@ -249,112 +127,42 @@
         </div>
     </footer>
 
-    <!-- 移动端菜单脚本 -->
+    <!-- 移动端菜单 -->
     <script>
         const hamburger = document.querySelector('.hamburger');
         const navLinks = document.querySelector('.nav-links');
-
         hamburger.addEventListener('click', () => {
             navLinks.classList.toggle('active');
         });
     </script>
 
-    <!-- 登录/注册 模态框 -->
+    <!-- 登录模态框（只写中文） -->
     <div id="authModal" class="modal-overlay">
         <div class="modal-content">
             <button class="modal-close" onclick="closeAuthModal()">&times;</button>
             
             <div class="auth-tabs">
-                <button id="tab-login" class="auth-tab active" onclick="switchAuthTab('login')">
-                    <span data-lang="zh">登录</span>
-                    <span data-lang="en">Login</span>
-                    <span data-lang="ja">ログイン</span>
-                    <span data-lang="ko">로그인</span>
-                </button>
-                <button id="tab-register" class="auth-tab" onclick="switchAuthTab('register')">
-                    <span data-lang="zh">注册</span>
-                    <span data-lang="en">Register</span>
-                    <span data-lang="ja">登録</span>
-                    <span data-lang="ko">등록</span>
-                </button>
+                <button id="tab-login" class="auth-tab active" onclick="switchAuthTab('login')">登录</button>
+                <button id="tab-register" class="auth-tab" onclick="switchAuthTab('register')">注册</button>
             </div>
 
-            <!-- 登录表单 -->
             <form id="form-login" class="auth-form active" onsubmit="handleLogin(event)">
                 <input type="text" id="loginUser" class="auth-input" placeholder="用户名" required>
                 <input type="password" id="loginPass" class="auth-input" placeholder="密码" required>
-                <button type="submit" class="btn-full">
-                    <span data-lang="zh">立即登录</span>
-                    <span data-lang="en">Login Now</span>
-                    <span data-lang="ja">ログイン</span>
-                    <span data-lang="ko">로그인</span>
-                </button>
+                <button type="submit" class="btn-full">立即登录</button>
                 <div id="loginMsg" class="auth-msg"></div>
             </form>
 
-            <!-- 注册表单 -->
             <form id="form-register" class="auth-form" onsubmit="handleRegister(event)">
                 <input type="text" id="regUser" class="auth-input" placeholder="设置用户名" required>
                 <input type="password" id="regPass" class="auth-input" placeholder="设置密码" required>
-                <button type="submit" class="btn-full" style="background: transparent; border: 1px solid var(--primary-color); color: #fff;">
-                    <span data-lang="zh">创建账户</span>
-                    <span data-lang="en">Create Account</span>
-                    <span data-lang="ja">アカウント作成</span>
-                    <span data-lang="ko">계정 생성</span>
-                </button>
+                <button type="submit" class="btn-full" style="background: transparent; border: 1px solid var(--primary-color); color: #fff;">创建账户</button>
                 <div id="regMsg" class="auth-msg"></div>
             </form>
         </div>
     </div>
 
-    <!-- 引入 auth.js（登录、VIP逻辑、多语言切换） -->
+    <!-- 引入 auth.js -->
     <script src="auth.js"></script>
-
-    <!-- 多语言手动切换脚本（修复版：确保选中文时只显示中文） -->
-<script>
-    function updateLanguageDisplay() {
-        // 获取Google Translate下拉框选中的语言
-        const combo = document.querySelector('.goog-te-combo');
-        if (!combo) return;
-
-        let selectedLang = combo.value || 'zh-CN';  // 默认中文
-
-        let lang = 'zh';  // 默认显示中文
-        if (selectedLang.includes('en')) lang = 'en';
-        else if (selectedLang.includes('ja')) lang = 'ja';
-        else if (selectedLang.includes('ko')) lang = 'ko';
-
-        // 遍历所有带data-lang的元素
-        document.querySelectorAll('[data-lang]').forEach(el => {
-            const elLang = el.getAttribute('data-lang');
-            if (elLang === lang) {
-                el.style.display = '';  // 显示匹配语言
-            } else {
-                el.style.display = 'none';  // 隐藏其他语言
-            }
-        });
-    }
-
-    // 页面加载后持续检测Google Translate是否加载完成
-    document.addEventListener('DOMContentLoaded', () => {
-        const checkInterval = setInterval(() => {
-            const combo = document.querySelector('.goog-te-combo');
-            if (combo) {
-                // 初始更新一次
-                updateLanguageDisplay();
-
-                // 监听用户切换语言
-                combo.addEventListener('change', updateLanguageDisplay);
-
-                // 清除定时器
-                clearInterval(checkInterval);
-            }
-        }, 500);
-
-        // 额外保险：页面任何变化都尝试更新（防止Google Translate异步加载）
-        const observer = new MutationObserver(updateLanguageDisplay);
-        observer.observe(document.body, { childList: true, subtree: true });
-    });
-</script>
 </body>
 </html>
