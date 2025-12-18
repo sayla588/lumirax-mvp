@@ -310,33 +310,51 @@
     <!-- 引入 auth.js（登录、VIP逻辑、多语言切换） -->
     <script src="auth.js"></script>
 
-    <!-- 多语言手动切换脚本（配合Google Translate） -->
-    <script>
-        function updateLanguageDisplay() {
-            const combo = document.querySelector('.goog-te-combo');
-            if (!combo) return;
-            const selectedLang = combo.value || 'zh-CN';
-            let lang = 'zh';
-            if (selectedLang.includes('en')) lang = 'en';
-            else if (selectedLang.includes('ja')) lang = 'ja';
-            else if (selectedLang.includes('ko')) lang = 'ko';
+    <!-- 多语言手动切换脚本（修复版：确保选中文时只显示中文） -->
+<script>
+    function updateLanguageDisplay() {
+        // 获取Google Translate下拉框选中的语言
+        const combo = document.querySelector('.goog-te-combo');
+        if (!combo) return;
 
-            document.querySelectorAll('[data-lang]').forEach(el => {
-                el.style.display = 'none';
-                if (el.getAttribute('data-lang') === lang) el.style.display = '';
-            });
-        }
+        let selectedLang = combo.value || 'zh-CN';  // 默认中文
 
-        // Google Translate加载后监听切换
-        document.addEventListener('DOMContentLoaded', () => {
-            const checkTranslate = setInterval(() => {
-                if (document.querySelector('.goog-te-combo')) {
-                    updateLanguageDisplay();
-                    document.querySelector('.goog-te-combo').addEventListener('change', updateLanguageDisplay);
-                    clearInterval(checkTranslate);
-                }
-            }, 500);
+        let lang = 'zh';  // 默认显示中文
+        if (selectedLang.includes('en')) lang = 'en';
+        else if (selectedLang.includes('ja')) lang = 'ja';
+        else if (selectedLang.includes('ko')) lang = 'ko';
+
+        // 遍历所有带data-lang的元素
+        document.querySelectorAll('[data-lang]').forEach(el => {
+            const elLang = el.getAttribute('data-lang');
+            if (elLang === lang) {
+                el.style.display = '';  // 显示匹配语言
+            } else {
+                el.style.display = 'none';  // 隐藏其他语言
+            }
         });
-    </script>
+    }
+
+    // 页面加载后持续检测Google Translate是否加载完成
+    document.addEventListener('DOMContentLoaded', () => {
+        const checkInterval = setInterval(() => {
+            const combo = document.querySelector('.goog-te-combo');
+            if (combo) {
+                // 初始更新一次
+                updateLanguageDisplay();
+
+                // 监听用户切换语言
+                combo.addEventListener('change', updateLanguageDisplay);
+
+                // 清除定时器
+                clearInterval(checkInterval);
+            }
+        }, 500);
+
+        // 额外保险：页面任何变化都尝试更新（防止Google Translate异步加载）
+        const observer = new MutationObserver(updateLanguageDisplay);
+        observer.observe(document.body, { childList: true, subtree: true });
+    });
+</script>
 </body>
 </html>
