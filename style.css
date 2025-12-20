@@ -708,35 +708,42 @@ footer {
     background: #00e6ff;
 }
 
-/* 手机端汉堡菜单优化：登录按钮显示在菜单里 */
+/* 手机端优化：登录按钮在汉堡菜单里醒目显示 */
 @media (max-width: 768px) {
+    /* 隐藏桌面版登录按钮 */
     .desktop-only {
-        display: none !important; /* 桌面登录按钮在手机隐藏 */
+        display: none !important;
     }
-    
-    .mobile-login-item {
-        display: block;
-        width: 100%;
-        text-align: center;
-        margin: 20px 0;
-    }
-    
-    .mobile-login-item .btn-login {
-        width: 80%;
-        max-width: 300px;
-        padding: 12px;
-        font-size: 1.1rem;
-        background: var(--primary-color);
-        border-radius: 50px;
-        box-shadow: 0 4px 15px rgba(0, 230, 255, 0.4);
-    }
-    
-    /* 菜单打开时更好看 */
+
+    /* 菜单打开样式 */
     .nav-links.active {
         display: flex;
         flex-direction: column;
         align-items: center;
         background: rgba(15, 23, 42, 0.98);
         padding: 20px 0;
+        border-radius: 12px;
+    }
+
+    /* 登录按钮在菜单里 */
+    .mobile-login-item {
+        display: block;
+        width: 100%;
+        text-align: center;
+        margin: 20px 0 10px;
+    }
+
+    .mobile-login-item .btn-login {
+        width: 80%;
+        max-width: 300px;
+        padding: 14px 20px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        background: linear-gradient(135deg, #00e6ff, #0077ff) !important;
+        color: #ffffff !important;
+        border: none !important;
+        border-radius: 50px;
+        box-shadow: 0 6px 20px rgba(0, 230, 255, 0.4);
+        text-shadow: 0 1px 3px rgba(0,0,0,0.5);
     }
 }
