@@ -63,7 +63,7 @@ function handleLogin(e) {
     }
 
     localStorage.setItem(DB_KEY_SESSION, username);
-    showMsg(msgBox, '登录成功！手机和电脑需分别登录一次哦～', 'success');
+    showMsg(msgBox, '登录成功！手机和电脑需分别注册登录一次哦～', 'success');
 
     setTimeout(() => {
         closeAuthModal();
