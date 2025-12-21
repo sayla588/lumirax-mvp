@@ -1,12 +1,7 @@
-// auth.js - Supabase后端完整版（已自动绕过邮箱确认）
+// auth.js - localStorage 本地存储版（简单稳定）
 
-// ==== 替换成你的Supabase信息 ====
-const SUPABASE_URL = 'https://xsyezbzazewcdpsjmqhc.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable__j0AlWci5myphWou32Re_w_7jeFlI69';
-// =================================
-
-const { createClient } = supabase;
-const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const DB_KEY_USERS = 'chainGuard_users';
+const DB_KEY_SESSION = 'chainGuard_session';
 
 document.addEventListener('DOMContentLoaded', () => {
     checkLoginStatus();
@@ -14,9 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ============================
-// 注册（自动绕过邮箱确认问题）
+// 注册
 // ============================
-async function handleRegister(e) {
+function handleRegister(e) {
     e.preventDefault();
     const username = document.getElementById('regUser').value.trim();
     const password = document.getElementById('regPass').value.trim();
@@ -27,140 +22,110 @@ async function handleRegister(e) {
         return;
     }
 
-    // 使用假邮箱注册
-    const { data, error } = await supabaseClient.auth.signUp({
-        email: `${username}@mivichain.fake`, // 假邮箱
-        password: password
-    });
+    let users = JSON.parse(localStorage.getItem(DB_KEY_USERS) || '{}');
 
-    if (error) {
-        if (error.message.includes('duplicate') || error.message.includes('already registered')) {
-            showMsg(msgBox, '用户名已存在，直接登录', 'success');
-            setTimeout(() => {
-                switchAuthTab('login');
-                document.getElementById('loginUser').value = username;
-            }, 1500);
-            return;
-        }
-        showMsg(msgBox, '注册失败：' + error.message, 'error');
+    if (users[username]) {
+        showMsg(msgBox, '该用户名已被注册', 'error');
         return;
     }
 
-    // 新用户注册成功，插入users表
-    const { error: dbError } = await supabaseClient
-        .from('users')
-        .insert({
-            id: data.user.id,
-            username: username,
-            is_vip: false,
-            vip_until: null
-        });
-
-    if (dbError) {
-        showMsg(msgBox, '注册失败，请重试', 'error');
-        return;
-    }
+    users[username] = {
+        password: password,
+        isVip: false,
+        vipUntil: null,
+        regDate: new Date().toISOString()
+    };
+    localStorage.setItem(DB_KEY_USERS, JSON.stringify(users));
 
     showMsg(msgBox, '注册成功！请登录', 'success');
     setTimeout(() => {
         switchAuthTab('login');
         document.getElementById('loginUser').value = username;
+        msgBox.textContent = '';
     }, 1500);
 }
 
 // ============================
 // 登录
 // ============================
-async function handleLogin(e) {
+function handleLogin(e) {
     e.preventDefault();
     const username = document.getElementById('loginUser').value.trim();
     const password = document.getElementById('loginPass').value.trim();
     const msgBox = document.getElementById('loginMsg');
 
-    const { data, error } = await supabaseClient.auth.signInWithPassword({
-        email: `${username}@mivichain.fake`,
-        password: password
-    });
+    let users = JSON.parse(localStorage.getItem(DB_KEY_USERS) || '{}');
+    const user = users[username];
 
-    if (error) {
+    if (!user || user.password !== password) {
         showMsg(msgBox, '用户名或密码错误', 'error');
         return;
     }
 
+    localStorage.setItem(DB_KEY_SESSION, username);
     showMsg(msgBox, '登录成功！', 'success');
+
     setTimeout(() => {
         closeAuthModal();
         checkLoginStatus();
+        if (typeof updateVipDisplay === 'function') updateVipDisplay();
     }, 1000);
 }
 
 // ============================
 // 退出登录
 // ============================
-async function logout() {
+function logout() {
     if (confirm('确定要退出登录吗？')) {
-        await supabaseClient.auth.signOut();
+        localStorage.removeItem(DB_KEY_SESSION);
         checkLoginStatus();
+        if (typeof updateVipDisplay === 'function') updateVipDisplay();
+        location.reload();
     }
 }
 
 // ============================
-// 检查登录状态和VIP
+// 检查是否为VIP
 // ============================
-async function checkLoginStatus() {
-    const { data: { user } } = await supabaseClient.auth.getUser();
+function isVip() {
+    const username = localStorage.getItem(DB_KEY_SESSION);
+    if (!username) return false;
+
+    const users = JSON.parse(localStorage.getItem(DB_KEY_USERS) || '{}');
+    const user = users[username];
+    if (!user || !user.isVip) return false;
+
+    if (!user.vipUntil) return true;
+    return new Date(user.vipUntil) > new Date();
+}
+
+// ============================
+// 更新导航栏登录状态
+// ============================
+function checkLoginStatus() {
+    const username = localStorage.getItem(DB_KEY_SESSION);
     const navActions = document.querySelector('.nav-actions');
-    if (!navActions) return;
 
-    if (user) {
-        const { data: profile } = await supabaseClient
-            .from('users')
-            .select('username, is_vip')
-            .eq('id', user.id)
-            .single();
-
-        if (profile) {
-            const vip = profile.is_vip;
-            navActions.innerHTML = `
-                <div class="user-profile">
-                    <span><i class="fa-solid fa-user-astronaut"></i> ${profile.username}
-                        ${vip ? '<span style="color:#10b981; margin-left:8px;">✨ VIP</span>' : ''}
-                    </span>
-                    ${!vip ? '<button class="btn-upgrade" onclick="showUpgradeModal()">升级 VIP</button>' : ''}
-                    <button class="btn-logout" onclick="logout()">退出</button>
-                </div>
-            `;
-        }
+    if (username) {
+        const vip = isVip();
+        navActions.innerHTML = `
+            <div class="user-profile">
+                <span><i class="fa-solid fa-user-astronaut"></i> ${username}
+                    ${vip ? '<span style="color:#10b981; margin-left:8px;">✨ VIP</span>' : ''}
+                </span>
+                ${!vip ? '<button class="btn-upgrade" onclick="showUpgradeModal()">升级 VIP</button>' : ''}
+                <button class="btn-logout" onclick="logout()">退出</button>
+            </div>
+        `;
     } else {
         navActions.innerHTML = `<button class="btn-login" onclick="openAuthModal()">登录 / 注册</button>`;
     }
 
-    updateVipDisplay();
+    if (typeof updateVipDisplay === 'function') updateVipDisplay();
 }
 
 // ============================
-// VIP下载按钮控制
-// ============================
-async function updateVipDisplay() {
-    const downloadBtn = document.getElementById('proDownloadBtn');
-    if (!downloadBtn) return;
-
-    const { data: { user } } = await supabaseClient.auth.getUser();
-    if (user) {
-        const { data } = await supabaseClient
-            .from('users')
-            .select('is_vip')
-            .eq('id', user.id)
-            .single();
-
-        downloadBtn.style.display = data && data.is_vip ? 'inline-block' : 'none';
-    } else {
-        downloadBtn.style.display = 'none';
-    }
-}
-
-// ============================
-// 升级VIP弹窗（你的爱发电代码保持不变）
+// 升级VIP弹窗（你的爱发电代码）
 function showUpgradeModal() {
     const modalHtml = `
         <div id="upgradeModal" class="modal-overlay" style="display:flex;">
@@ -225,6 +190,20 @@ function showUpgradeModal() {
 }
 
 // ============================
+// VIP下载按钮显示控制
+// ============================
+window.updateVipDisplay = function() {
+    const downloadBtn = document.getElementById('proDownloadBtn');
+    if (!downloadBtn) return;
+
+    if (isVip()) {
+        downloadBtn.style.display = 'inline-block';
+    } else {
+        downloadBtn.style.display = 'none';
+    }
+};
+
+// ============================
 // 辅助函数
 // ============================
 function showMsg(element, text, type) {
@@ -258,5 +237,20 @@ function setupModalEvents() {
     }
 }
 
-// 初始化检查登录状态
-checkLoginStatus();
+// ============================
+// 开发者后门（仅本地/Vercel预览用）
+if (window.location.hostname === 'localhost' || window.location.hostname.includes('vercel.app')) {
+    window.devVip = function(username) {
+        let users = JSON.parse(localStorage.getItem(DB_KEY_USERS) || '{}');
+        if (!users[username]) {
+            alert('用户不存在');
+            return;
+        }
+        users[username].isVip = true;
+        users[username].vipUntil = '2099-12-31';
+        localStorage.setItem(DB_KEY_USERS, JSON.stringify(users));
+        alert(`${username} 已升级为永久 VIP！`);
+        checkLoginStatus();
+        if (typeof updateVipDisplay === 'function') updateVipDisplay();
+    };
+}
