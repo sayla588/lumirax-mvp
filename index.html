@@ -34,19 +34,15 @@
         <li><a href="scanner.html" class="nav-link">链上扫描</a></li>
         <li><a href="risk.html" class="nav-link">风险透视</a></li>
         <li><a href="verify.html" class="nav-link">验证工具</a></li>
-        
-        <!-- 手机端汉堡菜单里也显示登录按钮 -->
-        <li class="mobile-login-item">
-            <button class="btn-login" onclick="openAuthModal()">登录 / 注册</button>
-        </li>
     </ul>
-    <div class="nav-actions desktop-only">
+    <!-- 只保留一个登录位置，由 auth.js 动态控制 -->
+    <div class="nav-actions">
         <button class="btn-login" onclick="openAuthModal()">登录 / 注册</button>
     </div>
     <div class="hamburger">
         <i class="fa-solid fa-bars"></i>
     </div>
-    </nav>
+</nav>
 
     <!-- Hero区（只写中文） -->
     <header class="hero">
