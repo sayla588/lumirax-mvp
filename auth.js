@@ -74,10 +74,10 @@ function handleLogin(e) {
     showMsg(msgBox, '登录成功！', 'success');
 
     setTimeout(() => {
-        closeAuthModal();
-        // 登录成功后强制刷新状态（关键！解决手机不显示问题）
-        forceRefreshLoginStatus();
-    }, 800);
+    closeAuthModal();
+    // 强制小刷新页面，确保手机状态更新
+    window.location.reload();
+    }, 1000);
 }
 
 // ============================
