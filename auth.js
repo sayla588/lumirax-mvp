@@ -66,9 +66,8 @@ function handleLogin(e) {
     showMsg(msgBox, '登录成功！手机和电脑需分别注册登录一次哦～', 'success');
 
     setTimeout(() => {
-        closeAuthModal();
-        checkLoginStatus();
-        if (typeof updateVipDisplay === 'function') updateVipDisplay();
+    closeAuthModal();
+    location.reload(); // 强制刷新页面，保证状态更新
     }, 1000);
 }
 
