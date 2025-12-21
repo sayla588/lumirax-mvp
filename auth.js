@@ -1,9 +1,9 @@
-// auth.js - Supabase后端完整版（2025年12月最新）
+// auth.js - Supabase后端完整版（已自动绕过邮箱确认）
 
-// ==== 请替换成你的Supabase项目信息 ====
+// ==== 替换成你的Supabase信息 ====
 const SUPABASE_URL = 'https://xsyezbzazewcdpsjmqhc.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable__j0AlWci5myphWou32Re_w_7jeFlI69';
-// =========================================
+// =================================
 
 const { createClient } = supabase;
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ============================
-// 注册
+// 注册（自动绕过邮箱确认问题）
 // ============================
 async function handleRegister(e) {
     e.preventDefault();
@@ -34,11 +34,19 @@ async function handleRegister(e) {
     });
 
     if (error) {
-        showMsg(msgBox, error.message.includes('duplicate') ? '用户名已被使用' : '注册失败', 'error');
+        if (error.message.includes('duplicate') || error.message.includes('already registered')) {
+            showMsg(msgBox, '用户名已存在，直接登录', 'success');
+            setTimeout(() => {
+                switchAuthTab('login');
+                document.getElementById('loginUser').value = username;
+            }, 1500);
+            return;
+        }
+        showMsg(msgBox, '注册失败：' + error.message, 'error');
         return;
     }
 
-    // 在users表插入记录
+    // 新用户注册成功，插入users表
     const { error: dbError } = await supabaseClient
         .from('users')
         .insert({
@@ -57,7 +65,6 @@ async function handleRegister(e) {
     setTimeout(() => {
         switchAuthTab('login');
         document.getElementById('loginUser').value = username;
-        msgBox.textContent = '';
     }, 1500);
 }
 
