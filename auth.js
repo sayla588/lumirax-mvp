@@ -311,3 +311,43 @@ document.addEventListener('visibilitychange', () => {
         if (typeof updateVipDisplay === 'function') updateVipDisplay();
     }
 });
+
+// 终极修复：手机端登录状态不显示问题
+// 页面加载完成时强制刷新状态
+window.addEventListener('load', forceUpdateLoginStatus);
+
+// 从后台切换回页面时刷新（手机切App常见问题）
+document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+        forceUpdateLoginStatus();
+    }
+});
+
+// 页面hash变化或历史记录前进后退时刷新（单页应用常见）
+window.addEventListener('hashchange', forceUpdateLoginStatus);
+window.addEventListener('popstate', forceUpdateLoginStatus);
+
+// 强制刷新登录状态函数
+function forceUpdateLoginStatus() {
+    // 多次尝试，确保状态更新
+    setTimeout(() => {
+        checkLoginStatus();
+        if (typeof updateVipDisplay === 'function') updateVipDisplay();
+    }, 300);
+    setTimeout(() => {
+        checkLoginStatus();
+        if (typeof updateVipDisplay === 'function') updateVipDisplay();
+    }, 800);
+    setTimeout(() => {
+        checkLoginStatus();
+        if (typeof updateVipDisplay === 'function') updateVipDisplay();
+    }, 1500);
+}
+
+// 登录成功后也强制刷新（保险）
+const originalHandleLogin = handleLogin;
+handleLogin = function(e) {
+    originalHandleLogin(e);
+    // 登录成功后延迟多次刷新
+    setTimeout(forceUpdateLoginStatus, 1000);
+};
