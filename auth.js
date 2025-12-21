@@ -296,3 +296,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, 500);
 });
+
+// 手机端特殊修复：页面加载后强制刷新登录状态
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        checkLoginStatus();
+        if (typeof updateVipDisplay === 'function') updateVipDisplay();
+    }, 1000); // 延迟1秒，确保页面完全加载
+});
+
+// 页面可见时也刷新（从后台切换回来）
+document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+        checkLoginStatus();
+        if (typeof updateVipDisplay === 'function') updateVipDisplay();
+    }
+});
