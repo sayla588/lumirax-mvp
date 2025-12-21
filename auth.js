@@ -1,12 +1,19 @@
-// auth.js - 完整修复版：修复手机登录状态不显示 + 登录框打不开
+// auth.js - 完整修复版：手机电脑登录状态同步 + 登录后立即显示升级VIP
 
 document.addEventListener('DOMContentLoaded', () => {
-    checkLoginStatus();
-    setupModalEvents();
+    initAuthSystem();
 });
 
 const DB_KEY_USERS = 'chainGuard_users';
 const DB_KEY_SESSION = 'chainGuard_session';
+
+// 初始化整个认证系统
+function initAuthSystem() {
+    checkLoginStatus();
+    setupModalEvents();
+    // 强制多次刷新状态（解决手机浏览器延迟问题）
+    forceRefreshLoginStatus();
+}
 
 // ============================
 // 注册功能
@@ -37,12 +44,11 @@ function handleRegister(e) {
     };
     localStorage.setItem(DB_KEY_USERS, JSON.stringify(users));
 
-    showMsg(msgBox, '注册成功！请登录（手机需单独登录一次）', 'success');
+    showMsg(msgBox, '注册成功！请登录', 'success');
     setTimeout(() => {
         switchAuthTab('login');
         document.getElementById('loginUser').value = username;
         msgBox.textContent = '';
-        forceRefreshLoginStatus(); // 注册后强制刷新状态
     }, 1500);
 }
 
@@ -63,13 +69,15 @@ function handleLogin(e) {
         return;
     }
 
+    // 登录成功，保存会话
     localStorage.setItem(DB_KEY_SESSION, username);
-    showMsg(msgBox, '登录成功！手机需单独登录一次哦～', 'success');
+    showMsg(msgBox, '登录成功！', 'success');
 
     setTimeout(() => {
         closeAuthModal();
-        forceRefreshLoginStatus(); // 登录成功后强制刷新状态
-    }, 1000);
+        // 登录成功后强制刷新状态（关键！解决手机不显示问题）
+        forceRefreshLoginStatus();
+    }, 800);
 }
 
 // ============================
@@ -78,14 +86,13 @@ function handleLogin(e) {
 function logout() {
     if (confirm('确定要退出登录吗？')) {
         localStorage.removeItem(DB_KEY_SESSION);
-        checkLoginStatus();
-        if (typeof updateVipDisplay === 'function') updateVipDisplay();
+        forceRefreshLoginStatus();
         location.reload();
     }
 }
 
 // ============================
-// 检查是否为有效VIP
+// 检查是否为VIP
 // ============================
 function isVip() {
     const username = localStorage.getItem(DB_KEY_SESSION);
@@ -93,18 +100,23 @@ function isVip() {
 
     const users = JSON.parse(localStorage.getItem(DB_KEY_USERS) || '{}');
     const user = users[username];
-    if (!user || !user.isVip) return false;
+    if (!user) return false;
 
-    if (!user.vipUntil) return true;
-    return new Date(user.vipUntil) > new Date();
+    if (user.isVip && user.vipUntil && new Date(user.vipUntil) < new Date()) {
+        user.isVip = false; // VIP过期自动降级
+        localStorage.setItem(DB_KEY_USERS, JSON.stringify(users));
+    }
+
+    return user.isVip || false;
 }
 
 // ============================
-// 更新导航栏登录状态
+// 更新导航栏显示（核心函数）
 // ============================
 function checkLoginStatus() {
     const username = localStorage.getItem(DB_KEY_SESSION);
     const navActions = document.querySelector('.nav-actions');
+    if (!navActions) return;
 
     if (username) {
         const vip = isVip();
@@ -121,13 +133,13 @@ function checkLoginStatus() {
         navActions.innerHTML = `<button class="btn-login" onclick="openAuthModal()">登录 / 注册</button>`;
     }
 
-    if (typeof updateVipDisplay === 'function') updateVipDisplay();
+    updateVipDisplay(); // 更新下载按钮
 }
 
 // ============================
-// 升级VIP弹窗（你的爱发电 + 国际预留）
+// 升级VIP弹窗
+// ============================
 function showUpgradeModal() {
-    // 你原来的弹窗代码（保持不变）
     const modalHtml = `
         <div id="upgradeModal" class="modal-overlay" style="display:flex;">
             <div class="modal-content vip-modal-scroll">
@@ -138,7 +150,6 @@ function showUpgradeModal() {
                 </p>
 
                 <div class="vip-scroll-container">
-                    <!-- 你的爱发电和国际部分代码保持不变 -->
                     <div class="vip-plans">
                         <div class="vip-card">
                             <div class="flag">🇨🇳 中国用户</div>
@@ -195,16 +206,20 @@ function showUpgradeModal() {
 // 辅助函数
 // ============================
 function showMsg(element, text, type) {
-    element.textContent = text;
-    element.className = `auth-msg ${type}`;
+    if (element) {
+        element.textContent = text;
+        element.className = `auth-msg ${type}`;
+    }
 }
 
 function openAuthModal() {
-    document.getElementById('authModal').style.display = 'flex';
+    const modal = document.getElementById('authModal');
+    if (modal) modal.style.display = 'flex';
 }
 
 function closeAuthModal() {
-    document.getElementById('authModal').style.display = 'none';
+    const modal = document.getElementById('authModal');
+    if (modal) modal.style.display = 'none';
     document.querySelectorAll('.auth-input').forEach(input => input.value = '');
     document.querySelectorAll('.auth-msg').forEach(msg => msg.textContent = '');
 }
@@ -226,8 +241,40 @@ function setupModalEvents() {
 }
 
 // ============================
-// 开发者后门
+// VIP下载按钮控制
 // ============================
+window.updateVipDisplay = function() {
+    const downloadBtn = document.getElementById('proDownloadBtn');
+    if (!downloadBtn) return;
+
+    if (isVip()) {
+        downloadBtn.style.display = 'inline-block';
+    } else {
+        downloadBtn.style.display = 'none';
+    }
+};
+
+// ============================
+// 强制刷新登录状态（解决手机不显示问题）
+function forceRefreshLoginStatus() {
+    const delays = [0, 300, 800, 1500, 2500];
+    delays.forEach(delay => {
+        setTimeout(() => {
+            checkLoginStatus();
+        }, delay);
+    });
+}
+
+// 页面加载、可见、切换时强制刷新
+window.addEventListener('load', forceRefreshLoginStatus);
+document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) forceRefreshLoginStatus();
+});
+window.addEventListener('hashchange', forceRefreshLoginStatus);
+window.addEventListener('popstate', forceRefreshLoginStatus);
+
+// ============================
+// 开发者后门（仅本地/Vercel预览）
 if (window.location.hostname === 'localhost' || window.location.hostname.includes('vercel.app')) {
     window.devVip = function(username) {
         let users = JSON.parse(localStorage.getItem(DB_KEY_USERS) || '{}');
@@ -242,44 +289,3 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
         forceRefreshLoginStatus();
     };
 }
-
-// ============================
-// VIP下载按钮显示控制
-// ============================
-window.isVip = isVip;
-window.updateVipDisplay = function() {
-    const downloadBtn = document.getElementById('proDownloadBtn');
-    if (!downloadBtn) return;
-
-    if (isVip()) {
-        downloadBtn.style.display = 'inline-block';
-    } else {
-        downloadBtn.style.display = 'none';
-    }
-};
-
-// ============================
-// 手机端登录状态强制刷新（终极修复）
-function forceRefreshLoginStatus() {
-    const delays = [0, 500, 1000, 2000, 3000];
-    delays.forEach(delay => {
-        setTimeout(() => {
-            checkLoginStatus();
-            if (typeof updateVipDisplay === 'function') updateVipDisplay();
-        }, delay);
-    });
-}
-
-// 页面加载完成
-window.addEventListener('load', forceRefreshLoginStatus);
-
-// 从后台切回页面
-document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) {
-        forceRefreshLoginStatus();
-    }
-});
-
-// 页面切换（hash/popstate）
-window.addEventListener('hashchange', forceRefreshLoginStatus);
-window.addEventListener('popstate', forceRefreshLoginStatus);
