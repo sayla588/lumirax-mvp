@@ -351,3 +351,42 @@ handleLogin = function(e) {
     // 登录成功后延迟多次刷新
     setTimeout(forceUpdateLoginStatus, 1000);
 };
+
+// 手机端登录状态强制刷新修复（终极版）
+function forceRefreshLoginStatus() {
+    // 多次尝试刷新，确保手机浏览器捕捉到
+    const attempts = [0, 500, 1000, 2000, 3000];
+    attempts.forEach(delay => {
+        setTimeout(() => {
+            checkLoginStatus();
+            if (typeof updateVipDisplay === 'function') updateVipDisplay();
+        }, delay);
+    });
+}
+
+// 页面加载完成时强制刷新
+window.addEventListener('load', forceRefreshLoginStatus);
+
+// 从后台切换回页面时刷新（手机切App常见）
+document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+        forceRefreshLoginStatus();
+    }
+});
+
+// 登录成功后也强制刷新
+const originalHandleLogin = handleLogin;
+handleLogin = function(e) {
+    const result = originalHandleLogin(e);
+    // 登录成功后延迟强制刷新
+    setTimeout(forceRefreshLoginStatus, 800);
+    return result;
+};
+
+// 注册成功后也强制刷新（因为注册后可能自动登录或需要手动登录）
+const originalHandleRegister = handleRegister;
+handleRegister = function(e) {
+    const result = originalHandleRegister(e);
+    setTimeout(forceRefreshLoginStatus, 2000);
+    return result;
+};
