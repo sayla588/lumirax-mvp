@@ -1,8 +1,9 @@
-// auth.js - Supabase后端最终版：用户登录注册 + VIP同步 + 手机电脑自动登录
+// auth.js - Supabase后端完整版（2025年12月最新）
 
-// 你的Supabase信息
+// ==== 请替换成你的Supabase项目信息 ====
 const SUPABASE_URL = 'https://xsyezbzazewcdpsjmqhc.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable__j0AlWci5myphWou32Re_w_7jeFlI69';
+// =========================================
 
 const { createClient } = supabase;
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -26,9 +27,9 @@ async function handleRegister(e) {
         return;
     }
 
-    // 用假邮箱注册
+    // 使用假邮箱注册
     const { data, error } = await supabaseClient.auth.signUp({
-        email: `${username}@mivichain.fake`,
+        email: `${username}@mivichain.fake`, // 假邮箱
         password: password
     });
 
@@ -37,13 +38,14 @@ async function handleRegister(e) {
         return;
     }
 
-    // 插入users表
+    // 在users表插入记录
     const { error: dbError } = await supabaseClient
         .from('users')
         .insert({
             id: data.user.id,
             username: username,
-            is_vip: false
+            is_vip: false,
+            vip_until: null
         });
 
     if (dbError) {
@@ -55,6 +57,7 @@ async function handleRegister(e) {
     setTimeout(() => {
         switchAuthTab('login');
         document.getElementById('loginUser').value = username;
+        msgBox.textContent = '';
     }, 1500);
 }
 
@@ -85,10 +88,10 @@ async function handleLogin(e) {
 }
 
 // ============================
-// 退出
+// 退出登录
 // ============================
 async function logout() {
-    if (confirm('确定退出登录吗？')) {
+    if (confirm('确定要退出登录吗？')) {
         await supabaseClient.auth.signOut();
         checkLoginStatus();
     }
@@ -100,6 +103,7 @@ async function logout() {
 async function checkLoginStatus() {
     const { data: { user } } = await supabaseClient.auth.getUser();
     const navActions = document.querySelector('.nav-actions');
+    if (!navActions) return;
 
     if (user) {
         const { data: profile } = await supabaseClient
@@ -128,7 +132,7 @@ async function checkLoginStatus() {
 }
 
 // ============================
-// VIP下载按钮
+// VIP下载按钮控制
 // ============================
 async function updateVipDisplay() {
     const downloadBtn = document.getElementById('proDownloadBtn');
