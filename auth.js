@@ -26,7 +26,7 @@ function isVip() {
 // 更新导航栏和VIP显示（包括桌面下载区）
 function checkLoginStatus() {
     const username = localStorage.getItem(DB_KEY_SESSION);
-    const navActions = document.querySelector('.nav-actions');
+    const navActions = document.getElementById('navActions');
 
     if (username) {
         const vip = isVip();
@@ -40,10 +40,10 @@ function checkLoginStatus() {
             </div>
         `;
     } else {
-        navActions.innerHTML = `<button class="btn-login" onclick="openAuthModal()">登录 / 注册</button>`;
+        navActions.innerHTML = `<button id="loginBtn" class="btn-login" onclick="openAuthModal()">登录 / 注册</button>`;
     }
 
-    updateVipDisplay(); // 更新所有VIP内容
+    if (typeof updateVipDisplay === 'function') updateVipDisplay();
 }
 
 // VIP内容显示控制（插件 + 桌面下载区）
