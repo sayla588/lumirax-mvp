@@ -26,7 +26,7 @@ function isVip() {
 // 更新导航栏和VIP显示（包括桌面下载区）
 function checkLoginStatus() {
     const username = localStorage.getItem(DB_KEY_SESSION);
-    const navActions = document.getElementById('navActions');
+    const navActions = document.querySelector('.nav-actions');
 
     if (username) {
         const vip = isVip();
@@ -40,7 +40,13 @@ function checkLoginStatus() {
             </div>
         `;
     } else {
-        navActions.innerHTML = `<button id="loginBtn" class="btn-login" onclick="openAuthModal()">登录 / 注册</button>`;
+        navActions.innerHTML = `<button class="btn-login" onclick="openAuthModal()">登录 / 注册</button>`;
+        
+        // 关键修复：重新绑定点击事件
+        const loginBtn = navActions.querySelector('.btn-login');
+        if (loginBtn) {
+            loginBtn.addEventListener('click', openAuthModal);
+        }
     }
 
     if (typeof updateVipDisplay === 'function') updateVipDisplay();
