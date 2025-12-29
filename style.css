@@ -747,3 +747,17 @@ footer {
         text-shadow: 0 1px 3px rgba(0,0,0,0.5);
     }
 }
+/* 统一按钮颜色：让“检查钱包风险”按钮也变成蓝色 */
+.btn-secondary {
+    background: linear-gradient(135deg, #00e6ff, #0077ff) !important; /* 和主按钮一样的蓝渐变 */
+    color: #fff !important;
+    border: none !important;
+    box-shadow: 0 4px 15px rgba(0, 230, 255, 0.4) !important;
+    transition: all 0.3s ease !important;
+}
+
+.btn-secondary:hover {
+    background: linear-gradient(135deg, #0077ff, #0055cc) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(0, 230, 255, 0.6) !important;
+}
