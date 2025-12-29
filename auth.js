@@ -93,11 +93,12 @@ function isVip() {
 
     const users = JSON.parse(localStorage.getItem(DB_KEY_USERS) || '{}');
     const user = users[username];
-    if (!user) return false;
+    if (!user || !user.isVip) return false;
 
-    if (user.isVip === true) return true;
-    return false;
+    if (!user.vipUntil) return true;
+    return new Date(user.vipUntil) > new Date();
 }
+
 // ============================
 // 更新导航栏登录状态
 // ============================
@@ -193,16 +194,12 @@ function showUpgradeModal() {
 // ============================
 window.updateVipDisplay = function() {
     const downloadBtn = document.getElementById('proDownloadBtn');
-    const vipDesktopDownload = document.getElementById('vipDesktopDownload');
+    if (!downloadBtn) return;
 
-    // 强制先隐藏
-    if (downloadBtn) downloadBtn.style.display = 'none';
-    if (vipDesktopDownload) vipDesktopDownload.style.display = 'none';
-
-    // 只有真正VIP才显示
     if (isVip()) {
-        if (downloadBtn) downloadBtn.style.display = 'inline-block';
-        if (vipDesktopDownload) vipDesktopDownload.style.display = 'block';
+        downloadBtn.style.display = 'inline-block';
+    } else {
+        downloadBtn.style.display = 'none';
     }
 };
 
