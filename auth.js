@@ -193,15 +193,15 @@ function showUpgradeModal() {
 // VIP下载按钮显示控制
 // ============================
 window.updateVipDisplay = function() {
-    const downloadBtn = document.getElementById('proDownloadBtn'); // 插件下载按钮
-    const vipDesktopDownload = document.getElementById('vipDesktopDownload'); // 桌面版下载区
+    const downloadBtn = document.getElementById('proDownloadBtn'); // 插件下载
+    const vipDesktopDownload = document.getElementById('vipDesktopDownload'); // 桌面版区
 
+    // 严格判断：只有已登录且isVip=true才显示
     if (isVip()) {
-        // VIP用户：显示所有专属内容
         if (downloadBtn) downloadBtn.style.display = 'inline-block';
         if (vipDesktopDownload) vipDesktopDownload.style.display = 'block';
     } else {
-        // 非VIP：全部隐藏
+        // 非VIP强制隐藏（包括未登录）
         if (downloadBtn) downloadBtn.style.display = 'none';
         if (vipDesktopDownload) vipDesktopDownload.style.display = 'none';
     }
