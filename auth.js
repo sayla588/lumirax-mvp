@@ -93,12 +93,11 @@ function isVip() {
 
     const users = JSON.parse(localStorage.getItem(DB_KEY_USERS) || '{}');
     const user = users[username];
-    if (!user || !user.isVip) return false;
+    if (!user) return false;
 
-    if (!user.vipUntil) return true;
-    return new Date(user.vipUntil) > new Date();
+    if (user.isVip === true) return true;
+    return false;
 }
-
 // ============================
 // 更新导航栏登录状态
 // ============================
@@ -193,17 +192,17 @@ function showUpgradeModal() {
 // VIP下载按钮显示控制
 // ============================
 window.updateVipDisplay = function() {
-    const downloadBtn = document.getElementById('proDownloadBtn'); // 插件下载
-    const vipDesktopDownload = document.getElementById('vipDesktopDownload'); // 桌面版区
+    const downloadBtn = document.getElementById('proDownloadBtn');
+    const vipDesktopDownload = document.getElementById('vipDesktopDownload');
 
-    // 严格判断：只有已登录且isVip=true才显示
+    // 强制先隐藏
+    if (downloadBtn) downloadBtn.style.display = 'none';
+    if (vipDesktopDownload) vipDesktopDownload.style.display = 'none';
+
+    // 只有真正VIP才显示
     if (isVip()) {
         if (downloadBtn) downloadBtn.style.display = 'inline-block';
         if (vipDesktopDownload) vipDesktopDownload.style.display = 'block';
-    } else {
-        // 非VIP强制隐藏（包括未登录）
-        if (downloadBtn) downloadBtn.style.display = 'none';
-        if (vipDesktopDownload) vipDesktopDownload.style.display = 'none';
     }
 };
 
