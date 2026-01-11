@@ -254,3 +254,61 @@ if (window.location.hostname === 'localhost' || window.location.hostname.include
         if (typeof updateVipDisplay === 'function') updateVipDisplay();
     };
 }
+
+// ============================
+// VIP 桌面程序下载（最终版）
+// ============================
+async function downloadDesktopApp() {
+    // ① 必须登录
+    const username = localStorage.getItem(DB_KEY_SESSION);
+    if (!username) {
+        alert('请先登录账号');
+        openAuthModal();
+        return;
+    }
+
+    // ② 必须是 VIP
+    if (!isVip()) {
+        alert('该功能仅限 VIP 用户使用');
+        showUpgradeModal();
+        return;
+    }
+
+    try {
+        // ③ 请求后端授权下载
+        const res = await fetch('/api/download-auth', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username: username
+            })
+        });
+
+        if (!res.ok) {
+            alert('下载授权失败，请稍后再试');
+            return;
+        }
+
+        // ④ 以二进制方式接收 exe
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+
+        // ⑤ 触发浏览器下载
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'mivichain-pro-guard.exe';
+        document.body.appendChild(a);
+        a.click();
+
+        // ⑥ 清理
+        a.remove();
+        window.URL.revokeObjectURL(url);
+
+    } catch (err) {
+        console.error(err);
+        alert('下载过程中发生错误');
+    }
+}
+
