@@ -73,7 +73,7 @@ function logout() {
     location.reload();
 }
 
-/* ================= VIP 判断 ================= */
+/* ================= VIP 判断（仅用于 UI 显示） ================= */
 function isVip() {
     const username = localStorage.getItem(DB_KEY_SESSION);
     if (!username) return false;
@@ -112,56 +112,28 @@ function checkLoginStatus() {
     updateVipDisplay();
 }
 
-/* ================= VIP 下载按钮 ================= */
+/* ================= VIP 下载按钮显示 ================= */
 function updateVipDisplay() {
     const btn = document.getElementById('proDownloadBtn');
     if (!btn) return;
     btn.style.display = isVip() ? 'inline-block' : 'none';
 }
 
-/* ================= 下载桌面版（关键修复） ================= */
-async function downloadDesktopApp() {
+/* ================= 下载桌面版（最终正确版） ================= */
+function downloadDesktopApp() {
     const username = localStorage.getItem(DB_KEY_SESSION);
 
+    // ① 未登录 → 要求登录
     if (!username) {
         alert('请先登录账号');
         openAuthModal();
         return;
     }
 
-    if (!isVip()) {
-        alert('该功能仅限 VIP 用户');
-        showUpgradeModal();
-        return;
-    }
-
-    try {
-        const res = await fetch('/api/download', {
-            method: 'GET',
-            headers: {
-                'x-username': username
-            },
-            redirect: 'follow'
-        });
-
-        if (res.status === 401) {
-            alert('未登录');
-            return;
-        }
-
-        if (res.status === 403) {
-            alert('仅限 VIP 用户下载');
-            return;
-        }
-
-        // ⚠️ 不处理 blob
-        // 浏览器会自动跟随 302 → GitHub 下载
-    } catch (err) {
-        console.error(err);
-        alert('下载失败，请稍后再试');
-    }
+    // ② 不在前端判断 VIP，直接交给后端
+    // ③ 浏览器跳转，支持 302 → GitHub Release
+    window.location.href = '/api/download';
 }
-
 
 /* ================= 弹窗控制 ================= */
 function openAuthModal() {
@@ -190,7 +162,7 @@ function setupModalEvents() {
     }
 }
 
-/* ================= 开发者后门 ================= */
+/* ================= 开发者后门（测试用） ================= */
 if (location.hostname.includes('vercel.app') || location.hostname === 'localhost') {
     window.devVip = function (username) {
         const users = JSON.parse(localStorage.getItem(DB_KEY_USERS) || '{}');
