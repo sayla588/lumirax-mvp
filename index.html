@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>MiviChain - 区块链安全分析平台</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MiviChain</title>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <link rel="stylesheet" href="style.css">
@@ -18,14 +18,15 @@
   </div>
 
   <ul class="nav-links">
-    <li><a href="index.html" class="nav-link active">首页</a></li>
-    <li><a href="scanner.html" class="nav-link">链上扫描</a></li>
-    <li><a href="risk.html" class="nav-link">风险透视</a></li>
-    <li><a href="verify.html" class="nav-link">验证工具</a></li>
+    <li><a href="index.html" class="active">首页</a></li>
+    <li><a href="scanner.html">链上扫描</a></li>
+    <li><a href="risk.html">风险透视</a></li>
+    <li><a href="verify.html">验证工具</a></li>
   </ul>
 
   <div class="nav-actions">
-    <button class="btn-login" id="loginBtn">登录 / 注册</button>
+    <!-- auth.js 会自动接管这里 -->
+    <button class="btn-login" onclick="openAuthModal()">登录 / 注册</button>
   </div>
 </nav>
 
@@ -33,26 +34,27 @@
 <header class="hero">
   <div class="hero-content">
     <h1>守护您的链上资产安全</h1>
-    <p>利用 AI 驱动的智能合约审计与实时风险监控，为您的 Web3 之旅保驾护航。</p>
+    <p>AI 驱动的 Web3 安全分析平台</p>
 
     <div class="hero-buttons">
-      <a href="scanner.html" class="btn-primary">开始扫描合约</a>
-      <a href="risk.html" class="btn-secondary">检查钱包风险</a>
+      <a href="scanner.html" class="btn-primary">开始扫描</a>
+      <a href="risk.html" class="btn-secondary">钱包风险</a>
 
+      <!-- VIP 下载按钮（auth.js 控制显示） -->
       <a id="proDownloadBtn"
          href="javascript:void(0)"
-         class="btn-primary vip-download-btn"
+         onclick="downloadDesktopApp()"
+         class="btn-primary"
          style="display:none;">
-        <i class="fa-solid fa-download"></i>
-        下载 MiviChain Pro 桌面程序（VIP）
+        <i class="fa-solid fa-download"></i> 下载桌面版（VIP）
       </a>
     </div>
   </div>
 </header>
 
-<!-- ================== 登录 / 注册弹窗 ================== -->
+<!-- ================== 登录 / 注册弹窗（只放 HTML） ================== -->
 <div id="authModal" class="modal-overlay" style="display:none;">
-  <div class="modal-content auth-modal">
+  <div class="modal-content">
     <button class="modal-close" onclick="closeAuthModal()">×</button>
 
     <div class="auth-tabs">
@@ -60,64 +62,24 @@
       <button id="tab-register" class="auth-tab" onclick="switchAuthTab('register')">注册</button>
     </div>
 
-    <!-- 登录 -->
     <form id="form-login" class="auth-form active" onsubmit="handleLogin(event)">
-      <input id="loginUser" class="auth-input" type="text" placeholder="用户名" required>
+      <input id="loginUser" class="auth-input" placeholder="用户名" required>
       <input id="loginPass" class="auth-input" type="password" placeholder="密码" required>
       <div id="loginMsg" class="auth-msg"></div>
       <button type="submit" class="btn-full">登录</button>
     </form>
 
-    <!-- 注册 -->
     <form id="form-register" class="auth-form" onsubmit="handleRegister(event)">
-      <input id="regUser" class="auth-input" type="text" placeholder="用户名" required>
+      <input id="regUser" class="auth-input" placeholder="用户名" required>
       <input id="regPass" class="auth-input" type="password" placeholder="密码" required>
       <div id="regMsg" class="auth-msg"></div>
       <button type="submit" class="btn-full">注册</button>
     </form>
-
   </div>
 </div>
 
-
-<!-- ================== JS（唯一一套） ================== -->
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  const loginBtn = document.getElementById("loginBtn");
-  const modal = document.getElementById("authModal");
-  const closeBtn = document.getElementById("closeModal");
-
-  const tabLogin = document.getElementById("tab-login");
-  const tabRegister = document.getElementById("tab-register");
-  const formLogin = document.getElementById("form-login");
-  const formRegister = document.getElementById("form-register");
-
-  // 打开弹窗
-  loginBtn.addEventListener("click", () => {
-    modal.style.display = "flex";
-  });
-
-  // 关闭弹窗
-  closeBtn.addEventListener("click", () => {
-    modal.style.display = "none";
-  });
-
-  // Tab 切换
-  tabLogin.addEventListener("click", () => {
-    tabLogin.classList.add("active");
-    tabRegister.classList.remove("active");
-    formLogin.classList.add("active");
-    formRegister.classList.remove("active");
-  });
-
-  tabRegister.addEventListener("click", () => {
-    tabRegister.classList.add("active");
-    tabLogin.classList.remove("active");
-    formRegister.classList.add("active");
-    formLogin.classList.remove("active");
-  });
-});
-</script>
+<!-- ================== 只加载 auth.js（不要再写登录 JS） ================== -->
+<script src="auth.js"></script>
 
 </body>
 </html>
