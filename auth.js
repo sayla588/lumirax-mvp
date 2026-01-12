@@ -121,8 +121,10 @@ function updateVipDisplay() {
 
 /* ================= 下载桌面版（关键修复） ================= */
 async function downloadDesktopApp() {
-    if (!localStorage.getItem(DB_KEY_SESSION)) {
-        alert('请先登录');
+    const username = localStorage.getItem(DB_KEY_SESSION);
+
+    if (!username) {
+        alert('请先登录账号');
         openAuthModal();
         return;
     }
@@ -134,30 +136,32 @@ async function downloadDesktopApp() {
     }
 
     try {
-        // ✅ 只请求 GET /api/download
-        const res = await fetch('/api/download');
+        const res = await fetch('/api/download', {
+            method: 'GET',
+            headers: {
+                'x-username': username
+            },
+            redirect: 'follow'
+        });
 
-        if (!res.ok) {
-            alert('下载失败，请稍后再试');
+        if (res.status === 401) {
+            alert('未登录');
             return;
         }
 
-        const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
+        if (res.status === 403) {
+            alert('仅限 VIP 用户下载');
+            return;
+        }
 
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'mivichain-pro-guard.exe';
-        document.body.appendChild(a);
-        a.click();
-
-        a.remove();
-        URL.revokeObjectURL(url);
-    } catch (e) {
-        console.error(e);
-        alert('下载异常');
+        // ⚠️ 不处理 blob
+        // 浏览器会自动跟随 302 → GitHub 下载
+    } catch (err) {
+        console.error(err);
+        alert('下载失败，请稍后再试');
     }
 }
+
 
 /* ================= 弹窗控制 ================= */
 function openAuthModal() {
