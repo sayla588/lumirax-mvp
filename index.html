@@ -11,22 +11,22 @@
     <!-- Google Translate -->
     <div id="google_translate_element" style="position:fixed; top:80px; right:20px; z-index:9999;"></div>
     <script type="text/javascript">
-      function googleTranslateElementInit() {
-        new google.translate.TranslateElement({
-          pageLanguage: 'zh-CN',
-          includedLanguages: 'zh-CN,en,ja,ko',
-          layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
-          autoDisplay: false
-        }, 'google_translate_element');
-      }
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'zh-CN',
+                includedLanguages: 'zh-CN,en,ja,ko',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                autoDisplay: false
+            }, 'google_translate_element');
+        }
     </script>
     <script type="text/javascript"
-            src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+        src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </head>
 
 <body>
 
-<!-- ================= 导航栏 ================= -->
+<!-- ================== 导航栏 ================== -->
 <nav class="navbar">
     <div class="logo">
         <i class="fa-solid fa-shield-halved"></i> MiviChain
@@ -47,7 +47,7 @@
     </div>
 </nav>
 
-<!-- ================= Hero ================= -->
+<!-- ================== Hero ================== -->
 <header class="hero">
     <div class="hero-content">
         <h1>守护您的链上资产安全</h1>
@@ -71,7 +71,7 @@
     <div class="hero-bg-animation"></div>
 </header>
 
-<!-- ================= 核心功能 ================= -->
+<!-- ================== 核心功能 ================== -->
 <section class="features">
     <div class="section-title">
         <h2>核心功能</h2>
@@ -108,7 +108,7 @@
     </div>
 </section>
 
-<!-- ================= 数据统计 ================= -->
+<!-- ================== 统计 ================== -->
 <section class="stats">
     <div class="stat-item">
         <span class="stat-number">100W+</span>
@@ -124,79 +124,28 @@
     </div>
 </section>
 
-<!-- ================= 页脚 ================= -->
+<!-- ================== 页脚 ================== -->
 <footer>
     <div class="footer-content">
         <div class="footer-logo">
             <i class="fa-solid fa-shield-halved"></i> MiviChain
         </div>
-        <p>© 2025 MiviChain Security. All rights reserved.</p>
+        <p>&copy; 2025 MiviChain Security. All rights reserved.</p>
     </div>
 </footer>
 
-<!-- ================= 登录模态框 ================= -->
-<div id="authModal" class="modal-overlay">
-    <div class="modal-content">
-        <button class="modal-close" onclick="closeAuthModal()">&times;</button>
+<!-- ================== JS ================== -->
 
-        <div class="auth-tabs">
-            <button id="tab-login" class="auth-tab active"
-                    onclick="switchAuthTab('login')">登录</button>
-            <button id="tab-register" class="auth-tab"
-                    onclick="switchAuthTab('register')">注册</button>
-        </div>
-
-        <form id="form-login" class="auth-form active" onsubmit="handleLogin(event)">
-            <input type="text" id="loginUser" class="auth-input" placeholder="用户名" required>
-            <input type="password" id="loginPass" class="auth-input" placeholder="密码" required>
-            <button type="submit" class="btn-full">立即登录</button>
-            <div id="loginMsg" class="auth-msg"></div>
-            <p style="text-align:center;color:#94a3b8;font-size:0.9rem;margin-top:10px;">
-                小提示：手机和电脑需分别注册登录一次
-            </p>
-        </form>
-
-        <form id="form-register" class="auth-form" onsubmit="handleRegister(event)">
-            <input type="text" id="regUser" class="auth-input" placeholder="设置用户名" required>
-            <input type="password" id="regPass" class="auth-input" placeholder="设置密码" required>
-            <button type="submit" class="btn-full"
-                    style="background:transparent;border:1px solid var(--primary-color);color:#fff;">
-                创建账户
-            </button>
-            <div id="regMsg" class="auth-msg"></div>
-        </form>
-    </div>
-</div>
-
-<!-- ================= JS ================= -->
 <script>
 /* 移动端菜单 */
-const hamburger = document.querySelector('.hamburger');
-const navLinks = document.querySelector('.nav-links');
-hamburger.addEventListener('click', () => {
-    navLinks.classList.toggle('active');
+document.querySelector(".hamburger").addEventListener("click", () => {
+    document.querySelector(".nav-links").classList.toggle("active");
 });
 
-/* 页面加载后检查 VIP */
-document.addEventListener("DOMContentLoaded", async () => {
-    const wallet = localStorage.getItem("wallet");
-    if (!wallet) return;
-
-    try {
-        const res = await fetch("/api/check-vip", {
-            headers: { "x-wallet-address": wallet }
-        });
-        if (res.ok) {
-            document.getElementById("proDownloadBtn").style.display = "inline-flex";
-        }
-    } catch (e) {
-        console.warn("VIP check failed");
-    }
-});
-
-/* 下载桌面端 */
+/* ================== VIP 下载逻辑（关键修复） ================== */
 async function downloadDesktopApp() {
     const wallet = localStorage.getItem("wallet");
+
     if (!wallet) {
         alert("请先登录");
         return;
@@ -204,8 +153,16 @@ async function downloadDesktopApp() {
 
     try {
         const res = await fetch("/api/download", {
-            headers: { "x-wallet-address": wallet }
+            method: "GET",
+            headers: {
+                "x-wallet-address": wallet
+            }
         });
+
+        if (res.status === 401) {
+            alert("请先登录");
+            return;
+        }
 
         if (res.status === 403) {
             alert("仅限 VIP 用户下载");
@@ -217,15 +174,27 @@ async function downloadDesktopApp() {
             return;
         }
 
-        const data = await res.json();
-        window.location.href = data.url;
+        // ✅ 正确处理 exe（二进制）
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
 
-    } catch (err) {
-        alert("网络异常");
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "mivichain-pro-guard.exe";
+        document.body.appendChild(a);
+        a.click();
+
+        a.remove();
+        URL.revokeObjectURL(url);
+
+    } catch (e) {
+        console.error(e);
+        alert("下载异常，请稍后再试");
     }
 }
 </script>
 
+<!-- 登录 / 注册逻辑 -->
 <script src="auth.js"></script>
 
 </body>
