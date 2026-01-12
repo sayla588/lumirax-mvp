@@ -1,44 +1,30 @@
-export default async function handler(req, res) {
-  try {
-    if (req.method !== "GET") {
-      return res.status(405).json({ error: "Method not allowed" });
-    }
+import fs from "fs";
+import path from "path";
 
-    // 1️⃣ 获取钱包
-    const wallet = req.headers["x-wallet-address"];
-    if (!wallet) {
-      return res.status(401).json({ error: "未登录" });
-    }
-
-    // 2️⃣ 校验 VIP
-    const isVip = await checkVip(wallet);
-    if (!isVip) {
-      return res.status(403).json({ error: "仅限 VIP 用户下载" });
-    }
-
-    // 3️⃣ 返回 GitHub Release 下载地址
-    return res.status(200).json({
-      url: "https://github.com/你的用户名/lumirax-mvp/releases/download/v1.0.0/mivichain-pro-guard.exe"
-    });
-
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: "服务器错误" });
+export default function handler(req, res) {
+  // 只允许 GET
+  if (req.method !== "GET") {
+    return res.status(405).end("Method Not Allowed");
   }
-}
 
-/**
- * VIP 校验（示例版）
- * 你后续可以替换为：
- * - 数据库
- * - NFT
- * - 支付订单
- */
-async function checkVip(wallet) {
-  const vipWallets = [
-    "0x1234567890abcdef",
-    "0xabcdef1234567890"
-  ];
+  // exe 路径
+  const filePath = path.join(
+    process.cwd(),
+    "downloads",
+    "mivichain-pro-guard.exe"
+  );
 
-  return vipWallets.includes(wallet.toLowerCase());
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).end("File not found");
+  }
+
+  // 下载头
+  res.setHeader(
+    "Content-Disposition",
+    'attachment; filename="mivichain-pro-guard.exe"'
+  );
+  res.setHeader("Content-Type", "application/octet-stream");
+
+  // 流式返回
+  fs.createReadStream(filePath).pipe(res);
 }
