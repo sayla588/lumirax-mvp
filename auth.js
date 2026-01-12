@@ -1,4 +1,4 @@
-// auth.js - localStorage 本地存储版（简单稳定）
+// auth.js - localStorage 本地存储版（最终稳定）
 
 const DB_KEY_USERS = 'chainGuard_users';
 const DB_KEY_SESSION = 'chainGuard_session';
@@ -8,9 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupModalEvents();
 });
 
-// ============================
-// 注册
-// ============================
+/* ================= 注册 ================= */
 function handleRegister(e) {
     e.preventDefault();
     const username = document.getElementById('regUser').value.trim();
@@ -22,71 +20,60 @@ function handleRegister(e) {
         return;
     }
 
-    let users = JSON.parse(localStorage.getItem(DB_KEY_USERS) || '{}');
-
+    const users = JSON.parse(localStorage.getItem(DB_KEY_USERS) || '{}');
     if (users[username]) {
         showMsg(msgBox, '该用户名已被注册', 'error');
         return;
     }
 
     users[username] = {
-        password: password,
+        password,
         isVip: false,
         vipUntil: null,
         regDate: new Date().toISOString()
     };
-    localStorage.setItem(DB_KEY_USERS, JSON.stringify(users));
 
-    showMsg(msgBox, '注册成功！请登录', 'success');
+    localStorage.setItem(DB_KEY_USERS, JSON.stringify(users));
+    showMsg(msgBox, '注册成功，请登录', 'success');
+
     setTimeout(() => {
         switchAuthTab('login');
         document.getElementById('loginUser').value = username;
         msgBox.textContent = '';
-    }, 1500);
+    }, 1200);
 }
 
-// ============================
-// 登录
-// ============================
+/* ================= 登录 ================= */
 function handleLogin(e) {
     e.preventDefault();
     const username = document.getElementById('loginUser').value.trim();
     const password = document.getElementById('loginPass').value.trim();
     const msgBox = document.getElementById('loginMsg');
 
-    let users = JSON.parse(localStorage.getItem(DB_KEY_USERS) || '{}');
-    const user = users[username];
-
-    if (!user || user.password !== password) {
+    const users = JSON.parse(localStorage.getItem(DB_KEY_USERS) || '{}');
+    if (!users[username] || users[username].password !== password) {
         showMsg(msgBox, '用户名或密码错误', 'error');
         return;
     }
 
     localStorage.setItem(DB_KEY_SESSION, username);
-    showMsg(msgBox, '登录成功！', 'success');
+    showMsg(msgBox, '登录成功', 'success');
 
     setTimeout(() => {
         closeAuthModal();
         checkLoginStatus();
-        if (typeof updateVipDisplay === 'function') updateVipDisplay();
-    }, 1000);
+        updateVipDisplay();
+    }, 800);
 }
 
-// ============================
-// 退出登录
-// ============================
+/* ================= 退出 ================= */
 function logout() {
-    if (confirm('确定要退出登录吗？')) {
-        localStorage.removeItem(DB_KEY_SESSION);
-        checkLoginStatus();
-        if (typeof updateVipDisplay === 'function') updateVipDisplay();
-        location.reload();
-    }
+    if (!confirm('确定退出登录？')) return;
+    localStorage.removeItem(DB_KEY_SESSION);
+    location.reload();
 }
 
-// ============================
-// 检查是否为VIP
-// ============================
+/* ================= VIP 判断 ================= */
 function isVip() {
     const username = localStorage.getItem(DB_KEY_SESSION);
     if (!username) return false;
@@ -99,216 +86,121 @@ function isVip() {
     return new Date(user.vipUntil) > new Date();
 }
 
-// ============================
-// 更新导航栏登录状态
-// ============================
+/* ================= UI 状态 ================= */
 function checkLoginStatus() {
     const username = localStorage.getItem(DB_KEY_SESSION);
-    const navActions = document.querySelector('.nav-actions');
+    const nav = document.querySelector('.nav-actions');
 
-    if (username) {
-        const vip = isVip();
-        navActions.innerHTML = `
-            <div class="user-profile">
-                <span><i class="fa-solid fa-user-astronaut"></i> ${username}
-                    ${vip ? '<span style="color:#10b981; margin-left:8px;">✨ VIP</span>' : ''}
-                </span>
-                ${!vip ? '<button class="btn-upgrade" onclick="showUpgradeModal()">升级 VIP</button>' : ''}
-                <button class="btn-logout" onclick="logout()">退出</button>
-            </div>
-        `;
-    } else {
-        navActions.innerHTML = `<button class="btn-login" onclick="openAuthModal()">登录 / 注册</button>`;
+    if (!username) {
+        nav.innerHTML = `<button class="btn-login" onclick="openAuthModal()">登录 / 注册</button>`;
+        updateVipDisplay();
+        return;
     }
 
-    if (typeof updateVipDisplay === 'function') updateVipDisplay();
-}
-
-// ============================
-// 升级VIP弹窗（你的爱发电代码）
-function showUpgradeModal() {
-    const modalHtml = `
-        <div id="upgradeModal" class="modal-overlay" style="display:flex;">
-            <div class="modal-content vip-modal-scroll">
-                <button class="modal-close" onclick="document.getElementById('upgradeModal').remove()">×</button>
-                <h3 style="text-align:center; margin-bottom:20px; color:#fff;">升级 VIP 会员</h3>
-                <p style="text-align:center; color:#ccc; margin-bottom:30px;">
-                    解锁 MiviChain Pro 浏览器插件下载 + 高级工具 + 无广告体验
-                </p>
-
-                <div class="vip-scroll-container">
-                    <div class="vip-plans">
-                        <div class="vip-card">
-                            <div class="flag">🇨🇳 中国用户</div>
-                            <h4>月会员 ¥29 / 月</h4>
-                            <p style="color:#94a3b8; margin:10px 0;">支付宝 · 微信支付</p>
-                            <button class="btn-full" onclick="window.open('https://ifdian.net/order/create?plan_id=2fda6108d9a211f0ac165254001e7c00&product_type=0&remark=&affiliate_code=&fr=afcom', '_blank')">
-                                去爱发电开通
-                            </button>
-                        </div>
-
-                        <div class="vip-card recommended">
-                            <div class="flag">🇨🇳 中国用户</div>
-                            <div class="badge">最划算</div>
-                            <h4>年会员 ¥17 / 月（建议一次付12个月 ≈ ¥204）</h4>
-                            <p style="color:#94a3b8; margin:10px 0;">支付宝 · 微信支付</p>
-                            <button class="btn-full" onclick="window.open('https://ifdian.net/order/create?plan_id=1d776c8ad9a311f0b58952540025c377&product_type=0&remark=&affiliate_code=&fr=afcom', '_blank')">
-                                去爱发电开通
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="vip-plans" style="margin-top:40px;">
-                        <div class="vip-card">
-                            <div class="flag">🌍 国际用户</div>
-                            <h4>Monthly VIP $4.99 / month</h4>
-                            <p style="color:#94a3b8; margin:10px 0;">即将开通</p>
-                            <button class="btn-full" onclick="alert('国际支付正在审核中，敬请期待！')">
-                                即将开通
-                            </button>
-                        </div>
-
-                        <div class="vip-card recommended">
-                            <div class="flag">🌍 国际用户</div>
-                            <div class="badge">Best Value</div>
-                            <h4>Yearly VIP $49.99 / year</h4>
-                            <p style="color:#94a3b8; margin:10px 0;">即将开通</p>
-                            <button class="btn-full" onclick="alert('国际支付正在审核中，敬请期待！')">
-                                即将开通
-                            </button>
-                        </div>
-                    </div>
-
-                    <p style="text-align:center; color:#94a3b8; font-size:0.9rem; margin:30px 0 20px;">
-                        支付成功后，请在留言或邮件中提供你的网站用户名，我会手动为你开通 VIP～
-                    </p>
-                </div>
-            </div>
+    nav.innerHTML = `
+        <div class="user-profile">
+            <span>
+              <i class="fa-solid fa-user-astronaut"></i>
+              ${username}
+              ${isVip() ? '<span style="color:#10b981;margin-left:6px;">✨ VIP</span>' : ''}
+            </span>
+            ${!isVip() ? '<button class="btn-upgrade" onclick="showUpgradeModal()">升级 VIP</button>' : ''}
+            <button class="btn-logout" onclick="logout()">退出</button>
         </div>
     `;
-    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    updateVipDisplay();
 }
 
-// ============================
-// VIP下载按钮显示控制
-// ============================
-window.updateVipDisplay = function() {
-    const downloadBtn = document.getElementById('proDownloadBtn');
-    if (!downloadBtn) return;
-
-    if (isVip()) {
-        downloadBtn.style.display = 'inline-block';
-    } else {
-        downloadBtn.style.display = 'none';
-    }
-};
-
-// ============================
-// 辅助函数
-// ============================
-function showMsg(element, text, type) {
-    element.textContent = text;
-    element.className = `auth-msg ${type}`;
+/* ================= VIP 下载按钮 ================= */
+function updateVipDisplay() {
+    const btn = document.getElementById('proDownloadBtn');
+    if (!btn) return;
+    btn.style.display = isVip() ? 'inline-block' : 'none';
 }
 
-function openAuthModal() {
-    document.getElementById('authModal').style.display = 'flex';
-}
-
-function closeAuthModal() {
-    document.getElementById('authModal').style.display = 'none';
-    document.querySelectorAll('.auth-input').forEach(input => input.value = '');
-    document.querySelectorAll('.auth-msg').forEach(msg => msg.textContent = '');
-}
-
-function switchAuthTab(tab) {
-    document.querySelectorAll('.auth-tab').forEach(btn => btn.classList.remove('active'));
-    document.getElementById(`tab-${tab}`).classList.add('active');
-    document.querySelectorAll('.auth-form').forEach(form => form.classList.remove('active'));
-    document.getElementById(`form-${tab}`).classList.add('active');
-}
-
-function setupModalEvents() {
-    const modal = document.getElementById('authModal');
-    if (modal) {
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) closeAuthModal();
-        });
-    }
-}
-
-// ============================
-// 开发者后门（仅本地/Vercel预览用）
-if (window.location.hostname === 'localhost' || window.location.hostname.includes('vercel.app')) {
-    window.devVip = function(username) {
-        let users = JSON.parse(localStorage.getItem(DB_KEY_USERS) || '{}');
-        if (!users[username]) {
-            alert('用户不存在');
-            return;
-        }
-        users[username].isVip = true;
-        users[username].vipUntil = '2099-12-31';
-        localStorage.setItem(DB_KEY_USERS, JSON.stringify(users));
-        alert(`${username} 已升级为永久 VIP！`);
-        checkLoginStatus();
-        if (typeof updateVipDisplay === 'function') updateVipDisplay();
-    };
-}
-
-// ============================
-// VIP 桌面程序下载（最终版）
-// ============================
+/* ================= 下载桌面版（关键修复） ================= */
 async function downloadDesktopApp() {
-    // ① 必须登录
-    const username = localStorage.getItem(DB_KEY_SESSION);
-    if (!username) {
-        alert('请先登录账号');
+    if (!localStorage.getItem(DB_KEY_SESSION)) {
+        alert('请先登录');
         openAuthModal();
         return;
     }
 
-    // ② 必须是 VIP
     if (!isVip()) {
-        alert('该功能仅限 VIP 用户使用');
+        alert('该功能仅限 VIP 用户');
         showUpgradeModal();
         return;
     }
 
     try {
-        // ③ 请求后端授权下载
-        const res = await fetch('/api/download-auth', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                username: username
-            })
-        });
+        // ✅ 只请求 GET /api/download
+        const res = await fetch('/api/download');
 
         if (!res.ok) {
-            alert('下载授权失败，请稍后再试');
+            alert('下载失败，请稍后再试');
             return;
         }
 
-        // ④ 以二进制方式接收 exe
         const blob = await res.blob();
-        const url = window.URL.createObjectURL(blob);
+        const url = URL.createObjectURL(blob);
 
-        // ⑤ 触发浏览器下载
         const a = document.createElement('a');
         a.href = url;
         a.download = 'mivichain-pro-guard.exe';
         document.body.appendChild(a);
         a.click();
 
-        // ⑥ 清理
         a.remove();
-        window.URL.revokeObjectURL(url);
-
-    } catch (err) {
-        console.error(err);
-        alert('下载过程中发生错误');
+        URL.revokeObjectURL(url);
+    } catch (e) {
+        console.error(e);
+        alert('下载异常');
     }
 }
 
+/* ================= 弹窗控制 ================= */
+function openAuthModal() {
+    document.getElementById('authModal').style.display = 'flex';
+}
+
+function closeAuthModal() {
+    document.getElementById('authModal').style.display = 'none';
+    document.querySelectorAll('.auth-input').forEach(i => i.value = '');
+    document.querySelectorAll('.auth-msg').forEach(m => m.textContent = '');
+}
+
+function switchAuthTab(tab) {
+    document.querySelectorAll('.auth-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+    document.getElementById(`tab-${tab}`).classList.add('active');
+    document.getElementById(`form-${tab}`).classList.add('active');
+}
+
+function setupModalEvents() {
+    const modal = document.getElementById('authModal');
+    if (modal) {
+        modal.addEventListener('click', e => {
+            if (e.target === modal) closeAuthModal();
+        });
+    }
+}
+
+/* ================= 开发者后门 ================= */
+if (location.hostname.includes('vercel.app') || location.hostname === 'localhost') {
+    window.devVip = function (username) {
+        const users = JSON.parse(localStorage.getItem(DB_KEY_USERS) || '{}');
+        if (!users[username]) return alert('用户不存在');
+        users[username].isVip = true;
+        users[username].vipUntil = '2099-12-31';
+        localStorage.setItem(DB_KEY_USERS, JSON.stringify(users));
+        alert(`${username} 已设置为 VIP`);
+        checkLoginStatus();
+    };
+}
+
+/* ================= 工具 ================= */
+function showMsg(el, text, type) {
+    el.textContent = text;
+    el.className = `auth-msg ${type}`;
+}
