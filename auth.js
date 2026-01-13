@@ -1,4 +1,4 @@
-// auth.js - localStorage 本地存储版（最终稳定）
+// auth.js - localStorage 本地存储版（最终稳定 · 可上线）
 
 const DB_KEY_USERS = 'chainGuard_users';
 const DB_KEY_SESSION = 'chainGuard_session';
@@ -73,7 +73,7 @@ function logout() {
     location.reload();
 }
 
-/* ================= VIP 判断（仅用于 UI 显示） ================= */
+/* ================= VIP 判断（仅用于前端 UI） ================= */
 function isVip() {
     const username = localStorage.getItem(DB_KEY_SESSION);
     if (!username) return false;
@@ -119,20 +119,18 @@ function updateVipDisplay() {
     btn.style.display = isVip() ? 'inline-block' : 'none';
 }
 
-/* ================= 下载桌面版（最终正确版） ================= */
+/* ================= 下载桌面版（最终正确逻辑） ================= */
 function downloadDesktopApp() {
     const username = localStorage.getItem(DB_KEY_SESSION);
 
-    // ① 未登录 → 要求登录
     if (!username) {
         alert('请先登录账号');
         openAuthModal();
         return;
     }
 
-    // ② 不在前端判断 VIP，直接交给后端
-    // ③ 浏览器跳转，支持 302 → GitHub Release
-    window.location.href = '/api/download';
+    // ✅ 关键：把 username 明确传给后端
+    window.location.href = `/api/download?user=${encodeURIComponent(username)}`;
 }
 
 /* ================= 弹窗控制 ================= */
@@ -162,7 +160,7 @@ function setupModalEvents() {
     }
 }
 
-/* ================= 开发者后门（测试用） ================= */
+/* ================= 测试用 VIP 后门 ================= */
 if (location.hostname.includes('vercel.app') || location.hostname === 'localhost') {
     window.devVip = function (username) {
         const users = JSON.parse(localStorage.getItem(DB_KEY_USERS) || '{}');
