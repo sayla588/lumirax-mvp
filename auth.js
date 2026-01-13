@@ -178,3 +178,60 @@ function showMsg(el, text, type) {
     el.textContent = text;
     el.className = `auth-msg ${type}`;
 }
+
+/* ================= 升级 VIP 弹窗 ================= */
+function showUpgradeModal() {
+    if (document.getElementById('upgradeModal')) return;
+
+    const modalHtml = `
+    <div id="upgradeModal" class="modal-overlay" style="display:flex;">
+        <div class="modal-content vip-modal-scroll">
+            <button class="modal-close" onclick="document.getElementById('upgradeModal').remove()">×</button>
+
+            <h3 style="text-align:center;margin-bottom:16px;color:#fff;">
+                升级 VIP 会员
+            </h3>
+
+            <p style="text-align:center;color:#94a3b8;margin-bottom:24px;">
+                解锁桌面版下载 · 高级功能 · 无广告体验
+            </p>
+
+            <div class="vip-plans">
+
+                <div class="vip-card">
+                    <h4>月会员 ¥29 / 月</h4>
+                    <p style="color:#94a3b8;">支付宝 / 微信</p>
+                    <button class="btn-full"
+                        onclick="window.open(
+                          'https://ifdian.net/order/create?plan_id=你的月付ID',
+                          '_blank'
+                        )">
+                        去爱发电开通
+                    </button>
+                </div>
+
+                <div class="vip-card recommended">
+                    <div class="badge">最划算</div>
+                    <h4>年会员 ¥204 / 年</h4>
+                    <p style="color:#94a3b8;">支付宝 / 微信</p>
+                    <button class="btn-full"
+                        onclick="window.open(
+                          'https://ifdian.net/order/create?plan_id=你的年付ID',
+                          '_blank'
+                        )">
+                        去爱发电开通
+                    </button>
+                </div>
+
+            </div>
+
+            <p style="margin-top:20px;text-align:center;font-size:13px;color:#94a3b8;">
+                支付完成后，请通过站内或邮件告知用户名，我将为你开通 VIP
+            </p>
+        </div>
+    </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+
