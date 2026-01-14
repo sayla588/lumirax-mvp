@@ -1,36 +1,45 @@
-// /api/download.js
+import crypto from 'crypto';
+
+const SECRET = process.env.AUTH_SECRET || 'CHANGE_ME_SECRET';
+
 export default function handler(req, res) {
+  const auth = req.headers.authorization;
+  if (!auth || !auth.startsWith('Bearer ')) {
+    return res.status(401).json({ error: '未登录' });
+  }
+
   try {
-    if (req.method !== 'GET') {
-      return res.status(405).json({ error: 'Method not allowed' });
+    const token = auth.replace('Bearer ', '');
+    const [payloadBase64, signature] = token.split('.');
+
+    const payloadStr = Buffer.from(payloadBase64, 'base64').toString();
+    const expectedSig = crypto
+      .createHmac('sha256', SECRET)
+      .update(payloadStr)
+      .digest('hex');
+
+    if (signature !== expectedSig) {
+      return res.status(401).json({ error: '无效凭证' });
     }
 
-    // ✅ 从 query 里取用户名
-    const username = req.query.user;
+    const payload = JSON.parse(payloadStr);
 
-    if (!username) {
-      return res.status(401).json({ error: '未登录' });
+    if (payload.exp < Date.now()) {
+      return res.status(401).json({ error: '登录已过期' });
     }
 
-    // VIP 白名单（当前阶段完全 OK）
-    const vipUsers = ['viptest', 'admin', 'sayla'];
-
-    if (!vipUsers.includes(username.toLowerCase())) {
+    if (!payload.isVip) {
       return res.status(403).json({ error: '仅限 VIP 下载' });
     }
 
-    // ✅ 你真实存在的 GitHub Release 文件
     const releaseUrl =
-      'https://github.com/sayla588/lumirax-mvp/releases/download/v1.0.0/mivichain-pro-guard.exe';
+      'https://github.com/sayla588/lumirax-mvp/releases/download/v1.0.0/MiviChain.Pro.Guard_1.0.0_x64-setup.exe';
 
-    // 302 跳转到 GitHub
-    res.writeHead(302, {
-      Location: releaseUrl
-    });
+    res.writeHead(302, { Location: releaseUrl });
     res.end();
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: '下载失败' });
+    res.status(500).json({ error: '服务器错误' });
   }
 }
