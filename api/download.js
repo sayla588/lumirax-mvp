@@ -14,7 +14,7 @@ export default function handler(req, res) {
     }
 
     // ✅ VIP 白名单（你后面可以接数据库）
-    const vipUsers = ['viptest', 'sayla', 'admin'];
+    const vipUsers = ['viptest', 'sayla', 'admin','viptest1',];
 
     if (!vipUsers.includes(username.toLowerCase())) {
       return res.status(403).json({ error: '仅限 VIP 下载' });
