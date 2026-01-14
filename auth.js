@@ -73,7 +73,7 @@ function logout() {
     location.reload();
 }
 
-/* ================= VIP 判断（仅用于前端 UI） ================= */
+/* ================= VIP 判断（仅用于 UI 显示） ================= */
 function isVip() {
     const username = localStorage.getItem(DB_KEY_SESSION);
     if (!username) return false;
@@ -100,9 +100,9 @@ function checkLoginStatus() {
     nav.innerHTML = `
         <div class="user-profile">
             <span>
-              <i class="fa-solid fa-user-astronaut"></i>
-              ${username}
-              ${isVip() ? '<span style="color:#10b981;margin-left:6px;">✨ VIP</span>' : ''}
+                <i class="fa-solid fa-user-astronaut"></i>
+                ${username}
+                ${isVip() ? '<span style="color:#10b981;margin-left:6px;">✨ VIP</span>' : ''}
             </span>
             ${!isVip() ? '<button class="btn-upgrade" onclick="showUpgradeModal()">升级 VIP</button>' : ''}
             <button class="btn-logout" onclick="logout()">退出</button>
@@ -119,7 +119,7 @@ function updateVipDisplay() {
     btn.style.display = isVip() ? 'inline-block' : 'none';
 }
 
-/* ================= 下载桌面版（最终正确逻辑） ================= */
+/* ================= 下载桌面版（与你的 /api/download 完全匹配） ================= */
 function downloadDesktopApp() {
     const username = localStorage.getItem(DB_KEY_SESSION);
 
@@ -129,7 +129,7 @@ function downloadDesktopApp() {
         return;
     }
 
-    // ✅ 关键：把 username 明确传给后端
+    // 核心：通过 query 参数把用户名交给后端
     window.location.href = `/api/download?user=${encodeURIComponent(username)}`;
 }
 
@@ -160,11 +160,14 @@ function setupModalEvents() {
     }
 }
 
-/* ================= 测试用 VIP 后门 ================= */
-if (location.hostname.includes('vercel.app') || location.hostname === 'localhost') {
+/* ================= 测试用 VIP 后门（仅本地 / Vercel） ================= */
+if (location.hostname === 'localhost' || location.hostname.includes('vercel.app')) {
     window.devVip = function (username) {
         const users = JSON.parse(localStorage.getItem(DB_KEY_USERS) || '{}');
-        if (!users[username]) return alert('用户不存在');
+        if (!users[username]) {
+            alert('用户不存在');
+            return;
+        }
         users[username].isVip = true;
         users[username].vipUntil = '2099-12-31';
         localStorage.setItem(DB_KEY_USERS, JSON.stringify(users));
@@ -179,7 +182,7 @@ function showMsg(el, text, type) {
     el.className = `auth-msg ${type}`;
 }
 
-/* ================= 升级 VIP 弹窗 ================= */
+/* ================= 升级 VIP 弹窗（中国区） ================= */
 function showUpgradeModal() {
     if (document.getElementById('upgradeModal')) return;
 
@@ -193,7 +196,7 @@ function showUpgradeModal() {
                 </h3>
 
                 <p style="text-align:center; color:#ccc; margin-bottom:30px;">
-                    解锁 MiviChain Pro 浏览器插件下载 + 高级工具 + 无广告体验
+                    解锁 MiviChain Pro 桌面程序下载 + 高级工具 + 无广告体验
                 </p>
 
                 <div class="vip-scroll-container">
@@ -206,7 +209,7 @@ function showUpgradeModal() {
                             </p>
                             <button class="btn-full"
                                 onclick="window.open(
-                                  'https://ifdian.net/order/create?plan_id=2fda6108d9a211f0ac165254001e7c00&product_type=0&remark=&affiliate_code=&fr=afcom',
+                                  'https://ifdian.net/order/create?plan_id=2fda6108d9a211f0ac165254001e7c00&product_type=0&fr=afcom',
                                   '_blank'
                                 )">
                                 去爱发电开通
@@ -222,7 +225,7 @@ function showUpgradeModal() {
                             </p>
                             <button class="btn-full"
                                 onclick="window.open(
-                                  'https://ifdian.net/order/create?plan_id=1d776c8ad9a311f0b58952540025c377&product_type=0&remark=&affiliate_code=&fr=afcom',
+                                  'https://ifdian.net/order/create?plan_id=1d776c8ad9a311f0b58952540025c377&product_type=0&fr=afcom',
                                   '_blank'
                                 )">
                                 去爱发电开通
@@ -231,7 +234,7 @@ function showUpgradeModal() {
                     </div>
 
                     <p style="text-align:center; color:#94a3b8; font-size:0.9rem; margin:30px 0 10px;">
-                        支付成功后，请在留言或邮件中提供你的网站用户名，
+                        支付成功后，请在爱发电留言中填写你的网站用户名，
                         我会手动为你开通 VIP。
                     </p>
                 </div>
@@ -241,4 +244,3 @@ function showUpgradeModal() {
 
     document.body.insertAdjacentHTML('beforeend', modalHtml);
 }
-
