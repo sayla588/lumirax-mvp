@@ -1,36 +1,36 @@
-// /api/download.js
-export default async function handler(req, res) {
+// /api/download.js —— 商用稳定版（query 鉴权）
+
+export default function handler(req, res) {
   try {
     if (req.method !== 'GET') {
       return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    // ✅ 关键修复：从 query 里取 user
+    // ✅ 只从 query 取用户（不要再混用 header / session）
     const username = req.query.user;
 
     if (!username) {
       return res.status(401).json({ error: '未登录' });
     }
 
-    // ✅ 测试 / 白名单 VIP（后端权威）
-    const vipUsers = ['viptest', 'admin', 'sayla'];
+    // ✅ VIP 白名单（你后面可以接数据库）
+    const vipUsers = ['viptest', 'sayla', 'admin'];
 
     if (!vipUsers.includes(username.toLowerCase())) {
       return res.status(403).json({ error: '仅限 VIP 下载' });
     }
 
-    // ✅ GitHub Release 真实地址
+    // ✅ GitHub Release 真实地址（你这个是对的）
     const releaseUrl =
-      'https://github.com/sayla588/lumirax-mvp/releases/download/v1.0.0/MiviChain.Pro.Guard_1.0.0_x64-setup.exe';
+      'https://github.com/sayla588/lumirax-mvp/releases/download/v1.0.0/mivichain-pro-guard.exe';
 
-    // ✅ 302 跳转，浏览器会自动下载
+    // ✅ 必须 302 跳转
     res.writeHead(302, {
-      Location: releaseUrl
+      Location: releaseUrl,
     });
     res.end();
-
-  } catch (err) {
-    console.error(err);
+  } catch (e) {
+    console.error(e);
     res.status(500).json({ error: '下载失败' });
   }
 }
