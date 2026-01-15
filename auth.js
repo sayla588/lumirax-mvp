@@ -234,7 +234,7 @@ function showUpgradeModal() {
                     </div>
 
                     <p style="text-align:center; color:#94a3b8; font-size:0.9rem; margin:30px 0 10px;">
-                        支付成功后，请通过以下方式联系我并提供你的网站用户名：
+                        支付成功后，请通过以下方式联系我并提供你的用户名：
                     </p>
 
                     <p style="text-align:center; color:#e5e7eb; font-size:0.95rem;">
