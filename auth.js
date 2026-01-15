@@ -234,8 +234,18 @@ function showUpgradeModal() {
                     </div>
 
                     <p style="text-align:center; color:#94a3b8; font-size:0.9rem; margin:30px 0 10px;">
-                        支付成功后，请在爱发电留言中填写你的网站用户名，
-                        我会手动为你开通 VIP。
+                        支付成功后，请通过以下方式联系我并提供你的网站用户名：
+                    </p>
+
+                    <p style="text-align:center; color:#e5e7eb; font-size:0.95rem;">
+                        📧 官方邮箱：
+                        <a href="mailto:mivichain@163.com" style="color:#38bdf8;">
+                            mivichain@163.com
+                        </a>
+                    </p>
+
+                    <p style="text-align:center; color:#64748b; font-size:0.85rem; margin-top:10px;">
+                        我会在确认后为你手动开通 VIP 下载权限
                     </p>
                 </div>
             </div>
